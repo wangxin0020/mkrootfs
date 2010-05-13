@@ -1,0 +1,6 @@
+menu "Packages"
+
+source "foo/Kconfig"
+
+endmenu
+
