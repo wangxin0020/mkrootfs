@@ -24,7 +24,7 @@ cat << EOF > $2/Makefile
 lastword = \$(word \$(words \$(1)),\$(1))
 makedir := \$(dir \$(call lastword,\$(MAKEFILE_LIST)))
 
-MAKEARGS := -C $1
+MAKEARGS := --no-print-directory -R -C $1
 MAKEARGS += O=\$(if \$(patsubst /%,,\$(makedir)),\$(CURDIR)/)\$(patsubst %/,%,\$(makedir))
 
 .PHONY: all \$(MAKECMDGOALS)
@@ -32,7 +32,7 @@ MAKEARGS += O=\$(if \$(patsubst /%,,\$(makedir)),\$(CURDIR)/)\$(patsubst %/,%,\$
 all	:= \$(filter-out all Makefile,\$(MAKECMDGOALS))
 
 all:
-	\$(MAKE) \$(MAKEARGS) \$(all)
+	@\$(MAKE) \$(MAKEARGS) \$(all)
 
 Makefile:;
 

@@ -2,7 +2,8 @@
 
 match($0, /CONFIG_([0-9A-Z_]*)/, sym) {
 	do {
-		list[gensub(/_/, "/", "g", tolower(sym[1]))] = 1;
+		if (sym[1] != "SHELL")
+			list[gensub(/_/, "/", "g", tolower(sym[1]))] = 1;
 		rest = substr($0, RSTART + RLENGTH + 1);
 	} while (match(rest, /CONFIG_([0-9A-Z_]*)/, sym));
 }

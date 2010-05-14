@@ -10,6 +10,7 @@ packages := foo
 # o  use make's built-in rules and variables
 #    (this increases performance and avoids hard-to-debug behaviour);
 MAKEFLAGS += -R
+NODIRFLAG = --no-print-directory
 
 # Avoid funny character set dependencies
 unexport LC_ALL
@@ -32,6 +33,16 @@ export LC_COLLATE LC_NUMERIC
 # effects are thus separated out and done before the recursive
 # descending is started. They are now explicitly listed as the
 # prepare rule.
+
+# To put more focus on warnings, be less verbose as default
+# Use 'make V=1' to see the full commands
+
+ifeq ("$(origin V)", "command line")
+  KBUILD_VERBOSE = $(V)
+endif
+ifndef KBUILD_VERBOSE
+  KBUILD_VERBOSE = 0
+endif
 
 # kbuild supports saving output files in a separate directory.
 # To locate output files in a separate directory two syntaxes are supported.
@@ -81,10 +92,10 @@ $(if $(MKR_BUILD_OUTPUT),, \
 PHONY += $(MAKECMDGOALS) sub-make
 
 $(filter-out _all sub-make $(CURDIR)/Makefile, $(MAKECMDGOALS)) _all: sub-make
-	@:
+	$(Q)@:
 
 sub-make: FORCE
-	$(MAKE) -C $(MKR_BUILD_OUTPUT) \
+	$(if $(KBUILD_VERBOSE:1=),@)$(MAKE) $(NODIRFLAG) -C $(MKR_BUILD_OUTPUT) \
 	MKR_BUILD_SRC=$(CURDIR) \
 	-f $(CURDIR)/Makefile \
 	$(filter-out _all sub-make,$(MAKECMDGOALS))
@@ -123,6 +134,46 @@ HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
 HOSTCXXFLAGS = -O2
 
+# Beautify output
+# ---------------------------------------------------------------------------
+#
+# Normally, we echo the whole command before executing it. By making
+# that echo $($(quiet)$(cmd)), we now have the possibility to set
+# $(quiet) to choose other forms of output instead, e.g.
+#
+#         quiet_cmd_cc_o_c = Compiling $(RELDIR)/$@
+#         cmd_cc_o_c       = $(CC) $(c_flags) -c -o $@ $<
+#
+# If $(quiet) is empty, the whole command will be printed.
+# If it is set to "quiet_", only the short version will be printed.
+# If it is set to "silent_", nothing will be printed at all, since
+# the variable $(silent_cmd_cc_o_c) doesn't exist.
+#
+# A simple variant is to prefix commands with $(Q) - that's useful
+# for commands that shall be hidden in non-verbose mode.
+#
+#	$(Q)ln $@ :<
+#
+# If KBUILD_VERBOSE equals 0 then the above command will be hidden.
+# If KBUILD_VERBOSE equals 1 then the above command is displayed.
+
+ifeq ($(KBUILD_VERBOSE),1)
+  quiet =
+  Q =
+else
+  quiet=quiet_
+  Q = @
+endif
+
+# If the user is running make -s (silent mode), suppress echoing of
+# commands
+
+ifneq ($(findstring s,$(MAKEFLAGS)),)
+  quiet=silent_
+endif
+
+export quiet Q KBUILD_VERBOSE
+
 # Look for make include files relative to root of kernel src
 MAKEFLAGS += --include-dir=$(srctree)
 
@@ -145,8 +196,8 @@ export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn --exc
 # Basic helpers built in scripts/
 PHONY += scripts_basic
 scripts_basic:
-	$(MAKE) $(build)=scripts/basic
-	rm -f .tmp_quiet_recordmcount
+	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/basic
+	$(Q)rm -f .tmp_quiet_recordmcount
 
 # # To avoid any implicit rule to kick in, define an empty command.
 # scripts/basic/%: scripts_basic ;
@@ -157,8 +208,8 @@ PHONY += outputmakefile
 # output directory.
 outputmakefile:
 ifneq ($(MKR_BUILD_SRC),)
-	ln -fsn $(srctree) source
-	$(CONFIG_SHELL) $(srctree)/scripts/mkmakefile \
+	$(Q)ln -fsn $(srctree) source
+	$(Q)$(CONFIG_SHELL) $(srctree)/scripts/mkmakefile \
 	    $(srctree) $(objtree) $(VERSION) $(PATCHLEVEL)
 endif
 
@@ -196,7 +247,7 @@ ifeq ($(mixed-targets),1)
 # Handle them one by one.
 
 %:: FORCE
-	$(MAKE) -C $(srctree) MKR_BUILD_SRC= $@
+	$(Q)$(MAKE) -C $(srctree) MKR_BUILD_SRC= $@
 
 else
 ifeq ($(config-targets),1)
@@ -207,12 +258,12 @@ ifeq ($(config-targets),1)
 export MKR_CONFIG
 
 config: scripts_basic outputmakefile FORCE
-	mkdir -p include/config
-	$(MAKE) $(build)=scripts/kconfig $@
+	$(Q)mkdir -p include/config
+	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/kconfig $@
 
 %config: scripts_basic outputmakefile FORCE
-	mkdir -p include/config
-	$(MAKE) $(build)=scripts/kconfig $@
+	$(Q)mkdir -p include/config
+	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/kconfig $@
 
 else
 # ===========================================================================
@@ -242,7 +293,7 @@ $(MKR_CONFIG) include/config/auto.conf.cmd: ;
 # if auto.conf.cmd is missing then we are probably in a cleaned tree so
 # we execute the config step to be sure to catch updated Kconfig files
 include/config/%.conf: $(MKR_CONFIG) include/config/auto.conf.cmd
-	$(MAKE) -f $(srctree)/Makefile silentoldconfig
+	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
 else
 # Dummy target needed, because used as prerequisite
 include/config/auto.conf: ;
@@ -263,8 +314,9 @@ all: $(packages)
 
 PHONY += $(packages)
 $(packages): prepare
-	mkdir -p $@
-	$(MAKE) -C $@ MKR_BUILD_SRC=$(srctree) $(build)=$@ install
+	@echo Building $@...
+	$(Q)mkdir -p $@
+	$(Q)$(MAKE) -C $@ MKR_BUILD_SRC=$(srctree) $(build)=$@ install
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".
@@ -283,7 +335,7 @@ prepare1: prepare2 $(if $(O),$(O)/)include/config/auto.conf
 archprepare: prepare1 scripts_basic
 
 prepare0: archprepare FORCE
-	$(MAKE) $(build)=.
+	$(Q)$(MAKE) $(build)=.
 
 # All the preparing..
 prepare: prepare0
@@ -309,7 +361,7 @@ clean: rm-dirs  := $(CLEAN_DIRS)
 PHONY += clean
 
 clean: $(clean-dirs)
-	$(cmd_rmdirs)
+	$(call cmd,rmdirs)
 	@find . \
 		\( -name '*.[oas]' -o -name '.*.cmd' -o -name '.*.d' \) \
 		-type f -print | xargs rm -f
@@ -322,8 +374,8 @@ mrproper: rm-files := $(wildcard $(MRPROPER_FILES))
 PHONY += mrproper
 
 mrproper: clean
-	$(cmd_rmdirs)
-	$(cmd_rmfiles)
+	$(call cmd,rmdirs)
+	$(call cmd,rmfiles)
 
 # distclean
 #
@@ -403,11 +455,6 @@ ifneq ($(cmd_files),)
   $(cmd_files): ;	# Do not try to update included dependency files
   include $(cmd_files)
 endif
-
-# Shorthand for $(MAKE) -f scripts/Makefile.clean obj=dir
-# Usage:
-# $(MAKE) $(clean)=dir
-clean := -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.clean obj
 
 endif	# skip-makefile
 

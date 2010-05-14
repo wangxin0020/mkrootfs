@@ -2,8 +2,6 @@
 # Kernel configuration targets
 # These targets are used from top-level makefile
 
-Q := @
-
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config \
 	localmodconfig localyesconfig
 

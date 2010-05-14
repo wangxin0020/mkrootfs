@@ -41,22 +41,22 @@ include scripts/Kbuild.include
 save-cflags := $(CFLAGS)
 
 # The filename Kbuild has precedence over Makefile
-kbuild-dir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
-kbuild-file := $(if $(wildcard $(kbuild-dir)/Kbuild),$(kbuild-dir)/Kbuild,$(kbuild-dir)/Makefile)
+mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
 
-ifneq ($(kbuild-file),)
-.mkr.makefile.deps: $(kbuild-file)
-	$(srctree)/scripts/makefile-deps.awk $< > $@ || { rm -f $@; false; }
+ifneq ($(mkr-pkgmk),)
+.mkr.makefile.deps: $(mkr-pkgmk)
+	@$(srctree)/scripts/makefile-deps.awk $< > $@ || { rm -f $@; false; }
 
 -include .mkr.makefile.deps
 endif
 
-include $(kbuild-file)
+include $(mkr-pkgmk)
 
 # If the save-* variables changed error out
 ifeq ($(MKR_BUILD_NOPEDANTIC),)
 	ifneq ("$(save-cflags)","$(CFLAGS)")
-		$(error CFLAGS was changed in "$(kbuild-file)". Fix it to use EXTRA_CFLAGS)
+		$(error CFLAGS was changed in "$(mkr-pkgmk)". Fix it to use EXTRA_CFLAGS)
 	endif
 endif
 include scripts/Makefile.lib
