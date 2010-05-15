@@ -1,3 +1,7 @@
-install: $(deps)
-	@echo making qux for bar
+config.status: $(pkg-deps)
+	@echo configuring qux for bar
+	@: > $@
+
+install: config.status
+	@echo installing qux
 

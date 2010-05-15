@@ -1,6 +1,11 @@
-install: $(deps)
+config.status: $(pkg-deps)
 ifneq ($(CONFIG_FOO_OPT),)
-	@echo making bar with FOO_OPT
+	@echo configuring bar with FOO_OPT
 else
-	@echo making bar
+	@echo configuring bar without FOO_OPT
 endif
+	@: > $@
+
+install: config.status
+	@echo installing bar
+
