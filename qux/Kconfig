@@ -2,3 +2,15 @@ config QUX
 	package "qux"
 	depends on BAR
 
+if QUX
+
+config BASEDIR
+	string
+	default "/work/src"
+
+config QUX_SRCDIR
+	string "srcdir"
+	default "$BASEDIR/qux"
+
+endif
+

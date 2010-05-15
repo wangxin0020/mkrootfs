@@ -1,4 +1,4 @@
-config.status: $(pkg-deps)
+config.status: $(mkr-pkgdeps)
 	@echo configuring qux for bar
 	@: > $@
 
