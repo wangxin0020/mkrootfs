@@ -1,3 +1,8 @@
 config FOO
-	bool "Enable the foo package"
+	package "foo"
+
+if FOO
+	config FOO_OPT
+	bool "FOO_OPT"
+endif
 

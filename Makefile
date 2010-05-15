@@ -134,6 +134,8 @@ HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
 HOSTCXXFLAGS = -O2
 
+export MKR_BUILD_SRC
+
 # Beautify output
 # ---------------------------------------------------------------------------
 #
@@ -316,7 +318,7 @@ PHONY += $(packages)
 $(packages): prepare
 	@echo Building $@...
 	$(Q)mkdir -p $@
-	$(Q)$(MAKE) -C $@ MKR_BUILD_SRC=$(srctree) $(build)=$@ install
+	$(Q)$(MAKE) -C $@ $(build)=$@ install
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

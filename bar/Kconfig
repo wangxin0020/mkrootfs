@@ -1,0 +1,4 @@
+config BAR
+	package "bar"
+	select FOO
+

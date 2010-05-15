@@ -1,0 +1,4 @@
+config QUX
+	package "qux"
+	depends on BAR
+

@@ -1,6 +1,8 @@
 menu "Packages"
 
 source "foo/Kconfig"
+source "bar/Kconfig"
+source "qux/Kconfig"
 
 endmenu
 

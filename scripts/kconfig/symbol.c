@@ -87,6 +87,8 @@ const char *sym_type_name(enum symbol_type type)
 		return "hex";
 	case S_STRING:
 		return "string";
+	case S_PACKAGE:
+		return "package";
 	case S_UNKNOWN:
 		return "unknown";
 	case S_OTHER:
@@ -109,6 +111,15 @@ struct property *sym_get_env_prop(struct symbol *sym)
 	struct property *prop;
 
 	for_all_properties(sym, prop, P_ENV)
+		return prop;
+	return NULL;
+}
+
+struct property *sym_get_pkg_prop(struct symbol *sym)
+{
+	struct property *prop;
+
+	for_all_properties(sym, prop, P_PACKAGE)
 		return prop;
 	return NULL;
 }
@@ -857,7 +868,7 @@ struct symbol *sym_check_deps(struct symbol *sym)
 
 	if (sym->flags & SYMBOL_CHECK) {
 		fprintf(stderr, "%s:%d:error: found recursive dependency: %s",
-		        sym->prop->file->name, sym->prop->lineno,
+			sym->prop->file->name, sym->prop->lineno,
 			sym->name ? sym->name : "<choice>");
 		return sym;
 	}
@@ -937,6 +948,8 @@ const char *prop_get_type_name(enum prop_type type)
 		return "select";
 	case P_RANGE:
 		return "range";
+	case P_PACKAGE:
+		return "package";
 	case P_UNKNOWN:
 		break;
 	}

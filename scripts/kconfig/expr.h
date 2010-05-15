@@ -62,7 +62,7 @@ struct symbol_value {
 };
 
 enum symbol_type {
-	S_UNKNOWN, S_BOOLEAN, S_TRISTATE, S_INT, S_HEX, S_STRING, S_OTHER
+	S_UNKNOWN, S_BOOLEAN, S_TRISTATE, S_INT, S_HEX, S_STRING, S_PACKAGE, S_OTHER
 };
 
 /* enum values are used as index to symbol.def[] */
@@ -132,6 +132,7 @@ enum prop_type {
 	P_SELECT,   /* select BAR */
 	P_RANGE,    /* range 7..100 (for a symbol) */
 	P_ENV,      /* value from environment variable */
+	P_PACKAGE,  /* config symbol is a package */
 };
 
 struct property {
@@ -142,8 +143,8 @@ struct property {
 	struct expr_value visible;
 	struct expr *expr;         /* the optional conditional part of the property */
 	struct menu *menu;         /* the menu the property are associated with
-	                            * valid for: P_SELECT, P_RANGE, P_CHOICE,
-	                            * P_PROMPT, P_DEFAULT, P_MENU, P_COMMENT */
+				    * valid for: P_SELECT, P_RANGE, P_CHOICE,
+				    * P_PROMPT, P_DEFAULT, P_MENU, P_COMMENT */
 	struct file *file;         /* what file was this property defined */
 	int lineno;                /* what lineno was this property defined */
 };

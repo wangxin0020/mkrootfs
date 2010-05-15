@@ -26,6 +26,81 @@ struct file *file_lookup(const char *name)
 	return file;
 }
 
+static void print_dirname(FILE *out, const char *fmt, char *filename)
+{
+	char *slash, *dirname;
+	
+	slash = strrchr(filename, '/');
+	*slash = '\0';
+	dirname = strrchr(slash - 1, '/') ?: filename;
+
+	fprintf(out, fmt, dirname);
+
+	*slash = '/';
+}
+
+static void print_pkg(void *cookie, struct symbol *sym, const char *name)
+{
+	struct property *prop;
+	FILE *out = cookie;
+
+	prop = sym_get_pkg_prop(sym);
+	if (!prop)
+		return;
+
+	/* symbol is a package */
+	print_dirname(out, "%s/install ", prop->file->name);	
+}
+
+static void print_pkg_expr_deps(FILE *out, struct expr *expr)
+{
+#if 0
+	struct symbol *sym;
+	struct expr *e;
+
+	expr_list_for_each_sym(expr, e, sym) {
+		print_pkg(out, sym, NULL);
+	}
+#else
+	expr_print(expr, print_pkg, out, 0);
+#endif
+}
+
+static void print_pkg_deps(FILE *out, struct symbol *sym, struct property *prop)
+{
+	int found_expr = 0;
+
+	if (sym->rev_dep.expr) {
+		print_pkg_expr_deps(out, sym->rev_dep.expr);
+		print_dirname(out, ": %s/install\n", prop->file->name);
+	}
+
+        for (prop = sym->prop; prop; prop = prop->next) {
+                if (prop->type == P_CHOICE || prop->type == P_SELECT)
+                        continue;
+		if (prop->visible.expr) {
+			if (!found_expr) {
+				found_expr = 1;
+				print_dirname(out, "%s/install: ", 
+					      prop->file->name);
+			}
+                	print_pkg_expr_deps(out, prop->visible.expr);
+		}
+                if (prop->type != P_DEFAULT || sym_is_choice(sym))
+                       	continue;
+		if (prop->expr) {
+			if (!found_expr) {
+				found_expr = 1;
+				print_dirname(out, "%s/install: ",
+					      prop->file->name);
+			}
+                	print_pkg_expr_deps(out, prop->expr);
+		}
+        }
+	if (found_expr)
+		putc('\n', out);
+}
+
 /* write a dependency file as used by kbuild to track dependencies */
 int file_write_dep(const char *name)
 {
@@ -33,6 +108,7 @@ int file_write_dep(const char *name)
 	struct expr *e;
 	struct file *file;
 	FILE *out;
+	int i;
 
 	if (!name)
 		name = ".kconfig.d";
@@ -65,7 +141,26 @@ int file_write_dep(const char *name)
 		fprintf(out, "endif\n");
 	}
 
-	fprintf(out, "\n$(deps_config): ;\n");
+	fprintf(out, "\n$(deps_config): ;\n\n");
+	fprintf(out, "all_packages :=\npackages :=\n");
+	for_all_symbols(i, sym) {
+		struct property *prop;
+		tristate value;
+
+		prop = sym_get_pkg_prop(sym);
+		if (!prop)
+			continue;
+
+		print_dirname(out, "all_packages += %s\n", prop->file->name);
+		value = sym_get_tristate_value(sym);
+		if (value == yes) {
+			print_dirname(out, "packages += %s\n", prop->file->name);
+			print_pkg_deps(out, sym, prop);
+		}
+	
+		putc('\n', out);
+	}
+
 	fclose(out);
 	rename("..config.tmp", name);
 	return 0;
@@ -130,4 +225,3 @@ const char *str_get(struct gstr *gs)
 {
 	return gs->s;
 }
-
