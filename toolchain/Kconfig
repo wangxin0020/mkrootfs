@@ -1,0 +1,85 @@
+menu "Toolchain and flags selection"
+
+config TOOLCHAIN
+	package
+	default y
+
+choice
+	prompt "Architecture"
+
+config ARCH_ARM
+	bool "arm"
+
+config ARCH_BLACKFIN
+	bool "blackfin"
+
+config ARCH_NIOS2
+	bool "nios2"
+
+config ARCH_POWERPC_32
+	bool "powerpc 32 bits"
+
+config ARCH_POWERPC_64
+	bool "powerpc 64 bits"
+
+config ARCH_X86_32
+	bool "x86 32 bits"
+
+config ARCH_X86_64
+	bool "x86 64 bits"
+
+endchoice
+
+config ARCH
+	string
+	default "arm" if ARCH_ARM
+	default "blackfin" if ARCH_BLACKFIN
+	default "nios" if ARCH_NIOS2
+	default "powerpc" if ARCH_POWERPC_32 || ARCH_POWERPC_64
+	default "x86" if ARCH_X86_32 || ARCH_X86_64
+
+config BOARD
+	string "Board directory name"
+
+config CC
+	string "Cross-compiler"
+	default "$(ARCH)-linux-gcc"
+
+config ARCH_FLAGS
+	string
+	default "-march=armv4t -msoft-float" if ARM_ARCH = 4
+	default "-march=armv5t -msoft-float" if ARM_ARCH = 5 && !ARM_VFP
+	default "-march=armv5t -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 5 && ARM_VFP
+	default "-march=armv6 -msoft-float" if ARM_ARCH = 6 && !ARM_VFP
+	default "-march=armv6 -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 6 && ARM_VFP
+	default "-march=armv7-a -msoft-float" if ARM_ARCH = 7 && !ARM_VFP
+	default "-march=armv7-a -mfpu=vfp3 -mfloat-abi=softfp" if ARM_ARCH = 7 && ARM_VFP
+	default "-m32" if ARCH_X86_32
+
+config CFLAGS
+	string "Compilation flags"
+	default "$(ARCH_FLAGS) -g -O2"
+
+config LDFLAGS
+	string "Link flags"
+	default "$(ARCH_FLAGS) -g -O2"
+
+if ARCH_ARM
+
+config ARM_ARCH
+	int "ARM architecture"
+	range 4 7
+	default 5
+
+config ARM_VFP
+	bool "VFP floating points"
+	default y if ARM_ARCH = 6 || ARM_ARCH = 7
+
+config ARM_EABI
+	bool "Enable EABI"
+	default y
+
+endif
+
+endmenu
+
