@@ -1,0 +1,7 @@
+Available variables:
+
+mkr-pkgdir: package directory in mkrootfs tre
+mkr-pkgdeps: package makefile dependencies, in order to trigger a re-configure
+if these options change
+
+

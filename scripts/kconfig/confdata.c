@@ -677,7 +677,7 @@ int conf_write_autoconf(void)
 	struct symbol *sym;
 	const char *str;
 	const char *name;
-	FILE *out, *tristate, *out_h;
+	FILE *out, *tristate;
 	time_t now;
 	int i, l;
 
@@ -698,13 +698,6 @@ int conf_write_autoconf(void)
 		return 1;
 	}
 
-	out_h = fopen(".tmpconfig.h", "w");
-	if (!out_h) {
-		fclose(out);
-		fclose(tristate);
-		return 1;
-	}
-
 	sym = sym_lookup("KERNELVERSION", 0);
 	sym_calc_value(sym);
 	time(&now);
@@ -717,13 +710,6 @@ int conf_write_autoconf(void)
 	fprintf(tristate, "#\n"
 			  "# Automatically generated - do not edit\n"
 			  "\n");
-	fprintf(out_h, "/*\n"
-		       " * Automatically generated C config: don't edit\n"
-		       " * Linux kernel version: %s\n"
-		       " * %s"
-		       " */\n"
-		       "#define AUTOCONF_INCLUDED\n",
-		       sym_get_string_value(sym), ctime(&now));
 
 	for_all_symbols(i, sym) {
 		sym_calc_value(sym);
@@ -738,48 +724,40 @@ int conf_write_autoconf(void)
 			case mod:
 				fprintf(out, "MKR_%s=m\n", sym->name);
 				fprintf(tristate, "MKR_%s=M\n", sym->name);
-				fprintf(out_h, "#define MKR_%s_MODULE 1\n", sym->name);
 				break;
 			case yes:
 				fprintf(out, "MKR_%s=y\n", sym->name);
 				if (sym->type == S_TRISTATE)
 					fprintf(tristate, "MKR_%s=Y\n",
 							sym->name);
-				fprintf(out_h, "#define MKR_%s 1\n", sym->name);
 				break;
 			}
 			break;
 		case S_STRING:
 			str = sym_get_string_value(sym);
 			fprintf(out, "MKR_%s=\"", sym->name);
-			fprintf(out_h, "#define MKR_%s \"", sym->name);
 			while (1) {
 				l = strcspn(str, "\"\\");
 				if (l) {
 					fwrite(str, l, 1, out);
-					fwrite(str, l, 1, out_h);
 					str += l;
 				}
 				if (!*str)
 					break;
 				fprintf(out, "\\%c", *str);
-				fprintf(out_h, "\\%c", *str);
 				str++;
 			}
 			fputs("\"\n", out);
-			fputs("\"\n", out_h);
 			break;
 		case S_HEX:
 			str = sym_get_string_value(sym);
 			if (str[0] != '0' || (str[1] != 'x' && str[1] != 'X')) {
 				fprintf(out, "MKR_%s=%s\n", sym->name, str);
-				fprintf(out_h, "#define MKR_%s 0x%s\n", sym->name, str);
 				break;
 			}
 		case S_INT:
 			str = sym_get_string_value(sym);
 			fprintf(out, "MKR_%s=%s\n", sym->name, str);
-			fprintf(out_h, "#define MKR_%s %s\n", sym->name, str);
 			break;
 		default:
 			break;
@@ -787,13 +765,7 @@ int conf_write_autoconf(void)
 	}
 	fclose(out);
 	fclose(tristate);
-	fclose(out_h);
 
-	name = getenv("KCONFIG_AUTOHEADER");
-	if (!name)
-		name = "include/generated/autoconf.h";
-	if (rename(".tmpconfig.h", name))
-		return 1;
 	name = getenv("KCONFIG_TRISTATE");
 	if (!name)
 		name = "include/config/tristate.conf";
