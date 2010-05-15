@@ -278,6 +278,12 @@ else
 # 	$(MAKE) $(build)=$(@)
 
 ifeq ($(dot-config),1)
+
+_may-prefix = $(shell if expr $(2) : '^/' > /dev/null; then echo $(2); else echo $(1)/$(2); fi)
+_newest = $(lastword $(sort $(wildcard $(strip $(1)))))
+_t-newest = $(if $(call _newest,$(1)),$(call _newest,$(1)),$(warning $(1) not found))
+mkr-mksrcdir = $(call _t-newest,$(call _may-prefix,$(MKR_SRC_BASEDIR),$(1)))
+
 # Read in config
 -include include/config/auto.conf
 
@@ -294,6 +300,11 @@ $(MKR_CONFIG) include/config/auto.conf.cmd: ;
 # we execute the config step to be sure to catch updated Kconfig files
 include/config/%.conf: $(MKR_CONFIG) include/config/auto.conf.cmd
 	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
+
+verif-srcdirs = $(if $(strip $(foreach v,$(srcdirs),$(if $($(v)),,failed))),$(error missing source directory))
+
+.mkr.srcdirs-verified: include/config/auto.conf
+	$(Q): '$(verif-srcdirs)' > $@
 else
 # Dummy target needed, because used as prerequisite
 include/config/auto.conf: ;
@@ -317,7 +328,7 @@ PHONY += $(packages/install)
 $(packages/install): %: prepare
 	@echo Building $(dir $@)...
 	$(Q)mkdir -p $(dir $@)
-	$(Q)$(MAKE) -C $(dir $@) $(pkg-build)=$(dir $@) $(notdir $@)
+	$(Q)$(MAKE) -C $(dir $@) $(call pkg-build,$(dir $@)) $(notdir $@)
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".
@@ -331,7 +342,7 @@ PHONY += prepare archprepare prepare0 prepare1 prepare2
 # prepare2 creates a makefile if using a separate output directory
 prepare2: outputmakefile
 
-prepare1: prepare2 $(if $(O),$(O)/)include/config/auto.conf
+prepare1: prepare2 include/config/auto.conf
 
 archprepare: prepare1 scripts_basic
 
@@ -339,7 +350,7 @@ prepare0: archprepare FORCE
 	$(Q)$(MAKE) $(build)=.
 
 # All the preparing..
-prepare: prepare0
+prepare: prepare0 .mkr.srcdirs-verified
 
 # Generate some files
 # ---------------------------------------------------------------------------

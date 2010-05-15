@@ -1,8 +1,14 @@
-config FOO
+menuconfig FOO
 	package "foo"
 
 if FOO
-	config FOO_OPT
-	bool "FOO_OPT"
+
+config FOO_SRCDIR
+srcdir "foo sources directory"
+default "foo-[0-9]*"
+
+config FOO_OPT
+bool "FOO_OPT"
+
 endif
 

@@ -89,6 +89,8 @@ const char *sym_type_name(enum symbol_type type)
 		return "string";
 	case S_PACKAGE:
 		return "package";
+	case S_SRCDIR:
+		return "srcdir";
 	case S_UNKNOWN:
 		return "unknown";
 	case S_OTHER:
@@ -119,7 +121,22 @@ struct property *sym_get_pkg_prop(struct symbol *sym)
 {
 	struct property *prop;
 
+	if (!(sym->flags & SYMBOL_PACKAGE))
+		return NULL;
+
 	for_all_properties(sym, prop, P_PACKAGE)
+		return prop;
+	return NULL;
+}
+
+struct property *sym_get_srcdir_prop(struct symbol *sym)
+{
+	struct property *prop;
+
+	if (!(sym->flags & SYMBOL_SRCDIR))
+		return NULL;
+
+	for_all_properties(sym, prop, P_SRCDIR)
 		return prop;
 	return NULL;
 }
@@ -950,6 +967,8 @@ const char *prop_get_type_name(enum prop_type type)
 		return "range";
 	case P_PACKAGE:
 		return "package";
+	case P_SRCDIR:
+		return "srcdir";
 	case P_UNKNOWN:
 		break;
 	}

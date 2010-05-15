@@ -2,4 +2,7 @@ mkr-mkdeps := y
 
 include scripts/Makefile.build
 
+.PHONY: .mkr.srcdir
+.mkr.srcdir:
+	$(Q)test ! -e $@ -o $(srcdir) -ne `cat $@` && echo $(srcdir) > $@
 

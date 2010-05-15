@@ -111,9 +111,17 @@ void menu_set_type(int type)
 {
 	struct symbol *sym = current_entry->sym;
 
-	if (type == S_PACKAGE) {
+	switch(type) {
+	case S_PACKAGE:
 		prop_alloc(P_PACKAGE, sym);
+		sym->flags |= SYMBOL_PACKAGE;
 		type = S_BOOLEAN;
+		break;
+	case S_SRCDIR:
+		prop_alloc(P_SRCDIR, sym);
+		sym->flags |= SYMBOL_SRCDIR;
+		type = S_STRING;
+		break;
 	}
 
 	if (sym->type == type)

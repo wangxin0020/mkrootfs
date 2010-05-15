@@ -126,6 +126,7 @@ struct property *prop_alloc(enum prop_type type, struct symbol *sym);
 struct symbol *prop_get_symbol(struct property *prop);
 struct property *sym_get_env_prop(struct symbol *sym);
 struct property *sym_get_pkg_prop(struct symbol *sym);
+struct property *sym_get_srcdir_prop(struct symbol *sym);
 
 static inline tristate sym_get_tristate_value(struct symbol *sym)
 {

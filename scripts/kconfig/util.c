@@ -54,16 +54,7 @@ static void print_pkg(void *cookie, struct symbol *sym, const char *name)
 
 static void print_pkg_expr_deps(FILE *out, struct expr *expr)
 {
-#if 0
-	struct symbol *sym;
-	struct expr *e;
-
-	expr_list_for_each_sym(expr, e, sym) {
-		print_pkg(out, sym, NULL);
-	}
-#else
 	expr_print(expr, print_pkg, out, 0);
-#endif
 }
 
 static void print_pkg_deps(FILE *out, struct symbol *sym, struct property *prop)
@@ -141,15 +132,18 @@ int file_write_dep(const char *name)
 		fprintf(out, "endif\n");
 	}
 
-	fprintf(out, "\n$(deps_config): ;\n\n");
-	fprintf(out, "all_packages :=\npackages :=\n");
+	fprintf(out, "\n$(deps_config): ;\n\n"
+		"all_packages :=\n"
+		"packages :=\n"
+		"srcdirs =\n");
+
 	for_all_symbols(i, sym) {
 		struct property *prop;
 		tristate value;
 
 		prop = sym_get_pkg_prop(sym);
 		if (!prop)
-			continue;
+			goto srcdir;
 
 		print_dirname(out, "all_packages += %s\n", prop->file->name);
 		value = sym_get_tristate_value(sym);
@@ -159,6 +153,18 @@ int file_write_dep(const char *name)
 		}
 	
 		putc('\n', out);
+
+	srcdir:
+		if (!sym_has_value(sym))
+			continue;
+
+		prop = sym_get_srcdir_prop(sym);
+		if (!prop)
+			continue;
+
+		print_dirname(out, "%s", prop->file->name);
+		fprintf(out, "/srcdir = $(call mkr-mksrcdir,$(MKR_%s))\n", sym->name);
+		print_dirname(out, "srcdirs += %s/srcdir\n\n", prop->file->name);
 	}
 
 	fclose(out);

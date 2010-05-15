@@ -1,7 +1,18 @@
-Available variables:
+Available variables in package Makefile:
 
-mkr-pkgdir: package directory in mkrootfs tre
-mkr-pkgdeps: package makefile dependencies, in order to trigger a re-configure
+mkr-pkgdir: package directory in mkrootfs tree
+mkr-deps: package makefile dependencies, in order to trigger a re-configure
 if these options change
+mkr-srcdir: package source directory
 
+
+Kconfig additions:
+"package" should be used instead of "bool" to mark the configure option for a
+package, this has several effects:
+- the Makefile for building the corresponding package is taken in the directory where is the Kconfig file containing this option;
+- the depencies between these types of options are used as build dependencies for the corresponding packages.
+
+"srcdir" can be used instead of "string" to mark the configure option for a
+package source directory.  The value is concatenated to the MKR_SRC_BASEDIR if 
+it is a relative path, or is used as path if it is absoute.
 

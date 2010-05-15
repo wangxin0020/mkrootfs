@@ -62,7 +62,7 @@ struct symbol_value {
 };
 
 enum symbol_type {
-	S_UNKNOWN, S_BOOLEAN, S_TRISTATE, S_INT, S_HEX, S_STRING, S_PACKAGE, S_OTHER
+	S_UNKNOWN, S_BOOLEAN, S_TRISTATE, S_INT, S_HEX, S_STRING, S_PACKAGE, S_SRCDIR, S_OTHER
 };
 
 /* enum values are used as index to symbol.def[] */
@@ -107,6 +107,9 @@ struct symbol {
 #define SYMBOL_DEF3       0x40000  /* symbol.def[S_DEF_3] is valid */
 #define SYMBOL_DEF4       0x80000  /* symbol.def[S_DEF_4] is valid */
 
+#define SYMBOL_PACKAGE	  0x100000 /* symbol is a package */
+#define SYMBOL_SRCDIR	  0x200000 /* symbol is a package source directory */
+
 #define SYMBOL_MAXLENGTH	256
 #define SYMBOL_HASHSIZE		257
 #define SYMBOL_HASHMASK		0xff
@@ -133,6 +136,7 @@ enum prop_type {
 	P_RANGE,    /* range 7..100 (for a symbol) */
 	P_ENV,      /* value from environment variable */
 	P_PACKAGE,  /* config symbol is a package */
+	P_SRCDIR,   /* config symbol is a package source directory */
 };
 
 struct property {
