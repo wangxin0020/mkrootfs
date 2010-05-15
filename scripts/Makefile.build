@@ -30,10 +30,8 @@ ldflags-y  :=
 subdir-asflags-y :=
 subdir-ccflags-y :=
 
-maybe-O:=$(if $(O),$(O)/)
-
 # Read auto.conf if it exists, otherwise ignore
--include $(maybe-O)include/config/auto.conf
+-include include/config/auto.conf
 
 include scripts/Kbuild.include
 
@@ -43,15 +41,6 @@ save-cflags := $(CFLAGS)
 # The filename Kbuild has precedence over Makefile
 mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
 mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
-
-ifneq ($(mkr-mkdeps),)
-ifneq ($(mkr-pkgmk),)
-.mkr.makefile.deps: $(mkr-pkgmk)
-	@$(srctree)/scripts/makefile-deps.awk $< > $@ || { rm -f $@; false; }
-
--include .mkr.makefile.deps
-endif
-endif
 
 include $(mkr-pkgmk)
 
@@ -77,11 +66,11 @@ endif
 
 ifneq ($(MKR_BUILD_SRC),)
 # Create output directory if not already present
-_dummy := $(shell [ -d $(maybe-O)$(obj) ] || mkdir -p $(maybe-O)$(obj))
+_dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
 
 # Create directories for object files if directory does not exist
 # Needed when obj-y := dir/file.o syntax is used
-_dummy := $(foreach d,$(obj-dirs), $(shell [ -d $(maybe-O)$(d) ] || mkdir -p $(maybe-O)$(d)))
+_dummy := $(foreach d,$(obj-dirs), $(shell [ -d $(d) ] || mkdir -p $(d)))
 endif
 
 ifndef obj

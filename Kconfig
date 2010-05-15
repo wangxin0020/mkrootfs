@@ -1,3 +1,5 @@
+source "toolchain/Kconfig"
+
 menu "Packages"
 
 config SRC_BASEDIR

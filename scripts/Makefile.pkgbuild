@@ -1,8 +1,44 @@
-mkr-mkdeps := y
+# ==========================================================================
+# Building
+# ==========================================================================
 
-include scripts/Makefile.build
+src := $(obj)
 
-.PHONY: .mkr.srcdir
-.mkr.srcdir:
-	$(Q)test ! -e $@ -o $(srcdir) -ne `cat $@` && echo $(srcdir) > $@
+PHONY := _build
+_build:
 
+# Read auto.conf if it exists, otherwise ignore
+-include $(O)/include/config/auto.conf
+
+# The filename Kbuild has precedence over Makefile
+mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
+
+ifeq ($(mkr-pkgmk),)
+$(error No Makefile/Kbuild for package $(obj))
+endif
+
+.mkr.makefile.deps: $(mkr-pkgmk)
+	@$(srctree)/scripts/makefile-deps.awk $< > $@ || { rm -f $@; false; }
+
+-include .mkr.makefile.deps
+
+include $(mkr-pkgmk)
+
+ifneq ($(MKR_BUILD_SRC),)
+# Create output directory if not already present
+_dummy := $(shell [ -d $(O)/$(obj) ] || mkdir -p $(O)/$(obj))
+
+# Create directories for object files if directory does not exist
+# Needed when obj-y := dir/file.o syntax is used
+_dummy := $(foreach d,$(obj-dirs), $(shell [ -d $(O)/$(d) ] || mkdir -p $(O)/$(d)))
+endif
+
+ifndef obj
+$(warning kbuild: Makefile.pkgbuild is included improperly)
+endif
+
+# Declare the contents of the .PHONY variable as phony.  We keep that
+# information in a variable se we can use it in if_changed and friends.
+
+.PHONY: $(PHONY)
