@@ -1,5 +1,3 @@
-packages := foo
-
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
 # More info can be located in ./README
@@ -305,8 +303,10 @@ endif # $(dot-config)
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules
 # Defaults vmlinux but it is usually overridden in the arch makefile
-all: $(packages)
+packages/install := $(patsubst %,%/install,$(packages))
 
+all: $(packages/install)
+PHONY += $(packages/install)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
 # Preset locale variables to speed up the build process. Limit locale
@@ -314,11 +314,10 @@ all: $(packages)
 # make menuconfig etc.
 # Error messages still appears in the original language
 
-PHONY += $(packages)
-$(packages): prepare
-	@echo Building $@...
-	$(Q)mkdir -p $@
-	$(Q)$(MAKE) -C $@ $(build)=$@ install
+$(packages/install): %: prepare
+	@echo Building $(dir $@)...
+	$(Q)mkdir -p $(dir $@)
+	$(Q)$(MAKE) -C $(dir $@) $(pkg-build)=$(dir $@) $(notdir $@)
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

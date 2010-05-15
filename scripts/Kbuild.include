@@ -149,6 +149,8 @@ ld-option = $(call try-run,\
 # $(Q)$(MAKE) $(build)=dir
 build := -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.build obj
 
+pkg-build := -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.pkgbuild obj
+
 ###
 # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.modbuiltin obj=
 # Usage:

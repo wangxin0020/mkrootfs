@@ -44,11 +44,13 @@ save-cflags := $(CFLAGS)
 mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
 mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
 
+ifneq ($(mkr-mkdeps),)
 ifneq ($(mkr-pkgmk),)
 .mkr.makefile.deps: $(mkr-pkgmk)
 	@$(srctree)/scripts/makefile-deps.awk $< > $@ || { rm -f $@; false; }
 
 -include .mkr.makefile.deps
+endif
 endif
 
 include $(mkr-pkgmk)

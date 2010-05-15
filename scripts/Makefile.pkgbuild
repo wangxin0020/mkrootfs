@@ -1,0 +1,5 @@
+mkr-mkdeps := y
+
+include scripts/Makefile.build
+
+
