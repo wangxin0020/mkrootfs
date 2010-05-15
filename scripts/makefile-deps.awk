@@ -1,11 +1,11 @@
 #! /usr/bin/awk -f
 
-match($0, /CONFIG_([0-9A-Z_]*)/, sym) {
+match($0, /MKR_([0-9A-Z_]*)/, sym) {
 	do {
 		if (sym[1] != "SHELL")
 			list[gensub(/_/, "/", "g", tolower(sym[1]))] = 1;
 		rest = substr($0, RSTART + RLENGTH + 1);
-	} while (match(rest, /CONFIG_([0-9A-Z_]*)/, sym));
+	} while (match(rest, /MKR_([0-9A-Z_]*)/, sym));
 }
 
 END {

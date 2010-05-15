@@ -21,7 +21,7 @@
  * If the user re-runs make *config, autoconf.h will be
  * regenerated.  make notices that and will rebuild every file which
  * includes autoconf.h, i.e. basically all files. This is extremely
- * annoying if the user just changed CONFIG_HIS_DRIVER from n to m.
+ * annoying if the user just changed MKR_HIS_DRIVER from n to m.
  *
  * So we play the same trick that "mkdep" played before. We replace
  * the dependency on autoconf.h by a dependency on every config
@@ -33,7 +33,7 @@
  * which then let make pick up the changes and the files that use
  * the config symbols are rebuilt.
  *
- * So if the user changes his CONFIG_HIS_DRIVER option, only the objects
+ * So if the user changes his MKR_HIS_DRIVER option, only the objects
  * which depend on "include/linux/config/his/driver.h" will be rebuilt,
  * so most likely only his driver ;-)
  *
@@ -75,20 +75,20 @@
  * and then basically copies the .<target>.d file to stdout, in the
  * process filtering out the dependency on autoconf.h and adding
  * dependencies on include/config/my/option.h for every
- * CONFIG_MY_OPTION encountered in any of the prequisites.
+ * MKR_MY_OPTION encountered in any of the prequisites.
  *
  * It will also filter out all the dependencies on *.ver. We need
  * to make sure that the generated version checksum are globally up
  * to date before even starting the recursive build, so it's too late
  * at this point anyway.
  *
- * The algorithm to grep for "CONFIG_..." is bit unusual, but should
+ * The algorithm to grep for "MKR_..." is bit unusual, but should
  * be fast ;-) We don't even try to really parse the header files, but
- * merely grep, i.e. if CONFIG_FOO is mentioned in a comment, it will
+ * merely grep, i.e. if MKR_FOO is mentioned in a comment, it will
  * be picked up as well. It's not a problem with respect to
  * correctness, since that can only give too many dependencies, thus
  * we cannot miss a rebuild. Since people tend to not mention totally
- * unrelated CONFIG_ options all over the place, it's not an
+ * unrelated MKR_ options all over the place, it's not an
  * efficiency problem either.
  *
  * (Note: it'd be easy to port over the complete mkdep state machine,
@@ -96,8 +96,8 @@
  */
 /*
  * Note 2: if somebody writes HELLO_CONFIG_BOOM in a file, it will depend onto
- * CONFIG_BOOM. This could seem a bug (not too hard to fix), but please do not
- * fix it! Some UserModeLinux files (look at arch/um/) call CONFIG_BOOM as
+ * MKR_BOOM. This could seem a bug (not too hard to fix), but please do not
+ * fix it! Some UserModeLinux files (look at arch/um/) call MKR_BOOM as
  * UML_CONFIG_BOOM, to avoid conflicts with /usr/include/linux/autoconf.h,
  * through arch/um/include/uml-config.h; this fixdep "bug" makes sure that
  * those files will have correct dependencies.
@@ -197,7 +197,7 @@ static void clear_config(void)
 }
 
 /*
- * Record the use of a CONFIG_* word.
+ * Record the use of a MKR_* word.
  */
 static void use_config(char *m, int slen)
 {
@@ -236,7 +236,7 @@ static void parse_config_file(char *map, size_t len)
 	conf:
 		if (p > map + len - 7)
 			continue;
-		if (memcmp(p, "CONFIG_", 7))
+		if (memcmp(p, "MKR_", 7))
 			continue;
 		for (q = p + 7; q < map + len; q++) {
 			if (!(isalnum(*q) || *q == '_'))

@@ -119,7 +119,7 @@ ifneq ($(MKR_BUILD_CHECKSRC),0)
 endif
 
 # Do section mismatch analysis for each module/built-in.o
-ifdef CONFIG_DEBUG_SECTION_MISMATCH
+ifdef MKR_DEBUG_SECTION_MISMATCH
   cmd_secanalysis = ; scripts/mod/modpost $@
 endif
 
@@ -187,7 +187,7 @@ $(obj)/%.symtypes : $(src)/%.c FORCE
 
 quiet_cmd_cc_o_c = CC $(quiet_modtag)  $@
 
-ifndef CONFIG_MODVERSIONS
+ifndef MKR_MODVERSIONS
 cmd_cc_o_c = $(CC) $(c_flags) -c -o $@ $<
 
 else
@@ -217,10 +217,10 @@ cmd_modversions =							\
 	fi;
 endif
 
-ifdef CONFIG_FTRACE_MCOUNT_RECORD
+ifdef MKR_FTRACE_MCOUNT_RECORD
 cmd_record_mcount = set -e ; perl $(srctree)/scripts/recordmcount.pl "$(ARCH)" \
-	"$(if $(CONFIG_CPU_BIG_ENDIAN),big,little)" \
-	"$(if $(CONFIG_64BIT),64,32)" \
+	"$(if $(MKR_CPU_BIG_ENDIAN),big,little)" \
+	"$(if $(MKR_64BIT),64,32)" \
 	"$(OBJDUMP)" "$(OBJCOPY)" "$(CC)" "$(LD)" "$(NM)" "$(RM)" "$(MV)" \
 	"$(if $(part-of-module),1,0)" "$(@)";
 endif
@@ -251,7 +251,7 @@ $(single-used-m): $(obj)/%.o: $(src)/%.c FORCE
 
 quiet_cmd_cc_lst_c = MKLST   $@
       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
-		     $(CONFIG_SHELL) $(srctree)/scripts/makelst $*.o \
+		     $(MKR_SHELL) $(srctree)/scripts/makelst $*.o \
 				     System.map $(OBJDUMP) > $@
 
 $(obj)/%.lst: $(src)/%.c FORCE

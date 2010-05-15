@@ -1,5 +1,5 @@
 config.status: $(pkg-deps)
-ifneq ($(CONFIG_FOO_OPT),)
+ifneq ($(MKR_FOO_OPT),)
 	@echo configuring bar with FOO_OPT
 else
 	@echo configuring bar without FOO_OPT

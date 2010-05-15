@@ -219,22 +219,22 @@ load:
 		sym = NULL;
 		switch (line[0]) {
 		case '#':
-			if (memcmp(line + 2, "CONFIG_", 7))
+			if (memcmp(line + 2, "MKR_", 4))
 				continue;
-			p = strchr(line + 9, ' ');
+			p = strchr(line + 6, ' ');
 			if (!p)
 				continue;
 			*p++ = 0;
 			if (strncmp(p, "is not set", 10))
 				continue;
 			if (def == S_DEF_USER) {
-				sym = sym_find(line + 9);
+				sym = sym_find(line + 6);
 				if (!sym) {
 					sym_add_change_count(1);
 					break;
 				}
 			} else {
-				sym = sym_lookup(line + 9, 0);
+				sym = sym_lookup(line + 6, 0);
 				if (sym->type == S_UNKNOWN)
 					sym->type = S_BOOLEAN;
 			}
@@ -251,12 +251,12 @@ load:
 				;
 			}
 			break;
-		case 'C':
-			if (memcmp(line, "CONFIG_", 7)) {
+		case 'M':
+			if (memcmp(line, "MKR_", 4)) {
 				conf_warning("unexpected data");
 				continue;
 			}
-			p = strchr(line + 7, '=');
+			p = strchr(line + 4, '=');
 			if (!p)
 				continue;
 			*p++ = 0;
@@ -267,13 +267,13 @@ load:
 					*p2 = 0;
 			}
 			if (def == S_DEF_USER) {
-				sym = sym_find(line + 7);
+				sym = sym_find(line + 4);
 				if (!sym) {
 					sym_add_change_count(1);
 					break;
 				}
 			} else {
-				sym = sym_lookup(line + 7, 0);
+				sym = sym_lookup(line + 4, 0);
 				if (sym->type == S_UNKNOWN)
 					sym->type = S_OTHER;
 			}
@@ -489,19 +489,19 @@ int conf_write(const char *name)
 			case S_TRISTATE:
 				switch (sym_get_tristate_value(sym)) {
 				case no:
-					fprintf(out, "# CONFIG_%s is not set\n", sym->name);
+					fprintf(out, "# MKR_%s is not set\n", sym->name);
 					break;
 				case mod:
-					fprintf(out, "CONFIG_%s=m\n", sym->name);
+					fprintf(out, "MKR_%s=m\n", sym->name);
 					break;
 				case yes:
-					fprintf(out, "CONFIG_%s=y\n", sym->name);
+					fprintf(out, "MKR_%s=y\n", sym->name);
 					break;
 				}
 				break;
 			case S_STRING:
 				str = sym_get_string_value(sym);
-				fprintf(out, "CONFIG_%s=\"", sym->name);
+				fprintf(out, "MKR_%s=\"", sym->name);
 				while (1) {
 					l = strcspn(str, "\"\\");
 					if (l) {
@@ -517,12 +517,12 @@ int conf_write(const char *name)
 			case S_HEX:
 				str = sym_get_string_value(sym);
 				if (str[0] != '0' || (str[1] != 'x' && str[1] != 'X')) {
-					fprintf(out, "CONFIG_%s=%s\n", sym->name, str);
+					fprintf(out, "MKR_%s=%s\n", sym->name, str);
 					break;
 				}
 			case S_INT:
 				str = sym_get_string_value(sym);
-				fprintf(out, "CONFIG_%s=%s\n", sym->name, str);
+				fprintf(out, "MKR_%s=%s\n", sym->name, str);
 				break;
 			}
 		}
@@ -736,23 +736,23 @@ int conf_write_autoconf(void)
 			case no:
 				break;
 			case mod:
-				fprintf(out, "CONFIG_%s=m\n", sym->name);
-				fprintf(tristate, "CONFIG_%s=M\n", sym->name);
-				fprintf(out_h, "#define CONFIG_%s_MODULE 1\n", sym->name);
+				fprintf(out, "MKR_%s=m\n", sym->name);
+				fprintf(tristate, "MKR_%s=M\n", sym->name);
+				fprintf(out_h, "#define MKR_%s_MODULE 1\n", sym->name);
 				break;
 			case yes:
-				fprintf(out, "CONFIG_%s=y\n", sym->name);
+				fprintf(out, "MKR_%s=y\n", sym->name);
 				if (sym->type == S_TRISTATE)
-					fprintf(tristate, "CONFIG_%s=Y\n",
+					fprintf(tristate, "MKR_%s=Y\n",
 							sym->name);
-				fprintf(out_h, "#define CONFIG_%s 1\n", sym->name);
+				fprintf(out_h, "#define MKR_%s 1\n", sym->name);
 				break;
 			}
 			break;
 		case S_STRING:
 			str = sym_get_string_value(sym);
-			fprintf(out, "CONFIG_%s=\"", sym->name);
-			fprintf(out_h, "#define CONFIG_%s \"", sym->name);
+			fprintf(out, "MKR_%s=\"", sym->name);
+			fprintf(out_h, "#define MKR_%s \"", sym->name);
 			while (1) {
 				l = strcspn(str, "\"\\");
 				if (l) {
@@ -772,14 +772,14 @@ int conf_write_autoconf(void)
 		case S_HEX:
 			str = sym_get_string_value(sym);
 			if (str[0] != '0' || (str[1] != 'x' && str[1] != 'X')) {
-				fprintf(out, "CONFIG_%s=%s\n", sym->name, str);
-				fprintf(out_h, "#define CONFIG_%s 0x%s\n", sym->name, str);
+				fprintf(out, "MKR_%s=%s\n", sym->name, str);
+				fprintf(out_h, "#define MKR_%s 0x%s\n", sym->name, str);
 				break;
 			}
 		case S_INT:
 			str = sym_get_string_value(sym);
-			fprintf(out, "CONFIG_%s=%s\n", sym->name, str);
-			fprintf(out_h, "#define CONFIG_%s %s\n", sym->name, str);
+			fprintf(out, "MKR_%s=%s\n", sym->name, str);
+			fprintf(out_h, "#define MKR_%s %s\n", sym->name, str);
 			break;
 		default:
 			break;
