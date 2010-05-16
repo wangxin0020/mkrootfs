@@ -7,21 +7,64 @@ src := $(obj)
 PHONY := _build
 _build:
 
+confcheck-y =
+
 # Read auto.conf if it exists, otherwise ignore
 -include $(O)/include/config/auto.conf
+
+# Toolchain arguments
+override ARCH := $(MKR_ARCH)
+override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
+override CC := $(MKR_CC)
+override KCC := $(MKR_KCC)
+
+# Unexport variables exported by top makefile
+unexport srctree objtree VPATH MKR_BUILD_SRC
+unexport quiet Q KBUILD_VERBOSE
+unexport HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
+unexport RCS_TAR_IGNORE KBUILD_EXTMOD
+unexport MKR_CONFIG O
+
+MKR_STAGING := $(O)/staging
+MKR_ROOTFS := $(O)/rootfs
+
+MAKE := $(MAKE) $(MAKEFLAGS) # -j 8 -l 8
+# MAKEOVERRIDES:=
 
 # The filename Kbuild has precedence over Makefile
 mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
 mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
 
 ifeq ($(mkr-pkgmk),)
-$(error No Makefile/Kbuild for package $(obj))
+$(error No Makefile or Kbuild for package $(obj))
 endif
 
 .mkr.makefile.deps: $(mkr-pkgmk)
-	@$(srctree)/scripts/makefile-deps.awk $< > $@ || { rm -f $@; false; }
+	$(Q)echo $(mkr-srcdir-var) | \
+	 $(srctree)/scripts/makefile-deps.awk - $< > $@ 2> /dev/null || rm -f $@
 
 -include .mkr.makefile.deps
+
+# Define confcheck macros
+confcheck-tool = type $(1) > /dev/null 2>&1 || { \
+	echo Error: Command $(1) not found, see $(2); success=false; };
+confcheck-not-empty = test x$($(strip $(1))) != x > /dev/null 2>&1 || { \
+	echo Error: Variable $(1) can not be empty; success=false; };
+confcheck-exists = test -e $(1) > /dev/null 2>&1 || { \
+	echo Error: File $(1) not found, see $(2); success=false; };
+
+# Macro for recursing
+mkr-recurse = failcom='exit 1'; \
+	for f in x $$MAKEFLAGS; do \
+		case $$f in \
+			*=* | --[!k]*);; \
+			*k*) failcom='success=false';; \
+		esac; \
+	done; \
+	for subdir in $(1); do \
+		$(2) $(subdir) || eval $$failcom; \
+	done; \
+	$$success
 
 include $(mkr-pkgmk)
 
@@ -38,7 +81,13 @@ ifndef obj
 $(warning kbuild: Makefile.pkgbuild is included improperly)
 endif
 
-# Declare the contents of the .PHONY variable as phony.  We keep that
-# information in a variable se we can use it in if_changed and friends.
+# Default rules
+.PHONY: confcheck
+confcheck:
 
-.PHONY: $(PHONY)
+.PHONY: default-confcheck
+default-confcheck:
+	$(Q)success=:;$(confcheck-y) $$success
+
+.PHONY: install
+install:

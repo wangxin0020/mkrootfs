@@ -1,4 +1,6 @@
-menuconfig FOO
+menu "foo"
+
+config FOO
 	package "foo"
 
 if FOO
@@ -11,4 +13,6 @@ config FOO_OPT
 bool "FOO_OPT"
 
 endif
+
+endmenu
 

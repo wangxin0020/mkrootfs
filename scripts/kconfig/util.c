@@ -29,8 +29,11 @@ struct file *file_lookup(const char *name)
 static void print_dirname(FILE *out, const char *fmt, char *filename)
 {
 	char *slash, *dirname;
-	
+
 	slash = strrchr(filename, '/');
+	if (!slash)
+		fprintf(stderr, "%s\n", filename);
+
 	*slash = '\0';
 	dirname = strrchr(slash - 1, '/') ?: filename;
 
@@ -49,7 +52,7 @@ static void print_pkg(void *cookie, struct symbol *sym, const char *name)
 		return;
 
 	/* symbol is a package */
-	print_dirname(out, "%s/install ", prop->file->name);	
+	print_dirname(out, "%s/install ", prop->file->name);
 }
 
 static void print_pkg_expr_deps(FILE *out, struct expr *expr)
@@ -66,28 +69,28 @@ static void print_pkg_deps(FILE *out, struct symbol *sym, struct property *prop)
 		print_dirname(out, ": %s/install\n", prop->file->name);
 	}
 
-        for (prop = sym->prop; prop; prop = prop->next) {
-                if (prop->type == P_CHOICE || prop->type == P_SELECT)
-                        continue;
+	for (prop = sym->prop; prop; prop = prop->next) {
+		if (prop->type == P_CHOICE || prop->type == P_SELECT)
+			continue;
 		if (prop->visible.expr) {
 			if (!found_expr) {
 				found_expr = 1;
-				print_dirname(out, "%s/install: ", 
+				print_dirname(out, "%s/install: ",
 					      prop->file->name);
 			}
-                	print_pkg_expr_deps(out, prop->visible.expr);
+			print_pkg_expr_deps(out, prop->visible.expr);
 		}
-                if (prop->type != P_DEFAULT || sym_is_choice(sym))
-                       	continue;
+		if (prop->type != P_DEFAULT || sym_is_choice(sym))
+			continue;
 		if (prop->expr) {
 			if (!found_expr) {
 				found_expr = 1;
 				print_dirname(out, "%s/install: ",
 					      prop->file->name);
 			}
-                	print_pkg_expr_deps(out, prop->expr);
+			print_pkg_expr_deps(out, prop->expr);
 		}
-        }
+	}
 	if (found_expr)
 		putc('\n', out);
 }
@@ -151,7 +154,7 @@ int file_write_dep(const char *name)
 			print_dirname(out, "packages += %s\n", prop->file->name);
 			print_pkg_deps(out, sym, prop);
 		}
-	
+
 		putc('\n', out);
 
 	srcdir:
@@ -163,8 +166,9 @@ int file_write_dep(const char *name)
 			continue;
 
 		print_dirname(out, "%s", prop->file->name);
-		fprintf(out, "/srcdir = $(call mkr-mksrcdir,$(MKR_%s))\n", sym->name);
-		print_dirname(out, "srcdirs += %s/srcdir\n\n", prop->file->name);
+		fprintf(out, "/srcdir = $(call mksrcdir,$(MKR_%s))\n", sym->name);
+		print_dirname(out, "%s", prop->file->name);
+		fprintf(out, "/srcdir-var = MKR_%s\n\n", sym->name);
 	}
 
 	fclose(out);

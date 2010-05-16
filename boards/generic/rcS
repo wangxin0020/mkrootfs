@@ -1,0 +1,32 @@
+#! /bin/ash
+
+mount -a
+
+if test ! -e /etc/ld.so.cache; then
+    echo -n 'Running ldconfig...'
+    /bin/ldconfig
+    echo done
+fi
+
+/usr/sbin/rdate -s `dmesg | sed 's/^.*rootserver=\([^,]*\).*$/\1/;t;d'`
+
+mkdir -p /var/log
+syslogd -S -D -L
+klogd
+telnetd
+
+if test -e /ltp && test ! -e /ltp/.installed; then
+    echo 'Installing LTP'
+    dir=`pwd`
+    cd /ltp
+    /bin/make install && : > /ltp/.installed
+    cd $dir
+fi
+
+if test -e /lib/modules/`uname -r`/modules.dep.bb; then
+    rm /lib/modules/`uname -r`/modules.dep.bb
+fi
+
+chown root:0 /bin/ping
+chmod u+sx /bin/ping
+

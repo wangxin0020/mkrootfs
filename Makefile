@@ -8,7 +8,7 @@
 # o  use make's built-in rules and variables
 #    (this increases performance and avoids hard-to-debug behaviour);
 MAKEFLAGS += -R
-NODIRFLAG = --no-print-directory
+NODIRFLAG += --no-print-directory
 
 # Avoid funny character set dependencies
 unexport LC_ALL
@@ -175,7 +175,7 @@ endif
 export quiet Q KBUILD_VERBOSE
 
 # Look for make include files relative to root of kernel src
-MAKEFLAGS += --include-dir=$(srctree)
+# MAKEFLAGS += --include-dir=$(srctree)
 
 export HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
 
@@ -279,10 +279,12 @@ else
 
 ifeq ($(dot-config),1)
 
-_may-prefix = $(shell if expr $(2) : '^/' > /dev/null; then echo $(2); else echo $(1)/$(2); fi)
+_may-prefix = $(shell if expr ""$(2) : '^/' > /dev/null; then echo $(2); else echo $(1)/$(2); fi)
 _newest = $(lastword $(sort $(wildcard $(strip $(1)))))
-_t-newest = $(if $(call _newest,$(1)),$(call _newest,$(1)),$(warning $(1) not found))
-mkr-mksrcdir = $(call _t-newest,$(call _may-prefix,$(MKR_SRC_BASEDIR),$(1)))
+mkr-basedir = $(call _may-prefix,$(srctree),$(MKR_SRC_BASEDIR))
+mksrcdir = $(call _newest,$(call _may-prefix,$(mkr-basedir),$(1)))
+checksrcdir = $(if $(call mksrcdir,$($(1))),:,\
+	echo Error: $(call _may-prefix,$(mkr-basedir),$($(1))) not found, see $(1); false)
 
 # Read in config
 -include include/config/auto.conf
@@ -300,11 +302,6 @@ $(MKR_CONFIG) include/config/auto.conf.cmd: ;
 # we execute the config step to be sure to catch updated Kconfig files
 include/config/%.conf: $(MKR_CONFIG) include/config/auto.conf.cmd
 	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
-
-verif-srcdirs = $(if $(strip $(foreach v,$(srcdirs),$(if $($(v)),,failed))),$(error missing source directory))
-
-.mkr.srcdirs-verified: include/config/auto.conf
-	$(Q): '$(verif-srcdirs)' > $@
 else
 # Dummy target needed, because used as prerequisite
 include/config/auto.conf: ;
@@ -314,10 +311,10 @@ endif # $(dot-config)
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules
 # Defaults vmlinux but it is usually overridden in the arch makefile
-packages/install := $(patsubst %,%/install,$(packages))
+pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
-all: $(packages/install)
-PHONY += $(packages/install)
+all: $(call pkg-targets,install)
+PHONY += $(call pkg-targets,clean install)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
 # Preset locale variables to speed up the build process. Limit locale
@@ -325,10 +322,48 @@ PHONY += $(packages/install)
 # make menuconfig etc.
 # Error messages still appears in the original language
 
-$(packages/install): %: prepare
-	@echo Building $(dir $@)...
-	$(Q)mkdir -p $(dir $@)
-	$(Q)$(MAKE) -C $(dir $@) $(call pkg-build,$(dir $@)) $(notdir $@)
+linux/%:
+	$(Q)mkdir -p linux
+	+$(call pkg-build,linux/) $*
+
+confcheck-srcdirs = $(foreach p, \
+			$(packages), \
+			$(call checksrcdir,$($(p)/srcdir-var)) || success=false;)
+confcheck-awk = $(strip $(shell type /usr/bin/awk > /dev/null 2>&1 || echo failed))
+confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
+	echo Linux kernel Makefile \($(linux/srcdir)/Makefile\) not found; \
+	success=false; };
+sub-confcheck = { mkdir -p $(1) && \
+	$(@)$(call pkg-build,$(1)) $(if $(V),,-s) confcheck; } || success=false;
+
+.mkr.basecheck: include/config/auto.conf
+	$(Q)success=:;$(if $(confcheck-awk), \
+		echo Error: /bin/awk not found; success=false,:); \
+	$(confcheck-srcdirs) \
+	$(confcheck-lnxmf) \
+	$$success && : > $@ || { echo Configuration check failed.; false; }
+
+linux/.mkr.confcheck: .mkr.basecheck
+	$(Q)success=:; $(call sub-confcheck,linux) \
+	$$success && : > $@ || { echo Configuration check failed.; false; }
+
+linux/.config: linux/.mkr.confcheck
+linux/include/config/auto.conf: linux/.config
+
+nolinux-pkgs := $(filter-out linux,$(packages))
+
+.mkr.confcheck: linux/include/config/auto.conf
+	$(Q)success=:;$(foreach t,$(nolinux-pkgs), \
+				$(call sub-confcheck,$(t)/)) \
+	$$success && : > $@ || { echo Configuration check failed.; false; }
+
+# $(confcheck-targets): %: include/config/auto.conf linux/.mkr.confcheck
+# 	$(Q)mkdir -p $(dir $@)
+# 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
+
+$(call pkg-targets,clean install): %: prepare
+	$(Q)echo Building $(dir $@)...
+	+$(call pkg-build,$(dir $@)) $(notdir $@)
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".
@@ -350,7 +385,7 @@ prepare0: archprepare FORCE
 	$(Q)$(MAKE) $(build)=.
 
 # All the preparing..
-prepare: prepare0 .mkr.srcdirs-verified
+prepare: prepare0 .mkr.confcheck
 
 # Generate some files
 # ---------------------------------------------------------------------------

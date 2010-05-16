@@ -1,0 +1,47 @@
+menu "Linux kernel"
+
+config LINUX
+	package
+	default y
+
+config LINUX_SRCDIR
+	srcdir "Sources directory"
+
+config LINUX_DEFCONFIG
+	string "Configuration file"
+	default "config-$(KERNELVERSION)"
+	help
+	  The kernel configuration file, it may be a relative path, it will be
+	  taken as relative to the board directory, or a defconfig target name.
+
+config LINUX_TARGETS
+	string "Targets"
+	default "all"
+	help
+	  List of targets to run when compiling the kernel.
+
+config LINUX_IMAGE
+	string "Image"
+	default "zImage"
+	help
+	  Kernel image to be copied to a boot-loader specific directory.
+
+config LINUX_IMAGE_DEST
+	string "Image destination"
+	default "/boot/vmlinuz-$(KERNELVERSION)"
+	help
+	  Directory where the kernel image file will be copied. The copy uses
+	  scp if this destination has the form host:path or user@host:path.
+
+config LINUX_EXTRA_FILES
+	string "Extra output files"
+	help
+	  Extra board specific output files
+
+config LINUX_EXTRA_INSTALL
+	string "Extra output files installation directory"
+	help
+	  Directory where the output files will be installed. The copy uses
+	  scp if this destination has the form host:path or user@host:path.
+endmenu
+

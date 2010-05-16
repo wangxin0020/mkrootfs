@@ -1,4 +1,6 @@
-menuconfig BAR
+menu "bar"
+
+config BAR
 	package "bar"
 	select FOO
 
@@ -9,4 +11,6 @@ config BAR_SRCDIR
 	default "bar-[0-9]*"
 
 endif
+
+endmenu
 

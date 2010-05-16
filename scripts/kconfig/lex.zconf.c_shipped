@@ -1,5 +1,5 @@
 
-#line 3 "scripts/kconfig/lex.zconf.c"
+#line 3 "/home/gilles/files/perso/src/mkrootfs2/scripts/kconfig/lex.zconf.c"
 
 #define  YY_INT_ALIGNED short int
 

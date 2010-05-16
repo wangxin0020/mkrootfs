@@ -1,0 +1,8 @@
+
+::sysinit:/etc/init.d/rcS
+::ctrlaltdel:/sbin/reboot
+::shutdown:/sbin/swapoff -a
+::shutdown:/bin/umount -a -r
+::restart:/sbin/init
+
+ttyS0::respawn:/sbin/getty 115200 ttyS0

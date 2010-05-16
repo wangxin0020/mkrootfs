@@ -1,16 +1,16 @@
-menuconfig QUX
+menu "qux"
+
+config QUX
 	package "qux"
 	depends on BAR
 
 if QUX
-
-config BASEDIR
-	string
-	default "/work/src"
 
 config QUX_SRCDIR
 	srcdir "Sources directory"
 	default "qux-[0-9]*"
 
 endif
+
+endmenu
 

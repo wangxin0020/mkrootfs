@@ -38,12 +38,19 @@ config ARCH
 	default "powerpc" if ARCH_POWERPC_32 || ARCH_POWERPC_64
 	default "x86" if ARCH_X86_32 || ARCH_X86_64
 
-config BOARD
-	string "Board directory name"
+config CONFIGURE_HOST
+	string "Configure host string"
+	default "$(ARCH)-linux"
+	help
+	  String passed to the --host argument of configure scripts
 
 config CC
 	string "Cross-compiler"
 	default "$(ARCH)-linux-gcc"
+
+config KCC
+	string "Linux kernel cross-compiler"
+	default "$(CC)"
 
 config ARCH_FLAGS
 	string
@@ -64,6 +71,13 @@ config LDFLAGS
 	string "Link flags"
 	default "$(ARCH_FLAGS) -g -O2"
 
+config BOARD
+	string "Board directory name"
+	default "generic"
+	help
+	  Directory where architecture or board specific files will be taken.
+	  This is a path relative to the boards directory in mkrootfs tree.
+
 if ARCH_ARM
 
 config ARM_ARCH
@@ -74,10 +88,6 @@ config ARM_ARCH
 config ARM_VFP
 	bool "VFP floating points"
 	default y if ARM_ARCH = 6 || ARM_ARCH = 7
-
-config ARM_EABI
-	bool "Enable EABI"
-	default y
 
 endif
 

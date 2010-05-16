@@ -1,9 +1,11 @@
 source "toolchain/Kconfig"
 
+source "linux/Kconfig"
+
 menu "Packages"
 
 config SRC_BASEDIR
-	string "Package sources baee directory"
+	string "Package sources base directory"
 	default "/work/src"
 
 	help
@@ -15,4 +17,3 @@ source "bar/Kconfig"
 source "qux/Kconfig"
 
 endmenu
-

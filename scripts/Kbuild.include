@@ -147,9 +147,9 @@ ld-option = $(call try-run,\
 # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.build obj=
 # Usage:
 # $(Q)$(MAKE) $(build)=dir
-build := -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.build obj
+build := --include-dir=$(srctree) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.build obj
 
-pkg-build = -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.pkgbuild obj=$(1) mkr-srcdir=$($(1)srcdir)
+pkg-build = $(MAKE) -j -l 8 -C $(1) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.pkgbuild obj=$(1) mkr-srcdir=$($(strip $(1))srcdir) mkr-srcdir-var=$($(strip $(1))srcdir-var)
 
 ###
 # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.modbuiltin obj=
@@ -188,7 +188,7 @@ ifneq ($(MKR_BUILD_NOCMDDEP),1)
 # Check if both arguments has same arguments. Result is empty string if equal.
 # User may override this check using make MKR_BUILD_NOCMDDEP=1
 arg-check = $(strip $(filter-out $(cmd_$(1)), $(cmd_$@)) \
-                    $(filter-out $(cmd_$@),   $(cmd_$(1))) )
+		    $(filter-out $(cmd_$@),   $(cmd_$(1))) )
 endif
 
 # >'< substitution is for echo to work,
@@ -245,19 +245,19 @@ if_changed_rule = $(if $(strip $(any-prereq) $(arg-check) ),                 \
 ifeq ($(MKR_BUILD_VERBOSE),2)
 why =                                                                        \
     $(if $(filter $@, $(PHONY)),- due to target is PHONY,                    \
-        $(if $(wildcard $@),                                                 \
-            $(if $(strip $(any-prereq)),- due to: $(any-prereq),             \
-                $(if $(arg-check),                                           \
-                    $(if $(cmd_$@),- due to command line change,             \
-                        $(if $(filter $@, $(targets)),                       \
-                            - due to missing .cmd file,                      \
-                            - due to $(notdir $@) not in $$(targets)         \
-                         )                                                   \
-                     )                                                       \
-                 )                                                           \
-             ),                                                              \
-             - due to target missing                                         \
-         )                                                                   \
+	$(if $(wildcard $@),                                                 \
+	    $(if $(strip $(any-prereq)),- due to: $(any-prereq),             \
+		$(if $(arg-check),                                           \
+		    $(if $(cmd_$@),- due to command line change,             \
+			$(if $(filter $@, $(targets)),                       \
+			    - due to missing .cmd file,                      \
+			    - due to $(notdir $@) not in $$(targets)         \
+			 )                                                   \
+		     )                                                       \
+		 )                                                           \
+	     ),                                                              \
+	     - due to target missing                                         \
+	 )                                                                   \
      )
 
 echo-why = $(call escsq, $(strip $(why)))
