@@ -173,10 +173,6 @@ ifneq ($(findstring s,$(MAKEFLAGS)),)
 endif
 
 export quiet Q KBUILD_VERBOSE
-
-# Look for make include files relative to root of kernel src
-# MAKEFLAGS += --include-dir=$(srctree)
-
 export HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
 
 # We need some generic definitions (do not try to remake the file).
@@ -323,8 +319,8 @@ PHONY += $(call pkg-targets,clean install)
 # Error messages still appears in the original language
 
 linux/%:
-	$(Q)mkdir -p linux
-	+$(call pkg-build,linux/) $*
+	mkdir -p linux
+	$(MAKE) $(call pkg-build,linux/) $*
 
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
@@ -334,7 +330,7 @@ confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
 	echo Linux kernel Makefile \($(linux/srcdir)/Makefile\) not found; \
 	success=false; };
 sub-confcheck = { mkdir -p $(1) && \
-	$(@)$(call pkg-build,$(1)) $(if $(V),,-s) confcheck; } || success=false;
+	$(@)$(MAKE) $(call pkg-build,$(1)) $(if $(V),,-s) confcheck; } || success=false;
 
 .mkr.basecheck: include/config/auto.conf
 	$(Q)success=:;$(if $(confcheck-awk), \
@@ -363,7 +359,7 @@ nolinux-pkgs := $(filter-out linux,$(packages))
 
 $(call pkg-targets,clean install): %: prepare
 	$(Q)echo Building $(dir $@)...
-	+$(call pkg-build,$(dir $@)) $(notdir $@)
+	fakeroot -s $(O)/foobar $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

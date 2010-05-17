@@ -147,9 +147,10 @@ ld-option = $(call try-run,\
 # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.build obj=
 # Usage:
 # $(Q)$(MAKE) $(build)=dir
+# Look for make include files relative to root of kernel src
 build := --include-dir=$(srctree) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.build obj
 
-pkg-build = $(MAKE) -j -l 8 -C $(1) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.pkgbuild obj=$(1) mkr-srcdir=$($(strip $(1))srcdir) mkr-srcdir-var=$($(strip $(1))srcdir-var)
+pkg-build = -C $(1) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.pkgbuild obj=$(1) mkr-srcdir=$($(strip $(1))srcdir) mkr-srcdir-var=$($(strip $(1))srcdir-var)
 
 ###
 # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.modbuiltin obj=

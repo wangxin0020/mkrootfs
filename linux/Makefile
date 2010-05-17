@@ -45,8 +45,8 @@ install:
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_ROOTFS) modules_install
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
-ifneq ($(strip $(MKR_EXTRA_FILES)),)
-	$(cp-y) $(MKR_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
+ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),"")
+	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
 endif
 
 # Catch-all target
