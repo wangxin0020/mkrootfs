@@ -321,8 +321,8 @@ PHONY += $(call pkg-targets,clean install)
 # Error messages still appears in the original language
 
 linux/%:
-	mkdir -p linux
-	$(MAKE) $(call pkg-build,linux/) $*
+	$(Q)mkdir -p linux
+	$(Q)$(MAKE) $(call pkg-build,linux/) $*
 
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
@@ -349,10 +349,8 @@ linux/.mkr.confcheck: .mkr.basecheck
 linux/.config: linux/.mkr.confcheck
 linux/include/config/auto.conf: linux/.config
 
-nolinux-pkgs := $(filter-out linux,$(packages))
-
 .mkr.confcheck: linux/include/config/auto.conf
-	$(Q)success=:;$(foreach t,$(nolinux-pkgs), \
+	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
 				$(call sub-confcheck,$(t)/)) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
@@ -362,7 +360,8 @@ nolinux-pkgs := $(filter-out linux,$(packages))
 
 $(call pkg-targets,clean install): %: prepare
 	$(Q)echo Building $(dir $@)...
-	fakeroot -s $(O)/foobar $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
+	$(Q)fakeroot -s $(O)/foobar $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
+	$(Q)echo Building $(dir $@)... done.
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

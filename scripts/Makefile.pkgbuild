@@ -28,7 +28,7 @@ unexport MKR_CONFIG O
 MKR_STAGING := $(O)/staging
 MKR_ROOTFS := $(O)/rootfs
 
-MAKE_UNI := $(MAKE)
+MAKE_UNI := $(MAKE) -j 1
 
 # The filename Kbuild has precedence over Makefile
 mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
@@ -53,7 +53,7 @@ confcheck-exists = test -e $(1) > /dev/null 2>&1 || { \
 	echo Error: File $(1) not found, see $(2); success=false; };
 
 # Macro for recursing
-mkr-recurse = failcom='exit 1'; success=:; \
+mkr-recurse = $(Q)failcom='exit 1'; success=:; \
 	for f in x $$MAKEFLAGS; do \
 		case $$f in \
 			*=* | --[!k]*);; \
@@ -61,6 +61,7 @@ mkr-recurse = failcom='exit 1'; success=:; \
 		esac; \
 	done; \
 	for target in $(1); do \
+		echo $(2) $$target; \
 		$(2) $$target || eval $$failcom; \
 	done; \
 	$$success
