@@ -180,6 +180,8 @@ $(srctree)/scripts/Kbuild.include: ;
 include $(srctree)/scripts/Kbuild.include
 
 # Make variables (CC, etc...)
+AWK = awk
+export AWK
 
 # Files to ignore in find ... statements
 
@@ -325,22 +327,23 @@ linux/%:
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
 			$(call checksrcdir,$($(p)/srcdir-var)) || success=false;)
-confcheck-awk = $(strip $(shell type /usr/bin/awk > /dev/null 2>&1 || echo failed))
+confcheck-awk = type $(AWK) > /dev/null 2>&1 || { \
+	echo Error: $(AWK) not found, use PATH or AWK on make command line; \
+	success=false; };
 confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
 	echo Linux kernel Makefile \($(linux/srcdir)/Makefile\) not found; \
 	success=false; };
 sub-confcheck = { mkdir -p $(1) && \
-	$(@)$(MAKE) $(call pkg-build,$(1)) $(if $(V),,-s) confcheck; } || success=false;
+	$(MAKE) $(call pkg-build,$(1)) $(if $(V),,-s) confcheck; } || success=false;
 
 .mkr.basecheck: include/config/auto.conf
-	$(Q)success=:;$(if $(confcheck-awk), \
-		echo Error: /bin/awk not found; success=false,:); \
+	$(Q)$(confcheck-awk) \
 	$(confcheck-srcdirs) \
 	$(confcheck-lnxmf) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
 linux/.mkr.confcheck: .mkr.basecheck
-	$(Q)success=:; $(call sub-confcheck,linux) \
+	$(Q)success=:; $(call sub-confcheck,linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
 linux/.config: linux/.mkr.confcheck

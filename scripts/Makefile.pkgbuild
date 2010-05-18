@@ -40,7 +40,7 @@ endif
 
 .mkr.makefile.deps: $(mkr-pkgmk)
 	$(Q)echo $(mkr-srcdir-var) | \
-	 $(srctree)/scripts/makefile-deps.awk - $< > $@ 2> /dev/null || rm -f $@
+	$(AWK) $(srctree)/scripts/makefile-deps.awk - $< > $@ 2> /dev/null || rm -f $@
 
 -include .mkr.makefile.deps
 
