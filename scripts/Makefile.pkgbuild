@@ -12,6 +12,12 @@ confcheck-y =
 # Read auto.conf if it exists, otherwise ignore
 -include $(O)/include/config/auto.conf
 
+ifneq ($(O),linux/)
+ifneq ($(filter $(MAKECMDGOALS),confcheck),)
+-include $(O)/linux/.config
+endif
+endif
+
 # Toolchain arguments
 override ARCH := $(MKR_ARCH)
 override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
@@ -46,6 +52,10 @@ endif
 -include .mkr.makefile.deps
 
 # Define confcheck macros
+confcheck-if = $(1) > /dev/null 2>&1 && { echo $(2); success=false; };
+
+confcheck-ifnot = $(1) > /dev/null 2>&1 || { echo $(2); success=false; };
+
 confcheck-tool = type $(1) > /dev/null 2>&1 || { \
 	echo Error: Command $(1) not found, see $(2); success=false; };
 confcheck-not-empty = test x$($(strip $(1))) != x > /dev/null 2>&1 || { \

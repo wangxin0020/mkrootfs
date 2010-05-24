@@ -219,6 +219,9 @@ endif
 # Detect when mixed targets is specified, and make a second invocation
 # of make so .config is not included in this case either (for *config).
 
+allconfigs := oldconfig xconfig gconfig menuconfig config silentoldconfig \
+	localmodconfig localyesconfig allyesconfig allnoconfig allmodconfig
+
 no-dot-config-targets := clean mrproper distclean \
 			 help
 
@@ -232,9 +235,9 @@ ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
-ifneq ($(filter config %config,$(MAKECMDGOALS)),)
+ifneq ($(filter $(allconfigs),$(MAKECMDGOALS)),)
       config-targets := 1
-      ifneq ($(filter-out config %config,$(MAKECMDGOALS)),)
+      ifneq ($(filter-out $(allconfigs),$(MAKECMDGOALS)),)
 	     mixed-targets := 1
       endif
 endif
@@ -255,11 +258,7 @@ ifeq ($(config-targets),1)
 
 export MKR_CONFIG
 
-config: scripts_basic outputmakefile FORCE
-	$(Q)mkdir -p include/config
-	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/kconfig $@
-
-%config: scripts_basic outputmakefile FORCE
+$(allconfigs): scripts_basic outputmakefile FORCE
 	$(Q)mkdir -p include/config
 	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/kconfig $@
 
@@ -347,9 +346,9 @@ linux/.mkr.confcheck: .mkr.basecheck
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
 linux/.config: linux/.mkr.confcheck
-linux/include/config/auto.conf: linux/.config
+	@:
 
-.mkr.confcheck: linux/include/config/auto.conf
+.mkr.confcheck: include/config/auto.conf linux/.config
 	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
 				$(call sub-confcheck,$(t)/)) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
@@ -358,6 +357,7 @@ linux/include/config/auto.conf: linux/.config
 # 	$(Q)mkdir -p $(dir $@)
 # 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 
+ARCH:=$(MKR_ARCH)
 ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
 
 PHONY+= check-computed-variables
@@ -369,7 +369,6 @@ check-computed-variables:
 	echo LDFLAGS=\"$(MKR_LDFLAGS)\"; \
 	} > .tmp.mkr.toolchain; \
 	if ! cmp -s .tmp.mkr.toolchain .mkr.toolchain; then \
-		exit 1; \
 		mv .tmp.mkr.toolchain .mkr.toolchain; \
 	else \
 		rm -f .tmp.mkr.toolchain; \

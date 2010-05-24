@@ -19,6 +19,8 @@ confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),"")
 confcheck-$(not-netdest-p) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
 endif
+confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
+confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
 
 confcheck: default-confcheck
 
