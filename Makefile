@@ -358,9 +358,36 @@ linux/include/config/auto.conf: linux/.config
 # 	$(Q)mkdir -p $(dir $@)
 # 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 
-$(call pkg-targets,clean install): %: prepare
+ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
+
+PHONY+= check-computed-variables
+check-computed-variables:
+	$(Q){ \
+	echo ARCH=\"$(MKR_ARCH)\"; \
+	echo CCVERSION=\"'$(shell $(MKR_CC) -v 2>&1 | tail -n 1)'\"; \
+	echo CFLAGS=\"$(MKR_CFLAGS)\"; \
+	echo LDFLAGS=\"$(MKR_LDFLAGS)\"; \
+	} > .tmp.mkr.toolchain; \
+	if ! cmp -s .tmp.mkr.toolchain .mkr.toolchain; then \
+		exit 1; \
+		mv .tmp.mkr.toolchain .mkr.toolchain; \
+	else \
+		rm -f .tmp.mkr.toolchain; \
+	fi; \
+	/bin/echo -n -e $(foreach p,$(packages), \
+		$(p) $(call mksrcdir,$($($(p)/srcdir-var)))\\n) | \
+	while read p srcdir; do \
+		echo "mkr-srcdir=\"$$srcdir\"" > .tmp.mkr.srcdir; \
+		if ! cmp -s .tmp.mkr.srcdir $$p/.mkr.srcdir; then \
+			mv .tmp.mkr.srcdir $$p/.mkr.srcdir; \
+		else \
+			rm -f .tmp.mkr.srcdir; \
+		fi; \
+	done
+
+$(call pkg-targets,clean install): %: prepare check-computed-variables
 	$(Q)echo Building $(dir $@)...
-	$(Q)fakeroot -s $(O)/foobar $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
+	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 	$(Q)echo Building $(dir $@)... done.
 
 # Things we need to do before we recursively start building the kernel

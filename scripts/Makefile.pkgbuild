@@ -17,6 +17,8 @@ override ARCH := $(MKR_ARCH)
 override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
 override CC := $(MKR_CC)
 override KCC := $(MKR_KCC)
+override cflags-y := $(MKR_CFLAGS)
+override ldflags-y := $(MKR_LDFLAGS)
 
 # Unexport variables exported by top makefile
 unexport srctree objtree VPATH MKR_BUILD_SRC
@@ -39,8 +41,7 @@ $(error No Makefile or Kbuild for package $(obj))
 endif
 
 .mkr.makefile.deps: $(mkr-pkgmk)
-	$(Q)echo $(mkr-srcdir-var) | \
-	$(AWK) $(srctree)/scripts/makefile-deps.awk - $< > $@ 2> /dev/null || rm -f $@
+	$(AWK) -f $(srctree)/scripts/makefile-deps.awk $< > $@ || rm -f $@
 
 -include .mkr.makefile.deps
 

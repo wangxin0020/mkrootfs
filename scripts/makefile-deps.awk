@@ -12,11 +12,14 @@ match($0, /MKR_([0-9A-Z_]*)/, sym) {
 END {
 	printf("mkr-optdeps :=");
 	for (s in list)
-		printf(" \\\n    $(O)/include/config/"s".h");
+		printf(" \\\n    $(wildcard $(O)/include/config/"s".h)");
 	printf("\n\n$(mkr-optdeps): ;\n\nmkr-deps :=");
 	printf(" \\\n    $(mkr-optdeps)")
-	printf(" \\\n    "FILENAME);
 	printf(" \\\n    .mkr.makefile.deps");
+	printf(" \\\n    .mkr.srcdir");
+	printf(" \\\n    $(O)/.mkr.toolchain");
+	printf(" \\\n    "FILENAME);
+	printf(" \\\n    $(srctree)/scripts/Makefile.pkgbuild")
 	printf(" \\\n    scripts/makefile-deps.awk");
 	printf("\n");
 }
