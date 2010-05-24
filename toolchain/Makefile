@@ -20,6 +20,11 @@ confcheck-$(CONFIG_AEABI) += \
 		test "$(CONFIG_OABI_COMPAT)" != "y" \
 			-a "$(MKR_ARM_EABI)" != "y", \
 		EABI-only kernel with non-EABI toolchain)
+
+confcheck-$(MKR_ARM_VFP) += \
+	$(call confcheck-if, \
+		test "$(CONFIG_VFP)" != "y" \
+		VFP-enabled user-space with non-VFP kernel)
 endif
 
 confcheck: default-confcheck

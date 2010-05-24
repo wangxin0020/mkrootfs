@@ -345,9 +345,6 @@ linux/.mkr.confcheck: .mkr.basecheck
 	$(Q)success=:; $(call sub-confcheck,linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-linux/.config: linux/.mkr.confcheck
-	@:
-
 .mkr.confcheck: include/config/auto.conf linux/.config
 	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
 				$(call sub-confcheck,$(t)/)) \
@@ -378,6 +375,7 @@ check-computed-variables:
 	while read p srcdir; do \
 		echo "mkr-srcdir=\"$$srcdir\"" > .tmp.mkr.srcdir; \
 		if ! cmp -s .tmp.mkr.srcdir $$p/.mkr.srcdir; then \
+			mkdir -p $$p; \
 			mv .tmp.mkr.srcdir $$p/.mkr.srcdir; \
 		else \
 			rm -f .tmp.mkr.srcdir; \
