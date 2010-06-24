@@ -19,12 +19,12 @@ endif
 endif
 
 # Toolchain arguments
-override ARCH := $(MKR_ARCH)
-override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
-override CC := $(MKR_CC)
-override KCC := $(MKR_KCC)
-override cflags-y := $(MKR_CFLAGS)
-override ldflags-y := $(MKR_LDFLAGS)
+override ARCH := $(shell echo $(MKR_ARCH))
+override ARCH_FLAGS := $(shell echo $(MKR_ARCH_FLAGS))
+override CC := $(shell echo $(MKR_CC))
+override KCC := $(shell echo $(MKR_KCC))
+override cflags-y := $(shell echo $(MKR_CFLAGS))
+override ldflags-y := $(shell echo $(MKR_LDFLAGS))
 
 # Unexport variables exported by top makefile
 unexport srctree objtree VPATH MKR_BUILD_SRC
@@ -57,7 +57,8 @@ confcheck-if = $(1) > /dev/null 2>&1 && { echo $(2); success=false; };
 confcheck-ifnot = $(1) > /dev/null 2>&1 || { echo $(2); success=false; };
 
 confcheck-tool = type $(1) > /dev/null 2>&1 || { \
-	echo Error: Command $(1) not found, see $(2); success=false; };
+	echo Error: Command $(1) not found, install it or see $(2); \
+	success=false; };
 confcheck-not-empty = test x$($(strip $(1))) != x > /dev/null 2>&1 || { \
 	echo Error: Variable $(1) can not be empty; success=false; };
 confcheck-exists = test -e $(1) > /dev/null 2>&1 || { \

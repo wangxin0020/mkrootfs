@@ -15,6 +15,7 @@ static const char nohelp_text[] = N_(
 struct menu rootmenu;
 static struct menu **last_entry_ptr;
 
+struct dir *dir_list;
 struct file *file_list;
 struct file *current_file;
 

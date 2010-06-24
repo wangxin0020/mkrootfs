@@ -10,9 +10,14 @@ Kconfig additions:
 "package" should be used instead of "bool" to mark the configure option for a
 package, this has several effects:
 - the Makefile for building the corresponding package is taken in the directory where is the Kconfig file containing this option;
-- the depencies between these types of options are used as build dependencies for the corresponding packages.
+- the build system recurses in this sub-directory if the option is
+enabled.
 
 "srcdir" can be used instead of "string" to mark the configure option for a
-package source directory.  The value is concatenated to the MKR_SRC_BASEDIR if 
-it is a relative path, or is used as path if it is absoute.
+package source directory.  The value is concatenated to the MKR_SRC_BASEDIR if
+it is a relative path, or is used as path if it is absoute, and is
+used and used as a pattern glob.
 
+If a Kconfig variable depends or select an option in another
+directory's Kconfig, this dependency is used as a build dependency
+between the corresponding directories.

@@ -71,13 +71,6 @@ config LDFLAGS
 	string "Link flags"
 	default "$(ARCH_FLAGS) -g -O2"
 
-config BOARD
-	string "Board directory name"
-	default "generic"
-	help
-	  Directory where architecture or board specific files will be taken.
-	  This is a path relative to the boards directory in mkrootfs tree.
-
 if ARCH_ARM
 
 config ARM_ARCH
@@ -93,3 +86,26 @@ endif
 
 endmenu
 
+menu "Toolchain tools and libraries selection"
+
+config LIBM
+       string "Install libm"
+       default y
+
+config LIBRESOLV
+       string "Install name resolution libraries"
+       default y
+
+config LIBDL
+       string "Install libdl"
+       default y
+
+config LIBPTHREAD
+       string "Install libpthread"
+       default y
+
+config LIBSTDCPP
+       string "Install libstdc++"
+       default n
+
+endmenu

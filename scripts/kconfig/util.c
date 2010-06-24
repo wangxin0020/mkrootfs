@@ -8,10 +8,28 @@
 #include <string.h>
 #include "lkc.h"
 
+struct dir *dir_lookup(const char *name)
+{
+	struct dir *dir;
+
+	for (dir = dir_list; dir; dir = dir->next)
+		if (!strcmp(name, dir->name))
+			return dir;
+
+	dir = malloc(sizeof(*dir));
+	dir->name = strdup(name);
+	dir->enabled = 0;
+	dir->next = dir_list;
+	dir_list = dir;
+
+	return dir;
+}
+
 /* file already present in list? If not add it */
 struct file *file_lookup(const char *name)
 {
 	struct file *file;
+	char *last_slash;
 
 	for (file = file_list; file; file = file->next) {
 		if (!strcmp(name, file->name))
@@ -21,77 +39,78 @@ struct file *file_lookup(const char *name)
 	file = malloc(sizeof(*file));
 	memset(file, 0, sizeof(*file));
 	file->name = strdup(name);
+
+	last_slash = strrchr(file->name, '/');
+	if (last_slash) {
+		*last_slash = '\0';
+		file->dir = dir_lookup(file->name);
+		*last_slash = '/';
+	} else
+		file->dir = dir_lookup("");
 	file->next = file_list;
 	file_list = file;
 	return file;
 }
 
-static void print_dirname(FILE *out, const char *fmt, char *filename)
+struct cross_dir_data {
+	FILE *out;
+	struct symbol *sym;
+	int printed;
+};
+
+static void print_cross_dir(void *cookie, struct symbol *sym, const char *name)
 {
-	char *slash, *dirname;
+	struct cross_dir_data *d = cookie;
 
-	slash = strrchr(filename, '/');
-	if (!slash)
-		fprintf(stderr, "%s\n", filename);
-
-	*slash = '\0';
-	dirname = strrchr(slash - 1, '/') ?: filename;
-
-	fprintf(out, fmt, dirname);
-
-	*slash = '/';
-}
-
-static void print_pkg(void *cookie, struct symbol *sym, const char *name)
-{
-	struct property *prop;
-	FILE *out = cookie;
-
-	prop = sym_get_pkg_prop(sym);
-	if (!prop)
+	if (!sym || !sym->file || !sym->file->dir->name[0]
+	    || !sym->file->dir->enabled || d->sym->file->dir == sym->file->dir)
 		return;
 
+	if (!d->printed)
+		fprintf(d->out, "%s/install: ", d->sym->file->dir->name);
+
 	/* symbol is a package */
-	print_dirname(out, "%s/install ", prop->file->name);
+	fprintf(d->out, "%s/install ", sym->file->dir->name);
+	++d->printed;
 }
 
-static void print_pkg_expr_deps(FILE *out, struct expr *expr)
+static void
+print_cross_dir_expr_deps(struct cross_dir_data *d, struct expr *expr)
 {
-	expr_print(expr, print_pkg, out, 0);
+	expr_print(expr, print_cross_dir, d, 0);
 }
 
-static void print_pkg_deps(FILE *out, struct symbol *sym, struct property *prop)
+static void print_cross_dir_deps(FILE *out, struct symbol *sym)
 {
-	int found_expr = 0;
+	struct cross_dir_data d;
+	struct property *prop;
+
+	if (!sym->file || sym->file->dir->name[0] == '\0'
+	    || !sym->file->dir->enabled)
+		return;
+
+	d.out = out;
+	d.sym = sym;
+	d.printed = 1;
 
 	if (sym->rev_dep.expr) {
-		print_pkg_expr_deps(out, sym->rev_dep.expr);
-		print_dirname(out, ": %s/install\n", prop->file->name);
+		print_cross_dir_expr_deps(&d, sym->rev_dep.expr);
+		if (d.printed > 1)
+			fprintf(out, ": %s/install\n", sym->file->dir->name);
 	}
 
+	d.printed = 0;
 	for (prop = sym->prop; prop; prop = prop->next) {
 		if (prop->type == P_CHOICE || prop->type == P_SELECT)
 			continue;
-		if (prop->visible.expr) {
-			if (!found_expr) {
-				found_expr = 1;
-				print_dirname(out, "%s/install: ",
-					      prop->file->name);
-			}
-			print_pkg_expr_deps(out, prop->visible.expr);
-		}
+		if (prop->visible.expr)
+			print_cross_dir_expr_deps(&d, prop->visible.expr);
 		if (prop->type != P_DEFAULT || sym_is_choice(sym))
 			continue;
-		if (prop->expr) {
-			if (!found_expr) {
-				found_expr = 1;
-				print_dirname(out, "%s/install: ",
-					      prop->file->name);
-			}
-			print_pkg_expr_deps(out, prop->expr);
-		}
+		if (prop->expr)
+			print_cross_dir_expr_deps(&d, prop->expr);
 	}
-	if (found_expr)
+	if (d.printed)
 		putc('\n', out);
 }
 
@@ -146,29 +165,34 @@ int file_write_dep(const char *name)
 
 		prop = sym_get_pkg_prop(sym);
 		if (!prop)
-			goto srcdir;
+			continue;
 
-		print_dirname(out, "all_packages += %s\n", prop->file->name);
+		fprintf(out, "all_packages += %s\n", prop->file->dir->name);
 		value = sym_get_tristate_value(sym);
 		if (value == yes) {
-			print_dirname(out, "packages += %s\n", prop->file->name);
-			print_pkg_deps(out, sym, prop);
+			fprintf(out, "packages += %s\n", prop->file->dir->name);
+			prop->file->dir->enabled = 1;
 		}
 
 		putc('\n', out);
+	}
 
-	srcdir:
-		if (!sym_has_value(sym))
-			continue;
+
+	for_all_symbols(i, sym) {
+		struct property *prop;
 
 		prop = sym_get_srcdir_prop(sym);
 		if (!prop)
-			continue;
+			goto not_srcdir;
 
-		print_dirname(out, "%s", prop->file->name);
-		fprintf(out, "/srcdir = $(call mksrcdir,$(MKR_%s))\n", sym->name);
-		print_dirname(out, "%s", prop->file->name);
-		fprintf(out, "/srcdir-var = MKR_%s\n\n", sym->name);
+		fprintf(out, "%s/srcdir = $(call mksrcdir,$(MKR_%s))\n",
+			prop->file->dir->name, sym->name);
+		fprintf(out, "%s/srcdir-var = MKR_%s\n\n",
+			prop->file->dir->name, sym->name);
+		continue;
+
+	  not_srcdir:
+		print_cross_dir_deps(out, sym);
 	}
 
 	fclose(out);

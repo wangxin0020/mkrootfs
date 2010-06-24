@@ -12,18 +12,6 @@ $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(mkr-srcdir)/Makefile)))
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
-# Checking mkrootfs configuration for building the kernel
-confcheck-$(not-defconfig-p) += $(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
-confcheck-$(netdest-p) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
-confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
-ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),"")
-confcheck-$(not-netdest-p) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
-endif
-confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
-confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
-
-confcheck: default-confcheck
-
 # Configuring the kernel
 configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) ARCH=$(ARCH)
 
@@ -54,3 +42,15 @@ endif
 # Catch-all target
 %:
 	$(MAKE) $(buildargs) $@
+
+# Checking mkrootfs configuration for building the kernel
+confcheck-$(not-defconfig-p) += $(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
+confcheck-$(netdest-p) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
+confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
+ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),"")
+confcheck-$(not-netdest-p) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
+endif
+confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
+confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
+
+confcheck: default-confcheck

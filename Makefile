@@ -354,8 +354,8 @@ linux/.mkr.confcheck: .mkr.basecheck
 # 	$(Q)mkdir -p $(dir $@)
 # 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 
-ARCH:=$(MKR_ARCH)
-ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
+ARCH:=$(shell echo $(MKR_ARCH))
+ARCH_FLAGS:=$(shell echo $(MKR_ARCH_FLAGS))
 
 PHONY+= check-computed-variables
 check-computed-variables:
@@ -384,7 +384,7 @@ check-computed-variables:
 
 $(call pkg-targets,clean install): %: prepare check-computed-variables
 	$(Q)echo Building $(dir $@)...
-	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
+	$(Q)fakeroot $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 	$(Q)echo Building $(dir $@)... done.
 
 # Things we need to do before we recursively start building the kernel

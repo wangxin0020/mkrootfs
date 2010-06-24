@@ -1,0 +1,24 @@
+menu "Base skeleton"
+
+config BASE
+	package
+	default y
+
+config BOARD
+	string "Board directory name"
+	default "generic"
+	help
+	  Directory where architecture or board specific files will be taken.
+	  This is a path relative to the boards directory in mkrootfs tree.
+
+config SERIAL_DEV
+	string "Serial console device"
+	default "ttyS0"
+	help
+	  Name of the serial console device node in the /dev directory.
+
+config SERIAL_BAUDRATE
+	int "Serial console baud rate"
+	default 115200
+
+endmenu

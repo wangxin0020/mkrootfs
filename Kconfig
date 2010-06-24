@@ -1,3 +1,5 @@
+source "base/Kconfig"
+
 source "toolchain/Kconfig"
 
 source "linux/Kconfig"

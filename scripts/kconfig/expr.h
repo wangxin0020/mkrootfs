@@ -15,10 +15,17 @@ extern "C" {
 #include <stdbool.h>
 #endif
 
+struct dir {
+	struct dir *next;
+	char *name;
+	int enabled;
+};
+
 struct file {
 	struct file *next;
 	struct file *parent;
 	char *name;
+	struct dir *dir;
 	int lineno;
 	int flags;
 };
@@ -84,6 +91,7 @@ struct symbol {
 	int flags;
 	struct property *prop;
 	struct expr_value rev_dep;
+	struct file *file;
 };
 
 #define for_all_symbols(i, sym) for (i = 0; i < 257; i++) for (sym = symbol_hash[i]; sym; sym = sym->next) if (sym->type != S_OTHER)
@@ -181,6 +189,7 @@ struct menu {
 
 #ifndef SWIG
 
+extern struct dir *dir_list;
 extern struct file *file_list;
 extern struct file *current_file;
 struct file *lookup_file(const char *name);

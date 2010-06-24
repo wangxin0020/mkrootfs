@@ -716,6 +716,7 @@ struct symbol *sym_lookup(const char *name, int flags)
 	symbol->type = S_UNKNOWN;
 	symbol->flags |= flags;
 
+	symbol->file = current_file;
 	symbol->next = symbol_hash[hash];
 	symbol_hash[hash] = symbol;
 
