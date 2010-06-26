@@ -58,7 +58,7 @@ endif
 # variable.
 
 ifeq ($(O),)
-	O := $(PWD)/output
+	O := $(PWD)/build
 	MKR_BUILD_OUTPUT := $(O)
 endif
 
