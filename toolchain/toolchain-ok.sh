@@ -18,7 +18,7 @@ fi
 cross=`expr $cc : '\(.*\)gcc'`
 
 for d in $LIBDIRS; do
-    for f in $d/libc.so.[0-9] $d/libuClibc*.so; do
+    for f in $d/libc.so.[0-9] $d/libuClibc*.so $d/libc.a; do
 	if test -e $f; then
 	    if ! ${cross}readelf -h $f > /dev/null 2>&1; then
 		die ${cross}readelf -h $f failed
@@ -32,7 +32,7 @@ for d in $LIBDIRS; do
 	    case "$mach" in
 		ARM) sr_arch=arm;;
 		*Blackfin) sr_arch=blackfin;;
-		*[Nn][iI][oO][sS]*) sr_arch=nios2;;
+		*Nios II) sr_arch=nios2;;
 		PowerPC64) sr_arch=ppc64;;
 		PowerPC) sr_arch=ppc;;
 		*386) sr_arch=i686;;
@@ -47,12 +47,6 @@ for d in $LIBDIRS; do
 	    fi
 	fi
     done
-done
-
-for d in $LIBDIRS; do
-    if test -e $d/libc.a; then
-	exit 0
-    fi
 done
 
 die No libc found in the following directories: $LIBDIRS
