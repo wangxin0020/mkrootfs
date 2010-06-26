@@ -31,7 +31,7 @@ skel:
 		cp -a /etc/localtime $(MKR_STAGING)/etc/localtime || :; \
 	}
 
-install: devices dirs skel
+staging: devices dirs skel
 
 confcheck-y := $(call confcheck-exists,$(dev_txt),MKR_BOARD)
 confcheck-y += $(call confcheck-exists,$(skeldir),MKR_BOARD)

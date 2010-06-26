@@ -34,7 +34,7 @@ buildargs := $(configargs) CROSS_COMPILE=$(CROSS_COMPILE) CC=$(KCC)
 cp-$(netdest-p) := scp -p
 cp-$(not-netdest-p) := cp -a
 
-install: include/config/auto.conf
+staging: include/config/auto.conf
 ifeq ($(CONFIG_MODULES),y)
 	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS) modules
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install

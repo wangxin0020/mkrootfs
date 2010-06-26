@@ -75,7 +75,17 @@ libs:
 		esac; \
 	done
 
-install: bins libs
+staging: bins libs
+
+# Configuration checks
+
+confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
+
+confcheck-y += $(call confcheck-ifnot, \
+	$(mkr-pkgdir)/toolchain-ok.sh \
+		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
+	Error in toolchain or sysroot settings\
+	maybe SYSROOT_MANUAL is necessary?)
 
 ifneq ($(MKR_ARCH_ARM),)
 .mkr.eabi: $(mkr-deps)
@@ -104,13 +114,5 @@ confcheck-$(MKR_ARM_VFP) += \
 		test "$(CONFIG_VFP)" != "y" \
 		VFP-enabled user-space with non-VFP kernel)
 endif
-
-confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
-
-confcheck-y += $(call confcheck-ifnot, \
-	$(mkr-pkgdir)/toolchain-ok.sh \
-		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
-	Error in toolchain or sysroot settings\
-	maybe SYSROOT_MANUAL is necessary?)
 
 confcheck: default-confcheck

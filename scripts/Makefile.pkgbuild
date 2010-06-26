@@ -101,5 +101,5 @@ confcheck:
 default-confcheck:
 	$(Q)success=:;$(confcheck-y) $$success
 
-.PHONY: install
-install:
+.PHONY: staging
+staging:

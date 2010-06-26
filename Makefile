@@ -310,8 +310,8 @@ endif # $(dot-config)
 # Defaults vmlinux but it is usually overridden in the arch makefile
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
-all: $(call pkg-targets,install)
-PHONY += $(call pkg-targets,clean install)
+all: $(call pkg-targets,staging)
+PHONY += $(call pkg-targets,clean staging)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
 # Preset locale variables to speed up the build process. Limit locale
@@ -382,7 +382,7 @@ check-computed-variables:
 		fi; \
 	done
 
-$(call pkg-targets,clean install): %: prepare check-computed-variables
+$(call pkg-targets,clean staging): %: prepare check-computed-variables
 	$(Q)echo Building $(dir $@)...
 	$(Q)fakeroot $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 	$(Q)echo Building $(dir $@)... done.

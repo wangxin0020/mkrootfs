@@ -49,4 +49,10 @@ for d in $LIBDIRS; do
     done
 done
 
+for d in $LIBDIRS; do
+    if test -e $d/libc.a; then
+	exit 0
+    fi
+done
+
 die No libc found in the following directories: $LIBDIRS
