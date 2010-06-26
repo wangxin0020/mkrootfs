@@ -27,16 +27,25 @@ config ARCH_X86_32
 
 config ARCH_X86_64
 	bool "x86 64 bits"
-
 endchoice
+
+config KARCH
+	string
+	default "arm" if ARCH_ARM
+	default "blackfin" if ARCH_BLACKFIN
+	default "nios2" if ARCH_NIOS2
+	default "powerpc" if ARCH_POWERPC_32 || ARCH_POWERPC_64
+	default "x86" if ARCH_X86_32 || ARCH_X86_64
 
 config ARCH
 	string
 	default "arm" if ARCH_ARM
 	default "blackfin" if ARCH_BLACKFIN
-	default "nios" if ARCH_NIOS2
-	default "powerpc" if ARCH_POWERPC_32 || ARCH_POWERPC_64
-	default "x86" if ARCH_X86_32 || ARCH_X86_64
+	default "nios2" if ARCH_NIOS2
+	default "ppc" if ARCH_POWERPC_32
+	default "ppc64" if ARCH_POWERPC_64
+	default "i686" if ARCH_X86_32
+	default "x86_64" if ARCH_X86_64
 
 config CONFIGURE_HOST
 	string "Configure host string"
@@ -84,28 +93,51 @@ config ARM_VFP
 
 endif
 
-endmenu
+choice
+	prompt "Toolchain sysroot"
+	default SYSROOT_AUTO
 
-menu "Toolchain tools and libraries selection"
+config SYSROOT_AUTO
+       bool "Automatic"
+       help
+	 Try and guess toolchain sysroot automatically. If you get an
+       	 error at the configuration check step, choose SYSROOT_MANUAL,
+	 and set SYSROOT to where the toolchain sysroot is.
+
+config SYSROOT_MANUAL
+       bool "Manual"
+
+endchoice
+
+if SYSROOT_MANUAL
+
+config SYSROOT
+       string "sysroot location"
+
+endif
+
+menu "Toolchain libraries selection"
 
 config LIBM
-       string "Install libm"
+       bool "Install libm"
        default y
 
 config LIBRESOLV
-       string "Install name resolution libraries"
+       bool "Install name resolution libraries"
        default y
 
 config LIBDL
-       string "Install libdl"
+       bool "Install libdl"
        default y
 
 config LIBPTHREAD
-       string "Install libpthread"
+       bool "Install libpthread"
        default y
 
 config LIBSTDCPP
-       string "Install libstdc++"
+       bool "Install libstdc++"
        default n
+
+endmenu
 
 endmenu

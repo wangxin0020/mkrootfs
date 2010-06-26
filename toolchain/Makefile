@@ -1,13 +1,21 @@
-LIBDIRS = $(shell for d in `$(CC) $(MKR_ARCH_FLAGS) --print-search-dirs \
-	| sed 's/^libraries: =\\(.*\\)$$/\\1/;t next;d;:next y/:/ /'`; do \
-	if [ -e $$d ]; then cd $$d && pwd; fi; done | sort -u)
+ifeq ($(MKR_SYSROOT_AUTO),y)
+.mkr.toolchain_dirs: $(mkr_deps)
+	$(mkr-pkgdir)/toolchain-dirs.sh $(CC) $(MKR_CFLAGS) > $@ || :
+
+-include .mkr.toolchain_dirs
+else
+LIBDIRS=$(foreach d,lib usr/lib,$(MKR_SYSROOT)/$(d))
+BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
+endif
 
 libs-y := \
-	libc.so \
-	libgcc_s.so \
 	ld-linux.so \
-	libnsl.so \
+	libc.so \
 	libnss_files.so \
+	ld-uClibc.so \
+	libuClibc \
+	libgcc_s.so \
+	libnsl.so \
 	libdl.so \
 	libcrypt.so
 libs-$(MKR_LIBM) += \
@@ -22,14 +30,10 @@ libs-$(MKR_LIBPTHREAD) += \
 libs-$(MKR_LIBSTDCPP) += \
 	libstdc++.so
 
-BINDIRS = $(shell for d in `$(CC) $(MKR_ARCH_FLAGS) --print-search-dirs \
-	| sed 's/^libraries: =\\(.*\\)$$/\\1/;t next;d;:next \
-	s,\\([^:]*\\),\\1bin \\1../bin,g;y/:/ /'`; do \
-	if [ -e $$d ]; then cd $$d && pwd; fi; done | sort -u)
-
 bins-y := \
 	gdbserver \
 	ldconfig \
+	ldconfig.real \
 	ldd \
 	lspci
 
@@ -43,7 +47,7 @@ bins:
 			fi; \
 		done; \
 	done; \
-	sed -i 's/bash/ash/g' $(MKR_STAGING)/bin/ldd
+	sed -i 's/bash/ash/g' $(MKR_STAGING)/bin/ldd > /dev/null 2>&1 || :
 
 libs:
 	mkdir -p $(MKR_STAGING)/lib; \
@@ -51,12 +55,24 @@ libs:
 	ln -s lib $(MKR_STAGING)/lib64; \
 	ln -s lib $(MKR_STAGING)/lib32; \
 	for l in $(libs-y); do \
-		for d in $(LIBDIRS); do \
-			if [ -e $$d/$$l.[0-9] ]; then \
-				cp $$d/$$l.[0-9] $(MKR_STAGING)/lib; \
-				break; \
-			fi; \
-		done; \
+		case "$l" in \
+		*.so) \
+			for d in $(LIBDIRS); do \
+				if [ -e $$d/$$l.[0-9] ]; then \
+					cp $$d/$$l.[0-9] $(MKR_STAGING)/lib; \
+					break; \
+				fi; \
+			done; \
+			;; \
+		*) \
+			for d in $(LIBDIRS); do \
+				if [ -e $$d/$$l-*.so ]; then \
+					cp $$d/$$l-*.so $(MKR_STAGING)/lib; \
+					break; \
+				fi; \
+			done; \
+			;; \
+		esac; \
 	done
 
 install: bins libs
@@ -88,5 +104,10 @@ confcheck-$(MKR_ARM_VFP) += \
 		test "$(CONFIG_VFP)" != "y" \
 		VFP-enabled user-space with non-VFP kernel)
 endif
+
+confcheck-y += $(call confcheck-ifnot, \
+	$(mkr-pkgdir)/toolchain-ok.sh \
+		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
+	Error in toolchain/sysroot settings, maybe manual sysroot is necessary?)
 
 confcheck: default-confcheck
