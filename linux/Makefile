@@ -20,10 +20,10 @@ defconfig-$(defconfig-p) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
 
 .config: $(O)/include/config/linux/defconfig.h
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
-	$(Q)$(defconfig-y) $@
+	$(defconfig-y) $@
 
 include/linux/autoconf.h: .config $(mkr-deps)
-	$(Q)$(MAKE) $(configargs) oldconfig
+	$(MAKE) $(configargs) oldconfig
 
 # Building the kernel
 buildargs := $(configargs) CROSS_COMPILE=$(CROSS_COMPILE) CC=$(KCC)
@@ -31,9 +31,8 @@ cp-$(netdest-p) := scp -p
 cp-$(not-netdest-p) := cp -a
 
 install:
-	$(call mkr-recurse,$(MKR_LINUX_TARGETS) modules,$(MAKE) $(buildargs))
+	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS) modules
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install
-	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_ROOTFS) modules_install
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)

@@ -28,7 +28,7 @@ skel:
 		$(MKR_STAGING)/$$f; \
 		}; \
 		done; \
-		cp -a /etc/localtime $(MKR_STAGING)/etc/localtime; \
+		cp -a /etc/localtime $(MKR_STAGING)/etc/localtime || :; \
 	}
 
 install: devices dirs skel

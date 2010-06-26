@@ -1,8 +1,4 @@
-source "base/Kconfig"
-
 source "toolchain/Kconfig"
-
-source "linux/Kconfig"
 
 menu "Packages"
 
@@ -11,11 +7,11 @@ config SRC_BASEDIR
 	default "/usr/src"
 
 	help
-	  The directory under which the package sources will be looked for.
-	  If relative, it is relative to Mkrootfs directory.
+	  The directory under which the package source trees will be
+	  looked for. If relative, it is relative to Mkrootfs directory.
 
-source "foo/Kconfig"
-source "bar/Kconfig"
-source "qux/Kconfig"
+source "base/Kconfig"
+
+source "linux/Kconfig"
 
 endmenu

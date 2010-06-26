@@ -4,6 +4,18 @@ config LINUX
 	package
 	default y
 
+config KARCH
+	string
+	default "arm" if ARCH_ARM
+	default "blackfin" if ARCH_BLACKFIN
+	default "nios2" if ARCH_NIOS2
+	default "powerpc" if ARCH_POWERPC_32 || ARCH_POWERPC_64
+	default "x86" if ARCH_X86_32 || ARCH_X86_64
+
+config KCC
+	string "Linux kernel compiler"
+	default "$(CC)"
+
 config LINUX_SRCDIR
 	srcdir "Sources directory"
 
@@ -44,4 +56,3 @@ config LINUX_EXTRA_INSTALL
 	  Directory where the output files will be installed. The copy uses
 	  scp if this destination has the form host:path or user@host:path.
 endmenu
-

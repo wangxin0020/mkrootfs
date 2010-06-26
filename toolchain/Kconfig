@@ -29,14 +29,6 @@ config ARCH_X86_64
 	bool "x86 64 bits"
 endchoice
 
-config KARCH
-	string
-	default "arm" if ARCH_ARM
-	default "blackfin" if ARCH_BLACKFIN
-	default "nios2" if ARCH_NIOS2
-	default "powerpc" if ARCH_POWERPC_32 || ARCH_POWERPC_64
-	default "x86" if ARCH_X86_32 || ARCH_X86_64
-
 config ARCH
 	string
 	default "arm" if ARCH_ARM
@@ -56,10 +48,6 @@ config CONFIGURE_HOST
 config CC
 	string "Cross-compiler"
 	default "$(ARCH)-linux-gcc"
-
-config KCC
-	string "Linux kernel cross-compiler"
-	default "$(CC)"
 
 config ARCH_FLAGS
 	string
