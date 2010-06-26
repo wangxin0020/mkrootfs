@@ -1,5 +1,5 @@
 ifeq ($(MKR_SYSROOT_AUTO),y)
-.mkr.toolchain_dirs: $(mkr_deps)
+.mkr.toolchain_dirs: $(mkr-deps)
 	$(mkr-pkgdir)/toolchain-dirs.sh $(CC) $(MKR_CFLAGS) > $@ || :
 
 -include .mkr.toolchain_dirs
@@ -79,7 +79,7 @@ install: bins libs
 
 ifneq ($(MKR_ARCH_ARM),)
 .mkr.eabi: $(mkr-deps)
-	$(CC) -o $@ $(cflags-y) -E $(mkr-pkgdir)/arm-eabi-check.h
+	$(CC) -o $@ $(cflags-y) -E $(mkr-pkgdir)/arm-eabi-check.h || :
 
 -include .mkr.eabi
 
@@ -105,9 +105,12 @@ confcheck-$(MKR_ARM_VFP) += \
 		VFP-enabled user-space with non-VFP kernel)
 endif
 
+confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
+
 confcheck-y += $(call confcheck-ifnot, \
 	$(mkr-pkgdir)/toolchain-ok.sh \
 		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
-	Error in toolchain/sysroot settings, maybe manual sysroot is necessary?)
+	Error in toolchain or sysroot settings\
+	maybe SYSROOT_MANUAL is necessary?)
 
 confcheck: default-confcheck

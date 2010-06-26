@@ -47,7 +47,7 @@ $(error No Makefile or Kbuild for package $(obj))
 endif
 
 .mkr.makefile.deps: $(mkr-pkgmk)
-	$(AWK) -f $(srctree)/scripts/makefile-deps.awk $< > $@ || rm -f $@
+	$(Q)$(AWK) -f $(srctree)/scripts/makefile-deps.awk $< > $@ || rm -f $@
 
 -include .mkr.makefile.deps
 

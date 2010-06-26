@@ -10,16 +10,16 @@ choice
 config ARCH_ARM
 	bool "arm"
 
-config ARCH_BLACKFIN
+config ARCH_BFIN
 	bool "blackfin"
 
 config ARCH_NIOS2
 	bool "nios2"
 
-config ARCH_POWERPC_32
+config ARCH_PPC32
 	bool "powerpc 32 bits"
 
-config ARCH_POWERPC_64
+config ARCH_PPC64
 	bool "powerpc 64 bits"
 
 config ARCH_X86_32
@@ -32,10 +32,10 @@ endchoice
 config ARCH
 	string
 	default "arm" if ARCH_ARM
-	default "blackfin" if ARCH_BLACKFIN
+	default "blackfin" if ARCH_BFIN
 	default "nios2" if ARCH_NIOS2
-	default "ppc" if ARCH_POWERPC_32
-	default "ppc64" if ARCH_POWERPC_64
+	default "ppc" if ARCH_PPC32
+	default "ppc64" if ARCH_PPC64
 	default "i686" if ARCH_X86_32
 	default "x86_64" if ARCH_X86_64
 
