@@ -122,19 +122,6 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 			goto done;
 		}
 	case S_STRING:
-		if (*p++ != '"')
-			break;
-		for (p2 = p; (p2 = strpbrk(p2, "\"\\")); p2++) {
-			if (*p2 == '"') {
-				*p2 = 0;
-				break;
-			}
-			memmove(p2, p2 + 1, strlen(p2));
-		}
-		if (!p2) {
-			conf_warning("invalid string found");
-			return 1;
-		}
 	case S_INT:
 	case S_HEX:
 	done:
@@ -403,7 +390,7 @@ int conf_write(const char *name)
 	struct menu *menu;
 	const char *basename;
 	char dirname[128], tmpname[128], newname[128];
-	int type, l;
+	int type;
 	const char *str;
 	time_t now;
 	int use_timestamp = 1;
@@ -501,18 +488,7 @@ int conf_write(const char *name)
 				break;
 			case S_STRING:
 				str = sym_get_string_value(sym);
-				fprintf(out, "MKR_%s=\"", sym->name);
-				while (1) {
-					l = strcspn(str, "\"\\");
-					if (l) {
-						fwrite(str, l, 1, out);
-						str += l;
-					}
-					if (!*str)
-						break;
-					fprintf(out, "\\%c", *str++);
-				}
-				fputs("\"\n", out);
+				fprintf(out, "MKR_%s=%s\n", sym->name, str);
 				break;
 			case S_HEX:
 				str = sym_get_string_value(sym);
@@ -679,7 +655,7 @@ int conf_write_autoconf(void)
 	const char *name;
 	FILE *out, *tristate;
 	time_t now;
-	int i, l;
+	int i;
 
 	sym_clear_all_valid();
 
@@ -735,19 +711,7 @@ int conf_write_autoconf(void)
 			break;
 		case S_STRING:
 			str = sym_get_string_value(sym);
-			fprintf(out, "MKR_%s=\"", sym->name);
-			while (1) {
-				l = strcspn(str, "\"\\");
-				if (l) {
-					fwrite(str, l, 1, out);
-					str += l;
-				}
-				if (!*str)
-					break;
-				fprintf(out, "\\%c", *str);
-				str++;
-			}
-			fputs("\"\n", out);
+			fprintf(out, "MKR_%s=%s\n", sym->name, str);
 			break;
 		case S_HEX:
 			str = sym_get_string_value(sym);

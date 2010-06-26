@@ -19,12 +19,12 @@ endif
 endif
 
 # Toolchain arguments
-override ARCH := $(shell echo $(MKR_ARCH))
-override ARCH_FLAGS := $(shell echo $(MKR_ARCH_FLAGS))
-override CC := $(shell echo $(MKR_CC))
-override KCC := $(shell echo $(MKR_KCC))
-override cflags-y := $(shell echo $(MKR_CFLAGS))
-override ldflags-y := $(shell echo $(MKR_LDFLAGS))
+override ARCH := $(MKR_ARCH)
+override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
+override CC := $(MKR_CC)
+override KCC := $(MKR_KCC)
+override cflags-y := $(MKR_CFLAGS)
+override ldflags-y := $(MKR_LDFLAGS)
 
 # Unexport variables exported by top makefile
 unexport srctree objtree VPATH MKR_BUILD_SRC

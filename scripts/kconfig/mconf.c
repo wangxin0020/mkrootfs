@@ -341,8 +341,8 @@ again:
 
 	/* strip MKR_ if necessary */
 	dialog_input = dialog_input_result;
-	if (strncasecmp(dialog_input_result, "MKR_", 7) == 0)
-		dialog_input += 7;
+	if (strncasecmp(dialog_input_result, "MKR_", 4) == 0)
+		dialog_input += 4;
 
 	sym_arr = sym_re_search(dialog_input);
 	res = get_relations_str(sym_arr);

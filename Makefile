@@ -354,8 +354,8 @@ linux/.mkr.confcheck: .mkr.basecheck
 # 	$(Q)mkdir -p $(dir $@)
 # 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 
-ARCH:=$(shell echo $(MKR_ARCH))
-ARCH_FLAGS:=$(shell echo $(MKR_ARCH_FLAGS))
+ARCH:=$(MKR_ARCH)
+ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
 
 PHONY+= check-computed-variables
 check-computed-variables:

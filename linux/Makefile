@@ -1,4 +1,4 @@
-CROSS_COMPILE := $(shell expr ""$(KCC) :  '\(.*\)gcc')
+CROSS_COMPILE := $(shell expr $(KCC) :  '\(.*\)gcc')
 
 defconfig-p := $(if $(findstring defconfig, $(MKR_LINUX_DEFCONFIG)),y)
 not-defconfig-p := $(if $(defconfig-p),,y)
@@ -13,7 +13,7 @@ $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 # Configuring the kernel
-configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) ARCH=$(ARCH)
+configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) ARCH=$(MKR_KARCH)
 
 defconfig-$(not-defconfig-p) := cp $(board-defconfig) $@
 defconfig-$(defconfig-p) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
@@ -35,7 +35,7 @@ install:
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_ROOTFS) modules_install
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
-ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),"")
+ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
 endif
 
@@ -47,7 +47,7 @@ endif
 confcheck-$(not-defconfig-p) += $(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
 confcheck-$(netdest-p) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
 confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
-ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),"")
+ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 confcheck-$(not-netdest-p) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
 endif
 confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)

@@ -1,4 +1,4 @@
-boarddir := $(shell echo $(srctree)/boards/$(MKR_BOARD))
+boarddir := $(srctree)/boards/$(MKR_BOARD)
 dev_txt := $(boarddir)/dev.txt
 skeldir := $(boarddir)/skel
 
