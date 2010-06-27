@@ -1,0 +1,118 @@
+menu "Xenomai"
+
+config XENO
+	package "Xenomai"
+	default y
+
+if XENO
+
+config XENO_SRCDIR
+       srcdir "Source directory"
+       default "xenomai-*"
+
+config XENO_MAINT
+       bool "Maintainer mode"
+       help
+	 Enabling this option will cause the build system to account
+	 for file additions in the Xenomai sources tree, at the
+	 expense of a larger compilation time (especially the kernel).
+
+config XENO_DEBUG
+       bool "Enable debug symbols"
+       default y
+
+config XENO_SMP
+       bool "SMP libraries"
+       default y if ARCH_X86_64
+       help
+	 Choose 'y' here to build libraries for multi-processor systems.
+
+menu "Skin components selection"
+
+config XENO_NATIVE
+       bool "Install native skin library"
+       default y
+
+config XENO_POSIX
+       bool "Install POSIX skin library"
+       default y
+
+config XENO_PSOS
+       bool "Install PSOS skin library"
+
+config XENO_RTDM
+       bool "Install RTDM skin library"
+       default y
+
+config XENO_UITRON
+       bool "Install UITRON skin library"
+
+config XENO_VRTX
+       bool "Install VRTX skin library"
+
+config XENO_VXWORKS
+       bool "Install VxWorks skin library"
+
+config XENO_TESTSUITE
+       bool "Install testsuite"
+       default y
+
+endmenu
+
+menu "Advanced configuration options"
+
+if ARCH_X86_32 || ARCH_X86_64
+
+config XENO_X86_SEP
+       bool "Use x86 SEP instructions in Xenomai libraries"
+       default y
+
+config XENO_X86_TSC
+       bool "Use x86 TSC in Xenomai libraries"
+       default y
+
+endif
+
+config XENO_THREAD
+       bool "Use TLS in Xenomai libraries"
+       default n
+       help
+	 This option enables the use of thread local data in Xenomai
+	 code using the __thread keyword. This may save a few
+       	 processor instructions in a few places, but may trigger
+       	 compiler bugs.
+
+config XENO_DLOPEN
+       bool "Allow loading Xenomai skin libraries with dlopen"
+       depends on !XENO_THREAD
+
+menu "Automatic mlockall"
+
+config XENO_POSIX_MLOCKALL
+       bool "Automatic mlockall for POSIX skin"
+
+config XENO_PSOS_MLOCKALL
+       bool "Automatic mlockall for PSOS+ skin"
+
+config XENO_UITRON_MLOCKALL
+       bool "Automatic mlockall for UITRON skin"
+
+endmenu
+
+endmenu
+
+if ARCH_ARM
+
+config XENO_ARM_MACH
+       string "ARM Machine to build Xenomai for"
+       default "generic"
+       help
+	 This string is passed to the --enable-arm-mach option of
+	 Xenomai configure script. Run this script with the --help
+	 option to see the available machines.
+
+endif
+
+endif
+
+endmenu

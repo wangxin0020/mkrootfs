@@ -1,16 +1,14 @@
 ifeq ($(MKR_BUSYBOX_CONFIG),defconfig)
 defconfig:=y
-else
-not-defconfig:=y
 endif
 
 board-config = $(srctree)/boards/$(MKR_BOARD)/$(MKR_BUSYBOX_CONFIG)
 defconfig-$(defconfig) = $(MAKE) $(configargs) defconfig
-defconfig-$(not-defconfig) = cp $(board-defconfig)
+defconfig-$(call not,$(defconfig)) = cp $(board-defconfig)
 
 # Configuring busybox
 configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) \
-	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(mkr-cross)ar" \
+	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$()ar" \
 	EXTRA_CFLAGS="$(ARCH_FLAGS)" \
 	EXTRA_LDFLAGS="$(ARCH_FLAGS)" \
 	CROSS_COMPILE="$(shell expr $(CC) : '\(.*\)gcc')" \
@@ -37,4 +35,5 @@ staging: include/autoconf.h
 	$(MAKE) $(buildargs) $@
 
 # Checking configuration
-confcheck-$(not-defconfig) += $(call confcheck-exists $(board-config),MKR_BUSYBOX_CONFIG)
+confcheck-$(call not,$(defconfig)) += \
+	$(call confcheck-exists $(board-config),MKR_BUSYBOX_CONFIG)

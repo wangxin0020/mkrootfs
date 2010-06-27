@@ -25,7 +25,7 @@ skel:
 			mkdir -p $(MKR_STAGING)/`dirname $$f`; \
 			cp -a $$f $(MKR_STAGING)/$$f; \
 			sed -i \
-		's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
+			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
 		$(MKR_STAGING)/$$f; \
 		}; \
 		done; \

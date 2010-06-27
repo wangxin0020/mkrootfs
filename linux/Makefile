@@ -1,41 +1,70 @@
-CROSS_COMPILE := $(shell expr $(KCC) : '\(.*\)gcc')
-
-defconfig := $(if $(findstring defconfig, $(MKR_LINUX_DEFCONFIG)),y)
-not-defconfig := $(if $(defconfig),,y)
-netdest := $(if $(findstring :, $(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)),y)
-not-netdest := $(if $(netdest),,y)
+defconfig := $(if $(findstring defconfig,$(MKR_LINUX_DEFCONFIG)),y)
+netdest := $(if $(findstring :, \
+	$(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)),y)
 
 board-defconfig = $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_DEFCONFIG)
 
+# Getting the kernel version
 # Upper Makefile checked that Makefile existed in Linux sources directory
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(mkr-srcdir)/Makefile)))
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
-# Configuring the kernel
-configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) ARCH=$(MKR_KARCH)
+# Checking whether MKR_XENO changed
+check-xeno:
+	set -e; echo $(MKR_XENO) > .tmp.mkr.xeno; \
+	if ! cmp -s .tmp.mkr.xeno .mkr.xeno; then \
+		rm -Rf *; \
+		mv .tmp.mkr.xeno .mkr.xeno; \
+	else \
+		rm .tmp.mkr.xeno; \
+	fi
 
-defconfig-$(not-defconfig) := cp $(board-defconfig) $@
+.mkr.xeno: check-xeno ;
+
+# Patching the kernel with Xenomai
+ifeq ($(MKR_XENO),y)
+prepare-kernel kernel/Makefile: .mkr.xeno
+	lndir -silent -ignorelinks $(mkr-srcdir) > /dev/null 2>&1
+	$(MKR_XENO_SRCDIR)/scripts/prepare-kernel.sh \
+		--default --linux=. --arch=$(MKR_KARCH)
+
+config-deps-y += kernel/Makefile
+
+# In maintainer mode, trigger prepare-kernel for every compilation
+ifeq ($(MKR_XENO_MAINT),y)
+.PHONY: prepare-kernel
+mkr-deps += prepare-kernel
+endif
+
+else
+configargs := -C $(mkr-srcdir) O=$(CURDIR)
+endif
+
+# Configuring the kernel
+configargs += V=$(KBUILD_VERBOSE) ARCH=$(MKR_KARCH)
+
+defconfig-$(call not,$(defconfig)) := cp $(board-defconfig) $@
 defconfig-$(defconfig) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
 
-config-deps-y := $(O)/include/config/linux/defconfig.h
-config-deps-$(not-defconfig) += $(O)/include/config/board.h
+config-deps-y += $(O)/include/config/linux/defconfig.h
+config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 .config: $(config-deps-y)
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
 	$(defconfig-y)
 
-include/generated/autoconf.h: .config $(mkr-deps)
-	$(MAKE) $(configargs) oldconfig
+include/generated/autoconf.h: .config $(mkr-deps) .mkr.xeno
+	$(MAKE) $(configargs) silentoldconfig
 
 # Building the kernel
 # get CONFIG_MODULES from kernel configuration
 $(eval $(shell grep '^CONFIG_MODULES=y' .config 2> /dev/null))
 
-buildargs := $(configargs) CROSS_COMPILE=$(CROSS_COMPILE) CC=$(KCC)
+buildargs := $(configargs) CROSS_COMPILE=$(mkr-kcross) CC=$(KCC)
 
 cp-$(netdest) := scp -p
-cp-$(not-netdest) := cp -a
+cp-$(call not,$(netdest)) := cp -a
 
 staging: include/generated/autoconf.h
 ifeq ($(CONFIG_MODULES),y)
@@ -55,13 +84,16 @@ endif
 	$(MAKE) $(buildargs) $@
 
 # Checking mkrootfs configuration for building the kernel
-confcheck-$(not-defconfig) += $(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
+confcheck-$(call not, $(defconfig)) += \
+	$(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
 confcheck-$(netdest) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
 confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
-confcheck-$(not-netdest) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
+confcheck-$(call not, $(netdest)) += \
+$(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
 endif
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_CC)
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
+confcheck-$(MKR_XENO) += $(call confcheck-tool,lndir,MKR_XENO)
 
 confcheck: default-confcheck

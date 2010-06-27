@@ -31,8 +31,12 @@ override ldflags-y := $(MKR_LDFLAGS)
 unexport srctree objtree VPATH MKR_BUILD_SRC
 unexport quiet Q KBUILD_VERBOSE
 unexport HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
+unexport AWK
 unexport RCS_TAR_IGNORE KBUILD_EXTMOD
-unexport MKR_CONFIG O
+unexport MKR_CONFIG O obj
+
+# Avoid leaking variables (the one passed on command-line) to sub-makes
+MAKEOVERRIDES=
 
 MKR_STAGING := $(O)/staging
 MKR_ROOTFS := $(O)/rootfs
@@ -53,6 +57,8 @@ endif
 -include .mkr.makefile.deps
 
 # Define confcheck macros
+not = $(if $(strip $(1)),,y)
+
 confcheck-if = $(1) > /dev/null && { echo $(2); success=false; };
 
 confcheck-ifnot = $(1) > /dev/null || { echo $(2); success=false; };
@@ -80,6 +86,7 @@ mkr-recurse = $(Q)failcom='exit 1'; success=:; \
 	$$success
 
 mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
+mkr-kcross := $(shell expr $(KCC) : '\(.*\)gcc')
 
 mkr-configure-args-y = \
 	--host="$(MKR_CONFIGURE_HOST)" \

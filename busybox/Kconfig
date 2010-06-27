@@ -10,7 +10,7 @@ config BUSYBOX_SRCDIR
 
 config BUSYBOX_CONFIG
 	string "Configuration file"
-	default defconfig"
+	default "defconfig"
 	help
 	  The kernel configuration file, it may be a relative path, it will be
 	  taken as relative to the board directory, or defconfig to
