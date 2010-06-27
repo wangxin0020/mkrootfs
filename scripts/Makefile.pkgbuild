@@ -79,6 +79,13 @@ mkr-recurse = $(Q)failcom='exit 1'; success=:; \
 	done; \
 	$$success
 
+mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
+
+mkr-configure-args-y = \
+	--host="$(MKR_CONFIGURE_HOST)" \
+	--prefix=/usr \
+	CC="$(CC)" CXX="$(CXX)" LD="$(mkr-cross)ld" AR="$(mkr-cross)ar"
+
 include $(mkr-pkgmk)
 
 ifneq ($(MKR_BUILD_SRC),)
@@ -104,3 +111,11 @@ default-confcheck:
 
 .PHONY: staging
 staging:
+
+# Rules for building autoconf packages
+config.status: $(mkr-deps)
+	rm -Rf * || :
+	$(mkr-srcdir)/configure $(mkr-configure-args-y)
+
+default-autotools-staging: config.status
+	$(MAKE) DESTDIR=$(MKR_STAGING) install

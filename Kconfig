@@ -16,4 +16,6 @@ source "linux/Kconfig"
 
 source "busybox/Kconfig"
 
+source "strace/Kconfig"
+
 endmenu

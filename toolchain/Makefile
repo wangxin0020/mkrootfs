@@ -89,10 +89,10 @@ confcheck-y += $(call confcheck-ifnot, \
 
 # ARM EABI check
 ifeq ($(MKR_ARCH_ARM),y)
-.mkr.eabi: $(mkr-deps)
+.mkr.arm.eabi: $(mkr-deps)
 	$(CC) -o $@ $(cflags-y) -E $(mkr-pkgdir)/arm-eabi-check.h || :
 
--include .mkr.eabi
+-include .mkr.arm.eabi
 
 # Invalid configurations:
 # CONFIG_AEABI CONFIG_OABI_COMPAT MKR_ARM_EABI

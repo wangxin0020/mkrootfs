@@ -25,7 +25,7 @@ config-deps-$(not-defconfig) += $(O)/include/config/board.h
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
 	$(defconfig-y)
 
-include/linux/autoconf.h: .config $(mkr-deps)
+include/generated/autoconf.h: .config $(mkr-deps)
 	$(MAKE) $(configargs) oldconfig
 
 # Building the kernel
@@ -37,7 +37,7 @@ buildargs := $(configargs) CROSS_COMPILE=$(CROSS_COMPILE) CC=$(KCC)
 cp-$(netdest) := scp -p
 cp-$(not-netdest) := cp -a
 
-staging: include/linux/autoconf.h
+staging: include/generated/autoconf.h
 ifeq ($(CONFIG_MODULES),y)
 	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS) modules
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install

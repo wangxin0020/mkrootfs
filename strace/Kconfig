@@ -1,0 +1,11 @@
+menu "Strace"
+
+config STRACE
+	package "Strace tool"
+	default y
+
+config STRACE_SRCDIR
+       srcdir "Source directory"
+       default "strace-*"
+
+endmenu

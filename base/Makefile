@@ -13,7 +13,7 @@ DIRS= \
 
 # Installing stuff
 devices:
-	 $(mkr-pkgdir)/mkdevices.sh $(MKR_STAGING) < $^
+	 $(mkr-pkgdir)/mkdevices.sh $(MKR_STAGING) < $(dev_txt)
 
 dirs:
 	for d in $(DIRS); do mkdir -p $(MKR_STAGING)/$$d; done
