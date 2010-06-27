@@ -84,7 +84,8 @@ mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
 mkr-configure-args-y = \
 	--host="$(MKR_CONFIGURE_HOST)" \
 	--prefix=/usr \
-	CC="$(CC)" CXX="$(CXX)" LD="$(mkr-cross)ld" AR="$(mkr-cross)ar"
+	CC="$(CC)" CXX="$(CXX)" LD="$(mkr-cross)ld" AR="$(mkr-cross)ar" \
+	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
 include $(mkr-pkgmk)
 
@@ -117,5 +118,6 @@ config.status: $(mkr-deps)
 	rm -Rf * || :
 	$(mkr-srcdir)/configure $(mkr-configure-args-y)
 
+.PHONY: default-autotools-staging
 default-autotools-staging: config.status
 	$(MAKE) DESTDIR=$(MKR_STAGING) install

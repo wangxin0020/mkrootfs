@@ -3,7 +3,7 @@ source "toolchain/Kconfig"
 menu "Packages"
 
 config SRC_BASEDIR
-	string "Package sources base directory"
+	string "Package source trees base directory"
 	default "/usr/src"
 
 	help
@@ -11,11 +11,9 @@ config SRC_BASEDIR
 	  looked for. If relative, it is relative to Mkrootfs directory.
 
 source "base/Kconfig"
-
 source "linux/Kconfig"
-
 source "busybox/Kconfig"
-
 source "strace/Kconfig"
+source "netcat/Kconfig"
 
 endmenu
