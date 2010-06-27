@@ -11,7 +11,8 @@ DIRS= \
 	/var \
 	/mnt
 
-devices: $(dev_txt)
+# Installing stuff
+devices:
 	 $(mkr-pkgdir)/mkdevices.sh $(MKR_STAGING) < $^
 
 dirs:
@@ -33,6 +34,7 @@ skel:
 
 staging: devices dirs skel
 
+# Checking configuration
 confcheck-y := $(call confcheck-exists,$(dev_txt),MKR_BOARD)
 confcheck-y += $(call confcheck-exists,$(skeldir),MKR_BOARD)
 

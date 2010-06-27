@@ -21,7 +21,9 @@ configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) \
 	$(defconfig-y)
 
 include/autoconf.h: .config
-	test -f Makefile && $(MAKE) $(configargs) clean || :
+	cp .config saved-busybox-config
+	test -f Makefile && $(MAKE) $(configargs) distclean || :
+	mv saved-busybox-config .config
 	$(MAKE) $(configargs) oldconfig
 
 # Building busybox

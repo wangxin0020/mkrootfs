@@ -37,6 +37,7 @@ bins-y := \
 	ldd \
 	lspci
 
+# Installing stuff
 bins:
 	mkdir -p $(MKR_STAGING)/bin; \
 	for b in $(bins-y); do \
