@@ -22,19 +22,19 @@ defconfig-$(defconfig-p) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
 	$(defconfig-y) $@
 
-include/config/auto.conf: .config $(mkr-deps)
-	$(MAKE) $(configargs) oldconfig include/config/auto.conf
+include/linux/autoconf.h: .config $(mkr-deps)
+	$(MAKE) $(configargs) oldconfig
 
 # Building the kernel
-# Include kernel configuration to know the value of CONFIG_MODULES
--include include/config/auto.conf
+# get CONFIG_MODULES from kernel configuration
+$(eval $(shell grep '^CONFIG_MODULES=y' .config 2> /dev/null))
 
 buildargs := $(configargs) CROSS_COMPILE=$(CROSS_COMPILE) CC=$(KCC)
 
 cp-$(netdest-p) := scp -p
 cp-$(not-netdest-p) := cp -a
 
-staging: include/config/auto.conf
+staging: include/linux/autoconf.h
 ifeq ($(CONFIG_MODULES),y)
 	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS) modules
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install
@@ -57,6 +57,7 @@ confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 confcheck-$(not-netdest-p) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
 endif
+confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_CC)
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
 
 config-$(MKR_ARCH_PPC32) += \

@@ -341,18 +341,14 @@ sub-confcheck = { mkdir -p $(1) && \
 	$(confcheck-lnxmf) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-linux/.mkr.confcheck: .mkr.basecheck
+linux/.mkr.confcheck: .mkr.basecheck linux/.config
 	$(Q)success=:; $(call sub-confcheck,linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-.mkr.confcheck: include/config/auto.conf linux/.config
+.mkr.confcheck: linux/.mkr.confcheck
 	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
 				$(call sub-confcheck,$(t)/)) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
-
-# $(confcheck-targets): %: include/config/auto.conf linux/.mkr.confcheck
-# 	$(Q)mkdir -p $(dir $@)
-# 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@)
 
 ARCH:=$(MKR_ARCH)
 ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
@@ -373,7 +369,7 @@ check-computed-variables:
 	/bin/echo -n -e $(foreach p,$(packages), \
 		$(p) $(call mksrcdir,$($($(p)/srcdir-var)))\\n) | \
 	while read p srcdir; do \
-		echo "mkr-srcdir=\"$$srcdir\"" > .tmp.mkr.srcdir; \
+		echo "mkr-srcdir=$$srcdir" > .tmp.mkr.srcdir; \
 		if ! cmp -s .tmp.mkr.srcdir $$p/.mkr.srcdir; then \
 			mkdir -p $$p; \
 			mv .tmp.mkr.srcdir $$p/.mkr.srcdir; \

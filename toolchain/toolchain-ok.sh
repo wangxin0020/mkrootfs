@@ -23,20 +23,20 @@ for d in $LIBDIRS; do
 	    if ! ${cross}readelf -h $f > /dev/null 2>&1; then
 		die ${cross}readelf -h $f failed
 	    fi
-	    mach=`${cross}readelf -h $d/libc.so.[0-9] \
-		| sed 's/^  Machine: *\(.*\)$/\1/;t;d'`
+	    mach=`${cross}readelf -h $f \
+		| sed 's/^  Machine: *\(.*\)$/\1/;t quit;d; :quit q'`
 	    if test -z "$mach"; then
 		die Machine not found in ${cross}readelf -h $f output
 	    fi
 
 	    case "$mach" in
-		ARM) sr_arch=arm;;
-		*Blackfin) sr_arch=blackfin;;
-		*Nios II) sr_arch=nios2;;
-		PowerPC64) sr_arch=ppc64;;
-		PowerPC) sr_arch=ppc;;
-		*386) sr_arch=i686;;
-		*X86-64) sr_arch=x86_64;;
+		"ARM") sr_arch=arm;;
+		"*Blackfin") sr_arch=blackfin;;
+		"*Nios II") sr_arch=nios2;;
+		"PowerPC64") sr_arch=ppc64;;
+		"PowerPC") sr_arch=ppc;;
+		"*386") sr_arch=i686;;
+		"*X86-64") sr_arch=x86_64;;
 		*) die Unrecognized machine type "$mach";;
 	    esac
 

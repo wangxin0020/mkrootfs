@@ -79,8 +79,6 @@ staging: bins libs
 
 # Configuration checks
 
-confcheck-y += $(call confcheck-tool,$(MKR_CC),MKR_CC)
-
 confcheck-y += $(call confcheck-ifnot, \
 	$(mkr-pkgdir)/toolchain-ok.sh \
 		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
