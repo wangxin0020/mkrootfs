@@ -1,0 +1,19 @@
+menu "BusyBox"
+
+config BUSYBOX
+	package
+	default y
+
+config BUSYBOX_SRCDIR
+       srcdir "Source directory"
+       default "busybox-*"
+
+config BUSYBOX_CONFIG
+	string "Configuration file"
+	default defconfig"
+	help
+	  The kernel configuration file, it may be a relative path, it will be
+	  taken as relative to the board directory, or defconfig to
+	  use BusyBox default configuration.
+
+endmenu

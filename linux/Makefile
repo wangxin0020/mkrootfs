@@ -1,9 +1,9 @@
 CROSS_COMPILE := $(shell expr $(KCC) : '\(.*\)gcc')
 
-defconfig-p := $(if $(findstring defconfig, $(MKR_LINUX_DEFCONFIG)),y)
-not-defconfig-p := $(if $(defconfig-p),,y)
-netdest-p := $(if $(findstring :, $(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)),y)
-not-netdest-p := $(if $(netdest-p),,y)
+defconfig := $(if $(findstring defconfig, $(MKR_LINUX_DEFCONFIG)),y)
+not-defconfig := $(if $(defconfig),,y)
+netdest := $(if $(findstring :, $(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)),y)
+not-netdest := $(if $(netdest),,y)
 
 board-defconfig = $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_DEFCONFIG)
 
@@ -15,12 +15,15 @@ KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 # Configuring the kernel
 configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) ARCH=$(MKR_KARCH)
 
-defconfig-$(not-defconfig-p) := cp $(board-defconfig) $@
-defconfig-$(defconfig-p) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
+defconfig-$(not-defconfig) := cp $(board-defconfig) $@
+defconfig-$(defconfig) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
 
-.config: $(O)/include/config/linux/defconfig.h
+config-deps-y := $(O)/include/config/linux/defconfig.h
+config-deps-$(not-defconfig) += $(O)/include/config/board.h
+
+.config: $(config-deps-y)
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
-	$(defconfig-y) $@
+	$(defconfig-y)
 
 include/linux/autoconf.h: .config $(mkr-deps)
 	$(MAKE) $(configargs) oldconfig
@@ -31,8 +34,8 @@ $(eval $(shell grep '^CONFIG_MODULES=y' .config 2> /dev/null))
 
 buildargs := $(configargs) CROSS_COMPILE=$(CROSS_COMPILE) CC=$(KCC)
 
-cp-$(netdest-p) := scp -p
-cp-$(not-netdest-p) := cp -a
+cp-$(netdest) := scp -p
+cp-$(not-netdest) := cp -a
 
 staging: include/linux/autoconf.h
 ifeq ($(CONFIG_MODULES),y)
@@ -46,42 +49,19 @@ ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
 endif
 
-# Catch-all target
+# Catch-all target, allow to run all the targets (including the
+# *config ones)
 %:
 	$(MAKE) $(buildargs) $@
 
 # Checking mkrootfs configuration for building the kernel
-confcheck-$(not-defconfig-p) += $(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
-confcheck-$(netdest-p) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
+confcheck-$(not-defconfig) += $(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
+confcheck-$(netdest) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
 confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
-confcheck-$(not-netdest-p) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
+confcheck-$(not-netdest) += $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
 endif
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_CC)
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
-
-config-$(MKR_ARCH_PPC32) += \
-	$(call confcheck-if, \
-		test "$(CONFIG_PPC32)" != "y", \
-		PowerPC 32 user-space with PowerPC 64 kernel configuration)
-
-config-$(MKR_ARCH_PPC64) += \
-	$(call confcheck-if, \
-		test "$(CONFIG_PPC64)" != "y", \
-		PowerPC 64 user-space with PowerPC 32 kernel configuration)
-
-config-$(MKR_ARCH_X86_64) += \
-	$(call confcheck-if, \
-		test "$(CONFIG_X86_64)" != "y", \
-		x86 64 user-space with x86 32 kernel configuration)
-
-# on x86_64, the kernel may support a 32 bits filesystem if
-# CONFIG_IA32_EMULATION is enabled.
-
-config-$(MKR_ARCH_X86_32) += \
-	$(call confcheck-if, \
-		test "$(CONFIG_X86_32)" != "y" \
-			-a "$(CONFIG_IA32_EMULATION)" != "y" \
-		x86 32 user-space with pure x86 64 kernel configuration)
 
 confcheck: default-confcheck

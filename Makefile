@@ -323,6 +323,10 @@ linux/%:
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-build,linux/) $*
 
+busybox/%:
+	$(Q)mkdir -p busybox
+	$(Q)$(MAKE) $(call pkg-build,busybox/) $*
+
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
 			$(call checksrcdir,$($(p)/srcdir-var)) || success=false;)
@@ -356,10 +360,10 @@ ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
 PHONY+= check-computed-variables
 check-computed-variables:
 	$(Q){ \
-	echo ARCH=\"$(MKR_ARCH)\"; \
-	echo CCVERSION=\"'$(shell $(MKR_CC) -v 2>&1 | tail -n 1)'\"; \
-	echo CFLAGS=\"$(MKR_CFLAGS)\"; \
-	echo LDFLAGS=\"$(MKR_LDFLAGS)\"; \
+	echo ARCH=$(MKR_ARCH); \
+	echo CCVERSION='$(shell $(MKR_CC) -v 2>&1 | tail -n 1)'; \
+	echo CFLAGS=$(MKR_CFLAGS); \
+	echo LDFLAGS=$(MKR_LDFLAGS); \
 	} > .tmp.mkr.toolchain; \
 	if ! cmp -s .tmp.mkr.toolchain .mkr.toolchain; then \
 		mv .tmp.mkr.toolchain .mkr.toolchain; \

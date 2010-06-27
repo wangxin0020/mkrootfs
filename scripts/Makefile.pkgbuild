@@ -22,6 +22,7 @@ endif
 override ARCH := $(MKR_ARCH)
 override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
 override CC := $(MKR_CC)
+override CXX := $(MKR_CXX)
 override KCC := $(MKR_KCC)
 override cflags-y := $(MKR_CFLAGS)
 override ldflags-y := $(MKR_LDFLAGS)

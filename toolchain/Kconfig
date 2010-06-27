@@ -39,6 +39,14 @@ config ARCH
 	default "i686" if ARCH_X86_32
 	default "x86_64" if ARCH_X86_64
 
+config KARCH
+	string
+	default "arm" if ARCH_ARM
+	default "blackfin" if ARCH_BFIN
+	default "nios2" if ARCH_NIOS2
+	default "powerpc" if ARCH_PPC32 || ARCH_PPC64
+	default "x86" if ARCH_X86_32 || ARCH_X86_64
+
 config CONFIGURE_HOST
 	string "Configure host string"
 	default "$(ARCH)-linux"
@@ -48,6 +56,10 @@ config CONFIGURE_HOST
 config CC
 	string "Cross-compiler"
 	default "$(ARCH)-linux-gcc"
+
+config CXX
+	string "C++ Cross-compiler"
+	default "$(ARCH)-linux-g++"
 
 config ARCH_FLAGS
 	string

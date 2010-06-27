@@ -55,7 +55,7 @@ libs:
 	ln -s lib $(MKR_STAGING)/lib64; \
 	ln -s lib $(MKR_STAGING)/lib32; \
 	for l in $(libs-y); do \
-		case "$l" in \
+		case "$$l" in \
 		*.so) \
 			for d in $(LIBDIRS); do \
 				if [ -e $$d/$$l.[0-9] ]; then \
@@ -78,14 +78,16 @@ libs:
 staging: bins libs
 
 # Configuration checks
-
+confcheck-y += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
 confcheck-y += $(call confcheck-ifnot, \
 	$(mkr-pkgdir)/toolchain-ok.sh \
 		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
 	Error in toolchain or sysroot settings\
 	maybe SYSROOT_MANUAL is necessary?)
 
-ifneq ($(MKR_ARCH_ARM),)
+
+# ARM EABI check
+ifeq ($(MKR_ARCH_ARM),y)
 .mkr.eabi: $(mkr-deps)
 	$(CC) -o $@ $(cflags-y) -E $(mkr-pkgdir)/arm-eabi-check.h || :
 
@@ -109,8 +111,32 @@ confcheck-$(CONFIG_AEABI) += \
 
 confcheck-$(MKR_ARM_VFP) += \
 	$(call confcheck-if, \
-		test "$(CONFIG_VFP)" != "y" \
+		test "$(CONFIG_VFP)" != "y", \
 		VFP-enabled user-space with non-VFP kernel)
 endif
+
+config-$(MKR_ARCH_PPC32) += \
+	$(call confcheck-if, \
+		test "$(CONFIG_PPC32)" != "y", \
+		PowerPC 32 user-space with PowerPC 64 kernel configuration)
+
+config-$(MKR_ARCH_PPC64) += \
+	$(call confcheck-if, \
+		test "$(CONFIG_PPC64)" != "y", \
+		PowerPC 64 user-space with PowerPC 32 kernel configuration)
+
+config-$(MKR_ARCH_X86_64) += \
+	$(call confcheck-if, \
+		test "$(CONFIG_X86_64)" != "y", \
+		x86 64 user-space with x86 32 kernel configuration)
+
+# on x86_64, the kernel may support a 32 bits filesystem if
+# CONFIG_IA32_EMULATION is enabled.
+
+config-$(MKR_ARCH_X86_32) += \
+	$(call confcheck-if, \
+		test "$(CONFIG_X86_32)" != "y" \
+			-a "$(CONFIG_IA32_EMULATION)" != "y", \
+		x86 32 user-space with x86 64 only kernel configuration)
 
 confcheck: default-confcheck
