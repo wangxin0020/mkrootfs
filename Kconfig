@@ -16,5 +16,6 @@ source "busybox/Kconfig"
 source "strace/Kconfig"
 source "xenomai/Kconfig"
 source "netcat/Kconfig"
+source "make/Kconfig"
 
 endmenu

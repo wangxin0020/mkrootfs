@@ -1,0 +1,10 @@
+menu "Make"
+
+config MAKE
+	package "Make"
+
+config MAKE_SRCDIR
+       srcdir "Source directory"
+       default "make-*"
+
+endmenu
