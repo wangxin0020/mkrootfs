@@ -11,30 +11,26 @@ $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 # Checking whether MKR_XENO changed
-check-xeno:
-	set -e; echo $(MKR_XENO) > .tmp.mkr.xeno; \
-	if ! cmp -s .tmp.mkr.xeno .mkr.xeno; then \
-		rm -Rf *; \
-		mv .tmp.mkr.xeno .mkr.xeno; \
-	else \
-		rm .tmp.mkr.xeno; \
-	fi
-
-.mkr.xeno: check-xeno ;
+.mkr.xeno: $(O)/include/config/xeno.h
+	rm -Rf *
+	: > $@
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
-prepare-kernel kernel/Makefile: .mkr.xeno
-	lndir -silent -ignorelinks $(mkr-srcdir) > /dev/null 2>&1
+.mkr.prepared: .mkr.xeno
+	rm -f drivers/Makefile kernel/Makefile \
+		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
+	lndir -silent -ignorelinks $(mkr-srcdir) && \
 	$(MKR_XENO_SRCDIR)/scripts/prepare-kernel.sh \
-		--default --linux=. --arch=$(MKR_KARCH)
+		--default --linux=. --arch=$(MKR_KARCH) && \
+	: > .mkr.prepared
 
-config-deps-y += kernel/Makefile
+config-deps-y += .mkr.prepared
 
 # In maintainer mode, trigger prepare-kernel for every compilation
 ifeq ($(MKR_XENO_MAINT),y)
-.PHONY: prepare-kernel
-mkr-deps += prepare-kernel
+.PHONY: .mkr.prepared
+mkr-deps += .mkr.prepared
 endif
 
 else
@@ -51,6 +47,7 @@ config-deps-y += $(O)/include/config/linux/defconfig.h
 config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 .config: $(config-deps-y)
+	: $^, $?
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
 	$(defconfig-y)
 
