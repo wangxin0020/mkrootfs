@@ -37,6 +37,8 @@ unexport MKR_CONFIG O obj
 
 # Avoid leaking variables (the one passed on command-line) to sub-makes
 MAKEOVERRIDES=
+NOPRINT_MAKEFLAGS=$(filter-out --no-print-directory, $(MAKEFLAGS))
+MAKE=make MAKEFLAGS="$(NOPRINT_MAKEFLAGS)"
 
 MKR_STAGING := $(O)/staging
 MKR_ROOTFS := $(O)/rootfs

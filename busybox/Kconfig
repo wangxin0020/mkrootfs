@@ -4,6 +4,8 @@ config BUSYBOX
 	package
 	default y
 
+if BUSYBOX
+
 config BUSYBOX_SRCDIR
        srcdir "Source directory"
        default "busybox-*"
@@ -15,5 +17,7 @@ config BUSYBOX_CONFIG
 	  The kernel configuration file, it may be a relative path, it will be
 	  taken as relative to the board directory, or defconfig to
 	  use BusyBox default configuration.
+
+endif
 
 endmenu

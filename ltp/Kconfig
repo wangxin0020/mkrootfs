@@ -1,0 +1,27 @@
+menu "LTP"
+
+config LTP
+	package "Linux Testing Project"
+	select MAKE
+
+if LTP
+
+config LTP_SRCDIR
+       srcdir "Source directory"
+       default "ltp-full-*"
+
+config LTP_MAINT
+       bool "Maintainer mode"
+       help
+	 LTP is copied into the target staging directory before being
+	 compiled, so, in order to take into account any modification
+	 which would have been made on the sources files, they need to
+	 be copied at every compilation. As this is a long operation,
+	 and useful only in the rare case where you would like to
+       	 modify LTP sources, it is not done by default, but this
+       	 option allows to enable it. Note that this option requires
+ 	 the rsync tool.
+
+endif
+
+endmenu

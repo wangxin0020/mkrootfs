@@ -2,10 +2,13 @@ menu "Netcat"
 
 config NETCAT
 	package "Netcat tool"
-	default n
+
+if NETCAT
 
 config NETCAT_SRCDIR
        srcdir "Source directory"
        default "netcat-*"
+
+endif
 
 endmenu

@@ -17,5 +17,6 @@ source "strace/Kconfig"
 source "xenomai/Kconfig"
 source "netcat/Kconfig"
 source "make/Kconfig"
+source "ltp/Kconfig"
 
 endmenu

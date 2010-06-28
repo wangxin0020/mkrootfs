@@ -4,8 +4,12 @@ config STRACE
 	package "Strace tool"
 	default y
 
+if STRACE
+
 config STRACE_SRCDIR
        srcdir "Source directory"
        default "strace-*"
+
+endif
 
 endmenu

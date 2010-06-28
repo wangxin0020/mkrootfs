@@ -21,7 +21,7 @@ include/autoconf.h: .config
 	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(configargs) distclean || :
 	mv saved-busybox-config .config
-	$(MAKE) $(configargs) oldconfig
+	$(MAKE) $(configargs) silentoldconfig
 
 # Building busybox
 buildargs = $(configargs) CONFIG_PREFIX=$(MKR_STAGING)

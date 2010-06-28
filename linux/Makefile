@@ -12,13 +12,12 @@ KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 # Checking whether MKR_XENO changed
 .mkr.xeno: $(O)/include/config/xeno.h
-	rm -Rf *
-	: > $@
+	$(Q)rm -Rf * && : > $@
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
 .mkr.prepared: .mkr.xeno
-	rm -f drivers/Makefile kernel/Makefile \
+	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
 	lndir -silent -ignorelinks $(mkr-srcdir) && \
 	$(MKR_XENO_SRCDIR)/scripts/prepare-kernel.sh \

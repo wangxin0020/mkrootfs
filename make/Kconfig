@@ -3,8 +3,12 @@ menu "Make"
 config MAKE
 	package "Make"
 
+if MAKE
+
 config MAKE_SRCDIR
        srcdir "Source directory"
        default "make-*"
+
+endif
 
 endmenu

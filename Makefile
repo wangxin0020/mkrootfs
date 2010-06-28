@@ -4,12 +4,6 @@
 # Comments in this file are targeted only to the developer, do not
 # expect to learn how to build the kernel reading this file.
 
-# Do not:
-# o  use make's built-in rules and variables
-#    (this increases performance and avoids hard-to-debug behaviour);
-MAKEFLAGS += -R
-NODIRFLAG += --no-print-directory
-
 # Avoid funny character set dependencies
 unexport LC_ALL
 LC_COLLATE=C
@@ -93,7 +87,7 @@ $(filter-out _all sub-make $(CURDIR)/Makefile, $(MAKECMDGOALS)) _all: sub-make
 	$(Q)@:
 
 sub-make: FORCE
-	$(if $(KBUILD_VERBOSE:1=),@)$(MAKE) $(NODIRFLAG) -C $(MKR_BUILD_OUTPUT) \
+	$(if $(KBUILD_VERBOSE:1=),@)$(MAKE) -C $(MKR_BUILD_OUTPUT) \
 	MKR_BUILD_SRC=$(CURDIR) \
 	-f $(CURDIR)/Makefile \
 	$(filter-out _all sub-make,$(MAKECMDGOALS))
@@ -194,7 +188,7 @@ export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn --exc
 # Basic helpers built in scripts/
 PHONY += scripts_basic
 scripts_basic:
-	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/basic
+	$(Q)$(MAKE) $(build)=scripts/basic
 	$(Q)rm -f .tmp_quiet_recordmcount
 
 # # To avoid any implicit rule to kick in, define an empty command.
@@ -260,7 +254,7 @@ export MKR_CONFIG
 
 $(allconfigs): scripts_basic outputmakefile FORCE
 	$(Q)mkdir -p include/config
-	$(Q)$(MAKE) $(NODIRFLAG) $(build)=scripts/kconfig $@
+	$(Q)$(MAKE) $(build)=scripts/kconfig $@
 
 else
 # ===========================================================================

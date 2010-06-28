@@ -4,6 +4,8 @@ config BASE
 	package
 	default y
 
+if BASE
+
 config BOARD
 	string "Board directory name"
 	default "generic"
@@ -20,5 +22,7 @@ config SERIAL_DEV
 config SERIAL_BAUDRATE
 	int "Serial console baud rate"
 	default 115200
+
+endif
 
 endmenu

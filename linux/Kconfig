@@ -4,6 +4,8 @@ config LINUX
 	package
 	default y
 
+if LINUX
+
 config KCC
 	string "Linux kernel compiler"
 	default "$(CC)"
@@ -48,4 +50,7 @@ config LINUX_EXTRA_INSTALL
 	help
 	  Directory where the output files will be installed. The copy uses
 	  scp if this destination has the form host:path or user@host:path.
+
+endif
+
 endmenu

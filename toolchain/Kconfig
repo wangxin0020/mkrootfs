@@ -4,6 +4,8 @@ config TOOLCHAIN
 	package
 	default y
 
+if TOOLCHAIN
+
 choice
 	prompt "Architecture"
 
@@ -139,5 +141,7 @@ config LIBSTDCPP
        default n
 
 endmenu
+
+endif
 
 endmenu
