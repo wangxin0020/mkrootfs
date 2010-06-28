@@ -67,10 +67,10 @@ static void print_cross_dir(void *cookie, struct symbol *sym, const char *name)
 		return;
 
 	if (!d->printed)
-		fprintf(d->out, "%s/install: ", d->sym->file->dir->name);
+		fprintf(d->out, "%s/staging: ", d->sym->file->dir->name);
 
 	/* symbol is a package */
-	fprintf(d->out, "%s/install ", sym->file->dir->name);
+	fprintf(d->out, "%s/staging ", sym->file->dir->name);
 	++d->printed;
 }
 
@@ -96,7 +96,7 @@ static void print_cross_dir_deps(FILE *out, struct symbol *sym)
 	if (sym->rev_dep.expr) {
 		print_cross_dir_expr_deps(&d, sym->rev_dep.expr);
 		if (d.printed > 1)
-			fprintf(out, ": %s/install\n", sym->file->dir->name);
+			fprintf(out, ": %s/staging\n", sym->file->dir->name);
 	}
 
 	d.printed = 0;
