@@ -1,0 +1,26 @@
+#! /bin/sh
+
+seq 1 399999 > /tmp/netcat.data
+( while :; do cat /tmp/netcat.data; sleep 15; done | netcat -vv -l -p 5566 ) &
+a=$!
+
+dd if=/dev/zero of=/dev/null &
+b=$!
+
+while true; do dd if=/dev/zero of=/mnt/bigfile bs=1024000 count=100; done &
+c=$!
+
+while true; do killall hackbench; sleep 7; done &
+d=$!
+
+while true; do /ltp/testcases/bin/hackbench 1; done &
+e=$!
+
+while true; do ls -lR / > /dev/null 2>&1; done &
+f=$!
+
+sleep $1
+kill $a $b $c $d $e $f
+killall latency
+killall netcat dd hackbench ls sleep cat minihell
+

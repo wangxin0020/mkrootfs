@@ -18,5 +18,6 @@ source "xenomai/Kconfig"
 source "netcat/Kconfig"
 source "make/Kconfig"
 source "ltp/Kconfig"
+source "tests/Kconfig"
 
 endmenu

@@ -55,6 +55,9 @@ config XENO_VXWORKS
 
 config XENO_TESTSUITE
        bool "Install testsuite"
+       select XENO_NATIVE
+       select XENO_POSIX
+       select XENO_RTDM
        default y
 
 endmenu

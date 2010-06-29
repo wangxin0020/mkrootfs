@@ -1,0 +1,21 @@
+menu "Real-time tests & benches"
+
+config TESTS
+	package "Real-time tests"
+	select XENO_TESTSUITE if XENO
+	select LTP
+	select NETCAT
+	help
+	  This packages contains a few binaries and select everything
+	  which is necessary to run tests and benches on a real-time
+	  system.
+
+if TESTS
+
+config TESTS_SRCDIR
+       srcdir
+       default "$(srctree)/tests"
+
+endif
+
+endmenu
