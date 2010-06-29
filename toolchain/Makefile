@@ -51,7 +51,7 @@ bins:
 				*/sbin/*) dest=sbin;; \
 				*) dest=bin;; \
 				esac; \
-				cp "$$bin" "$(MKR_STAGING)/$$dest"; \
+				install -o 0 "$$bin" "$(MKR_STAGING)/$$dest"; \
 				break; \
 			fi; \
 		done; \
@@ -75,7 +75,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					cp "$$d"/"$$l".[0-9] "$(MKR_STAGING)/$$dest"; \
+					install -o 0 "$$d"/"$$l".[0-9] "$(MKR_STAGING)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -87,7 +87,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					cp "$$d"/"$$l"-*.so "$(MKR_STAGING)/$$dest"; \
+					install -o 0 "$$d"/"$$l"-*.so "$(MKR_STAGING)/$$dest"; \
 					break; \
 				fi; \
 			done; \

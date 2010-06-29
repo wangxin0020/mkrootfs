@@ -29,7 +29,7 @@ cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
 
 # Generic rules
 staging: $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
-	install -D $^ $(MKR_STAGING)/usr/bin
+	install -o 0 -D $^ $(MKR_STAGING)/usr/bin
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
