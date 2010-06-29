@@ -39,11 +39,19 @@ bins-y := \
 
 # Installing stuff
 bins:
-	mkdir -p $(MKR_STAGING)/bin; \
+	mkdir -p "$(MKR_STAGING)/bin" "$(MKR_STAGING)/sbin"\
+		"$(MKR_STAGING)/usr/bin" "$(MKR_STAGING)/usr/sbin"; \
 	for b in $(bins-y); do \
 		for d in $(BINDIRS); do \
-			if [ -e $$d/$$b ]; then \
-				cp $$d/$$b $(MKR_STAGING)/bin; \
+			bin="$$d/$$b"; \
+			if [ -e "$$bin" ]; then \
+				case "$$bin" in \
+				*usr/bin/*) dest=usr/bin;; \
+				*usr/sbin/*) dest=usr/sbin;; \
+				*/sbin/*) dest=sbin;; \
+				*) dest=bin;; \
+				esac; \
+				cp "$$bin" "$(MKR_STAGING)/$$dest"; \
 				break; \
 			fi; \
 		done; \
@@ -51,24 +59,35 @@ bins:
 	sed -i 's/bash/ash/g' $(MKR_STAGING)/bin/ldd > /dev/null 2>&1 || :
 
 libs:
-	mkdir -p $(MKR_STAGING)/lib; \
-	rm -f $(MKR_STAGING)/lib32 $(MKR_STAGING)/lib64; \
-	ln -s lib $(MKR_STAGING)/lib64; \
-	ln -s lib $(MKR_STAGING)/lib32; \
+	mkdir -p "$(MKR_STAGING)/lib" "$(MKR_STAGING)/usr/lib"; \
+	rm -f "$(MKR_STAGING)/lib32" "$(MKR_STAGING)/lib64" \
+		"$(MKR_STAGING)/usr/lib32" "$(MKR_STAGING)/usr/lib64"; \
+	ln -s lib "$(MKR_STAGING)/lib64"; \
+	ln -s lib "$(MKR_STAGING)/lib32"; \
+	ln -s lib "$(MKR_STAGING)/usr/lib64"; \
+	ln -s lib "$(MKR_STAGING)/usr/lib32"; \
 	for l in $(libs-y); do \
 		case "$$l" in \
 		*.so) \
 			for d in $(LIBDIRS); do \
-				if [ -e $$d/$$l.[0-9] ]; then \
-					cp $$d/$$l.[0-9] $(MKR_STAGING)/lib; \
+				if [ -e "$$d"/"$$l".[0-9] ]; then \
+					case "$$d"/"$$l".[0-9] in \
+					*usr/lib*) dest=usr/lib;; \
+					*) dest=lib;; \
+					esac; \
+					cp "$$d"/"$$l".[0-9] "$(MKR_STAGING)/$$dest"; \
 					break; \
 				fi; \
 			done; \
 			;; \
 		*) \
 			for d in $(LIBDIRS); do \
-				if [ -e $$d/$$l-*.so ]; then \
-					cp $$d/$$l-*.so $(MKR_STAGING)/lib; \
+				if [ -e "$$d"/"$$l"-*.so ]; then \
+					case "$$d"/"$$l"-*.so in \
+					*usr/lib*) dest=usr/lib;; \
+					*) dest=lib;; \
+					esac; \
+					cp "$$d"/"$$l"-*.so "$(MKR_STAGING)/$$dest"; \
 					break; \
 				fi; \
 			done; \
