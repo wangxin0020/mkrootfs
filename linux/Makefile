@@ -48,7 +48,6 @@ config-deps-y += $(O)/include/config/linux/defconfig.h
 config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 .config: $(config-deps-y)
-	: $^, $?
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
 	$(defconfig-y)
 

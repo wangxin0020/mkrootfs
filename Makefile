@@ -378,7 +378,7 @@ check-computed-variables:
 
 $(call pkg-targets,clean staging): %: prepare check-computed-variables
 	$(Q)echo Building $(dir $@)...
-	$(Q)fakeroot $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \
+	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \
 	> $(dir $@)/.mkr.log 2>&1
 	$(Q)echo Building $(dir $@)... done.
 

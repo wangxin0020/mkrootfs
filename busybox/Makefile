@@ -27,7 +27,8 @@ include/autoconf.h: .config
 buildargs = $(configargs) CONFIG_PREFIX=$(MKR_STAGING)
 
 staging: include/autoconf.h
-	$(MAKE) $(buildargs) install
+	$(MAKE) $(buildargs)
+	$(mkr-fakeroot) $(MAKE) $(buildargs) install
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones)
