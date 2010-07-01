@@ -58,7 +58,7 @@ struct cross_dir_data {
 	int printed;
 };
 
-static void print_cross_dir(void *cookie, struct symbol *sym, const char *name)
+static void print_build_dir(void *cookie, struct symbol *sym, const char *name)
 {
 	struct cross_dir_data *d = cookie;
 
@@ -69,18 +69,11 @@ static void print_cross_dir(void *cookie, struct symbol *sym, const char *name)
 	if (!d->printed)
 		fprintf(d->out, "%s/staging: ", d->sym->file->dir->name);
 
-	/* symbol is a package */
 	fprintf(d->out, "%s/staging ", sym->file->dir->name);
 	++d->printed;
 }
 
-static void
-print_cross_dir_expr_deps(struct cross_dir_data *d, struct expr *expr)
-{
-	expr_print(expr, print_cross_dir, d, 0);
-}
-
-static void print_cross_dir_deps(FILE *out, struct symbol *sym)
+static void print_build_deps(FILE *out, struct symbol *sym)
 {
 	struct cross_dir_data d;
 	struct property *prop;
@@ -93,23 +86,22 @@ static void print_cross_dir_deps(FILE *out, struct symbol *sym)
 	d.sym = sym;
 	d.printed = 1;
 
-	if (sym->rev_dep.expr) {
-		print_cross_dir_expr_deps(&d, sym->rev_dep.expr);
-		if (d.printed > 1)
-			fprintf(out, ": %s/staging\n", sym->file->dir->name);
-	}
-
 	d.printed = 0;
 	for (prop = sym->prop; prop; prop = prop->next) {
-		if (prop->type == P_CHOICE || prop->type == P_SELECT)
-			continue;
-		if (prop->visible.expr)
-			print_cross_dir_expr_deps(&d, prop->visible.expr);
-		if (prop->type != P_DEFAULT || sym_is_choice(sym))
-			continue;
-		if (prop->expr)
-			print_cross_dir_expr_deps(&d, prop->expr);
+		switch (prop->type) {
+		case P_BUILD_SELECT:
+			if (!expr_calc_value(prop->visible.expr))
+				break;
+			/* Fallback wanted */
+		case P_BUILD_DEPENDS:
+			expr_print(prop->expr, print_build_dir, &d, E_NONE);
+			break;
+			/* Avoid gcc warning */
+		default:
+			break;
+		}
 	}
+
 	if (d.printed)
 		putc('\n', out);
 }
@@ -192,7 +184,11 @@ int file_write_dep(const char *name)
 		continue;
 
 	  not_srcdir:
-		print_cross_dir_deps(out, sym);
+		if ((sym->type == S_BOOLEAN
+		     || sym->type == S_TRISTATE)
+		    && (sym_get_tristate_value(sym) == mod
+			|| sym_get_tristate_value(sym) == yes))
+			print_build_deps(out, sym);
 	}
 
 	fclose(out);

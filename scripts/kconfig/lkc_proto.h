@@ -1,4 +1,3 @@
-
 /* confdata.c */
 P(conf_parse,void,(const char *name));
 P(conf_read,int,(const char *name));

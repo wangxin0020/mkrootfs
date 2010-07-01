@@ -36,7 +36,7 @@ static struct menu *current_menu, *current_entry;
 #define YYERROR_VERBOSE
 #endif
 %}
-%expect 26
+%expect 31
 
 %union
 {
@@ -62,11 +62,13 @@ static struct menu *current_menu, *current_entry;
 %token <id>T_IF
 %token <id>T_ENDIF
 %token <id>T_DEPENDS
+%token <id>T_BUILD_DEPENDS
 %token <id>T_OPTIONAL
 %token <id>T_PROMPT
 %token <id>T_TYPE
 %token <id>T_DEFAULT
 %token <id>T_SELECT
+%token <id>T_BUILD_SELECT
 %token <id>T_RANGE
 %token <id>T_OPTION
 %token <id>T_ON
@@ -122,7 +124,7 @@ stmt_list:
 ;
 
 option_name:
-	T_DEPENDS | T_PROMPT | T_TYPE | T_SELECT | T_OPTIONAL | T_RANGE | T_DEFAULT
+	T_DEPENDS | T_BUILD_DEPENDS | T_PROMPT | T_TYPE | T_SELECT | T_BUILD_SELECT | T_OPTIONAL | T_RANGE | T_DEFAULT
 ;
 
 common_stmt:
@@ -212,6 +214,13 @@ config_option: T_SELECT T_WORD if_expr T_EOL
 {
 	menu_add_symbol(P_SELECT, sym_lookup($2, 0), $3);
 	printd(DEBUG_PARSE, "%s:%d:select\n", zconf_curname(), zconf_lineno());
+};
+
+config_option: T_BUILD_SELECT T_WORD if_expr T_EOL
+{
+	menu_add_symbol(P_BUILD_SELECT, sym_lookup($2, 0), $3);
+	menu_add_symbol(P_SELECT, sym_lookup($2, 0), $3);
+	printd(DEBUG_PARSE, "%s:%d:build-select\n", zconf_curname(), zconf_lineno());
 };
 
 config_option: T_RANGE symbol symbol if_expr T_EOL
@@ -422,6 +431,12 @@ depends: T_DEPENDS T_ON expr T_EOL
 	printd(DEBUG_PARSE, "%s:%d:depends on\n", zconf_curname(), zconf_lineno());
 };
 
+depends: T_BUILD_DEPENDS T_ON expr T_EOL
+{
+	menu_add_build_dep($3);
+	printd(DEBUG_PARSE, "%s:%d:build_depends on\n", zconf_curname(), zconf_lineno());
+};
+
 /* prompt statement */
 
 prompt_stmt_opt:
@@ -514,6 +529,7 @@ static const char *zconf_tokenname(int token)
 	case T_IF:		return "if";
 	case T_ENDIF:		return "endif";
 	case T_DEPENDS:		return "depends";
+	case T_BUILD_DEPENDS:	return "build_depends";
 	}
 	return "<token>";
 }

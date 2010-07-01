@@ -2,7 +2,6 @@ menu "Real-time tests & benches"
 
 config TESTS
 	package "Real-time tests"
-	select XENO_TESTSUITE if XENO
 	select LTP
 	select NETCAT
 	help
@@ -15,6 +14,11 @@ if TESTS
 config TESTS_SRCDIR
        srcdir
        default "$(srctree)/tests"
+
+config TESTS_XENO
+       def_bool XENO
+       build_depends on XENO
+       select XENO_TESTSUITE
 
 endif
 

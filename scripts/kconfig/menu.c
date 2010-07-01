@@ -108,6 +108,12 @@ void menu_add_dep(struct expr *dep)
 	current_entry->dep = expr_alloc_and(current_entry->dep, menu_check_dep(dep));
 }
 
+void menu_add_build_dep(struct expr *dep)
+{
+	menu_add_prop(P_BUILD_DEPENDS, NULL, expr_copy(dep), NULL);
+	menu_add_dep(dep);
+}
+
 void menu_set_type(int type)
 {
 	struct symbol *sym = current_entry->sym;

@@ -145,6 +145,8 @@ enum prop_type {
 	P_ENV,      /* value from environment variable */
 	P_PACKAGE,  /* config symbol is a package */
 	P_SRCDIR,   /* config symbol is a package source directory */
+	P_BUILD_DEPENDS, /* build_depends, build-time dependency */
+	P_BUILD_SELECT, /* build_select, build-time dependency */
 };
 
 struct property {

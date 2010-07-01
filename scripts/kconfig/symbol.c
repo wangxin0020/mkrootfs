@@ -830,7 +830,7 @@ static struct symbol *sym_check_sym_deps(struct symbol *sym)
 		return sym2;
 
 	for (prop = sym->prop; prop; prop = prop->next) {
-		if (prop->type == P_CHOICE || prop->type == P_SELECT)
+		if (prop->type == P_CHOICE || prop->type == P_SELECT || prop->type == P_BUILD_SELECT || prop->type == P_BUILD_DEPENDS)
 			continue;
 		sym2 = sym_check_expr_deps(prop->visible.expr);
 		if (sym2)
@@ -970,6 +970,10 @@ const char *prop_get_type_name(enum prop_type type)
 		return "package";
 	case P_SRCDIR:
 		return "srcdir";
+	case P_BUILD_DEPENDS:
+		return "build_depends";
+	case P_BUILD_SELECT:
+		return "build_select";
 	case P_UNKNOWN:
 		break;
 	}

@@ -17,12 +17,14 @@ KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
 .mkr.prepared: .mkr.xeno
+	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
 	lndir -silent -ignorelinks $(mkr-srcdir) && \
 	$(MKR_XENO_SRCDIR)/scripts/prepare-kernel.sh \
-		--default --linux=. --arch=$(MKR_KARCH) && \
+		--linux=. --arch=$(MKR_KARCH) && \
 	: > .mkr.prepared
+	$(Q)echo Preparing linux sources directory...done.
 
 config-deps-y += .mkr.prepared
 
