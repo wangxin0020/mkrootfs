@@ -1,0 +1,12 @@
+build-tools/kconfig/lxdialog/checklist.c
+build-tools/kconfig/lxdialog/inputbox.c
+build-tools/kconfig/lxdialog/menubox.c
+build-tools/kconfig/lxdialog/textbox.c
+build-tools/kconfig/lxdialog/util.c
+build-tools/kconfig/lxdialog/yesno.c
+build-tools/kconfig/mconf.c
+build-tools/kconfig/conf.c
+build-tools/kconfig/confdata.c
+build-tools/kconfig/gconf.c
+build-tools/kconfig/gconf.glade.h
+build-tools/kconfig/qconf.cc

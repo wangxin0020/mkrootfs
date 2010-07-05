@@ -19,7 +19,7 @@ END {
 	printf(" \\\n    .mkr.srcdir");
 	printf(" \\\n    $(O)/.mkr.toolchain");
 	printf(" \\\n    "FILENAME);
-	printf(" \\\n    $(srctree)/scripts/Makefile.pkgbuild")
-	printf(" \\\n    scripts/makefile-deps.awk");
+	printf(" \\\n    $(srctree)/build-tools/Makefile.pkgbuild")
+	printf(" \\\n    build-tools/makefile-deps.awk");
 	printf("\n");
 }

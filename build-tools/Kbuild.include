@@ -120,12 +120,12 @@ cc-option-align = $(subst -functions=0,,\
 
 # cc-version
 # Usage gcc-ver := $(call cc-version)
-cc-version = $(shell $(MKR_SHELL) $(srctree)/scripts/gcc-version.sh $(CC))
+cc-version = $(shell $(MKR_SHELL) $(srctree)/build-tools/gcc-version.sh $(CC))
 
 # cc-fullversion
 # Usage gcc-ver := $(call cc-fullversion)
 cc-fullversion = $(shell $(MKR_SHELL) \
-	$(srctree)/scripts/gcc-version.sh -p $(CC))
+	$(srctree)/build-tools/gcc-version.sh -p $(CC))
 
 # cc-ifversion
 # Usage:  EXTRA_CFLAGS += $(call cc-ifversion, -lt, 0402, -O1)
@@ -144,19 +144,19 @@ ld-option = $(call try-run,\
 ######
 
 ###
-# Shorthand for $(Q)$(MAKE) -f scripts/Makefile.build obj=
+# Shorthand for $(Q)$(MAKE) -f build-tools/Makefile.build obj=
 # Usage:
 # $(Q)$(MAKE) $(build)=dir
 # Look for make include files relative to root of kernel src
-build := --include-dir=$(srctree) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.build obj
+build := --include-dir=$(srctree) -f $(if $(MKR_BUILD_SRC),$(srctree)/)build-tools/Makefile.build obj
 
-pkg-build = -C $(1) -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.pkgbuild obj=$(1) mkr-srcdir=$($(strip $(1))srcdir) mkr-srcdir-var=$($(strip $(1))srcdir-var)
+pkg-build = -C $(1) -f $(if $(MKR_BUILD_SRC),$(srctree)/)build-tools/Makefile.pkgbuild obj=$(1) mkr-srcdir=$($(strip $(1))srcdir) mkr-srcdir-var=$($(strip $(1))srcdir-var)
 
 ###
-# Shorthand for $(Q)$(MAKE) -f scripts/Makefile.modbuiltin obj=
+# Shorthand for $(Q)$(MAKE) -f build-tools/Makefile.modbuiltin obj=
 # Usage:
 # $(Q)$(MAKE) $(modbuiltin)=dir
-modbuiltin := -f $(if $(MKR_BUILD_SRC),$(srctree)/)scripts/Makefile.modbuiltin obj
+modbuiltin := -f $(if $(MKR_BUILD_SRC),$(srctree)/)build-tools/Makefile.modbuiltin obj
 
 # Prefix -I with $(srctree) if it is not an absolute path.
 # skip if -I has no parameter
@@ -213,7 +213,7 @@ if_changed = $(if $(strip $(any-prereq) $(arg-check)),                       \
 if_changed_dep = $(if $(strip $(any-prereq) $(arg-check) ),                  \
 	@set -e;                                                             \
 	$(echo-cmd) $(cmd_$(1));                                             \
-	scripts/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).tmp;\
+	build-tools/basic/fixdep $(depfile) $@ '$(make-cmd)' > $(dot-target).tmp;\
 	rm -f $(depfile);                                                    \
 	mv -f $(dot-target).tmp $(dot-target).cmd)
 

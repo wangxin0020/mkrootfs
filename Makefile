@@ -170,8 +170,8 @@ export quiet Q KBUILD_VERBOSE
 export HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
 
 # We need some generic definitions (do not try to remake the file).
-$(srctree)/scripts/Kbuild.include: ;
-include $(srctree)/scripts/Kbuild.include
+$(srctree)/build-tools/Kbuild.include: ;
+include $(srctree)/build-tools/Kbuild.include
 
 # Make variables (CC, etc...)
 AWK = awk
@@ -185,14 +185,14 @@ export RCS_TAR_IGNORE := --exclude SCCS --exclude BitKeeper --exclude .svn --exc
 # ===========================================================================
 # Rules shared between *config targets and build targets
 
-# Basic helpers built in scripts/
-PHONY += scripts_basic
-scripts_basic:
-	$(Q)$(MAKE) $(build)=scripts/basic
+# Basic helpers built in build-tools/
+PHONY += build-tools_basic
+build-tools_basic:
+	$(Q)$(MAKE) $(build)=build-tools/basic
 	$(Q)rm -f .tmp_quiet_recordmcount
 
 # # To avoid any implicit rule to kick in, define an empty command.
-# scripts/basic/%: scripts_basic ;
+# build-tools/basic/%: build-tools_basic ;
 
 PHONY += outputmakefile
 # outputmakefile generates a Makefile in the output directory, if using a
@@ -201,12 +201,12 @@ PHONY += outputmakefile
 outputmakefile:
 ifneq ($(MKR_BUILD_SRC),)
 	$(Q)ln -fsn $(srctree) source
-	$(Q)$(MKR_SHELL) $(srctree)/scripts/mkmakefile \
+	$(Q)$(MKR_SHELL) $(srctree)/build-tools/mkmakefile \
 	    $(srctree) $(objtree) $(VERSION) $(PATCHLEVEL)
 endif
 
 # To make sure we do not include .config for any of the *config targets
-# catch them early, and hand them over to scripts/kconfig/Makefile
+# catch them early, and hand them over to build-tools/kconfig/Makefile
 # It is allowed to specify more targets when calling make, including
 # mixing *config targets and build targets.
 # For example 'make oldconfig all'.
@@ -248,24 +248,24 @@ else
 ifeq ($(config-targets),1)
 # ===========================================================================
 # *config targets only - make sure prerequisites are updated, and descend
-# in scripts/kconfig to make the *config target
+# in build-tools/kconfig to make the *config target
 
 export MKR_CONFIG
 
-$(allconfigs): scripts_basic outputmakefile FORCE
+$(allconfigs): build-tools_basic outputmakefile FORCE
 	$(Q)mkdir -p include/config
-	$(Q)$(MAKE) $(build)=scripts/kconfig $@
+	$(Q)$(MAKE) $(build)=build-tools/kconfig $@
 
 else
 # ===========================================================================
 # Build targets only - this includes vmlinux, arch specific targets, clean
 # targets and others. In general all targets except *config targets.
 
-# Additional helpers built in scripts/
-# Carefully list dependencies so we do not try to build scripts twice
+# Additional helpers built in build-tools/
+# Carefully list dependencies so we do not try to build build-tools twice
 # in parallel
-# PHONY += scripts
-# scripts: scripts_basic include/config/auto.conf include/config/tristate.conf
+# PHONY += build-tools
+# build-tools: build-tools_basic include/config/auto.conf include/config/tristate.conf
 # 	$(MAKE) $(build)=$(@)
 
 ifeq ($(dot-config),1)
@@ -386,7 +386,7 @@ $(call pkg-targets,clean staging): %: prepare check-computed-variables
 # or the modules are listed in "prepare".
 # A multi level approach is used. prepareN is processed before prepareN-1.
 # archprepare is used in arch Makefiles and when processed asm symlink,
-# version.h and scripts_basic is processed / created.
+# version.h and build-tools_basic is processed / created.
 
 # Listed in dependency order
 PHONY += prepare archprepare prepare0 prepare1 prepare2
@@ -396,7 +396,7 @@ prepare2: outputmakefile
 
 prepare1: prepare2 include/config/auto.conf
 
-archprepare: prepare1 scripts_basic
+archprepare: prepare1 build-tools_basic
 
 prepare0: archprepare FORCE
 	$(Q)$(MAKE) $(build)=.
@@ -415,7 +415,7 @@ prepare: prepare0 .mkr.confcheck
 CLEAN_DIRS  += $(packages)
 
 # Directories & files removed with 'make mrproper'
-MRPROPER_DIRS  += include scripts
+MRPROPER_DIRS  += include build-tools
 MRPROPER_FILES += .config .config.old
 
 # clean - Delete most, but leave enough to build external modules
@@ -462,7 +462,7 @@ help:
 	@echo  '  distclean	  - mrproper + remove editor backup and patch files'
 	@echo  ''
 	@echo  'Configuration targets:'
-	@$(MAKE) -f $(srctree)/scripts/kconfig/Makefile help
+	@$(MAKE) -f $(srctree)/build-tools/kconfig/Makefile help
 	@echo  ''
 	@echo  'Other generic targets:'
 	@echo  '  all		  - Build all targets marked with [*]'

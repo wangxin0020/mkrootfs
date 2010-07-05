@@ -33,7 +33,7 @@ subdir-ccflags-y :=
 # Read auto.conf if it exists, otherwise ignore
 -include include/config/auto.conf
 
-include scripts/Kbuild.include
+include build-tools/Kbuild.include
 
 # For backward compatibility check that these variables do not change
 save-cflags := $(CFLAGS)
@@ -50,7 +50,7 @@ ifeq ($(MKR_BUILD_NOPEDANTIC),)
 		$(error CFLAGS was changed in "$(mkr-pkgmk)". Fix it to use EXTRA_CFLAGS)
 	endif
 endif
-include scripts/Makefile.lib
+include build-tools/Makefile.lib
 
 ifdef host-progs
 ifneq ($(hostprogs-y),$(host-progs))
@@ -61,7 +61,7 @@ endif
 
 # Do not include host rules unless needed
 ifneq ($(hostprogs-y)$(hostprogs-m),)
-include scripts/Makefile.host
+include build-tools/Makefile.host
 endif
 
 ifneq ($(MKR_BUILD_SRC),)
@@ -109,7 +109,7 @@ endif
 
 # Do section mismatch analysis for each module/built-in.o
 ifdef MKR_DEBUG_SECTION_MISMATCH
-  cmd_secanalysis = ; scripts/mod/modpost $@
+  cmd_secanalysis = ; build-tools/mod/modpost $@
 endif
 
 # Compile C sources (.c)
@@ -207,7 +207,7 @@ cmd_modversions =							\
 endif
 
 ifdef MKR_FTRACE_MCOUNT_RECORD
-cmd_record_mcount = set -e ; perl $(srctree)/scripts/recordmcount.pl "$(ARCH)" \
+cmd_record_mcount = set -e ; perl $(srctree)/build-tools/recordmcount.pl "$(ARCH)" \
 	"$(if $(MKR_CPU_BIG_ENDIAN),big,little)" \
 	"$(if $(MKR_64BIT),64,32)" \
 	"$(OBJDUMP)" "$(OBJCOPY)" "$(CC)" "$(LD)" "$(NM)" "$(RM)" "$(MV)" \
@@ -220,7 +220,7 @@ define rule_cc_o_c
 	$(cmd_modversions)						  \
 	$(call echo-cmd,record_mcount)					  \
 	$(cmd_record_mcount)						  \
-	scripts/basic/fixdep $(depfile) $@ '$(call make-cmd,cc_o_c)' >    \
+	build-tools/basic/fixdep $(depfile) $@ '$(call make-cmd,cc_o_c)' >    \
 						      $(dot-target).tmp;  \
 	rm -f $(depfile);						  \
 	mv -f $(dot-target).tmp $(dot-target).cmd
@@ -240,7 +240,7 @@ $(single-used-m): $(obj)/%.o: $(src)/%.c FORCE
 
 quiet_cmd_cc_lst_c = MKLST   $@
       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
-		     $(MKR_SHELL) $(srctree)/scripts/makelst $*.o \
+		     $(MKR_SHELL) $(srctree)/build-tools/makelst $*.o \
 				     System.map $(OBJDUMP) > $@
 
 $(obj)/%.lst: $(src)/%.c FORCE

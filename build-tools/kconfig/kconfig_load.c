@@ -15,7 +15,7 @@ void kconfig_load(void)
 
 	handle = dlopen("./libkconfig.so", RTLD_LAZY);
 	if (!handle) {
-		handle = dlopen("./scripts/kconfig/libkconfig.so", RTLD_LAZY);
+		handle = dlopen("./build-tools/kconfig/libkconfig.so", RTLD_LAZY);
 		if (!handle) {
 			fprintf(stderr, "%s\n", dlerror());
 			exit(1);
@@ -25,8 +25,8 @@ void kconfig_load(void)
 #define P(name,type,arg)			\
 {						\
 	name ## _p = dlsym(handle, #name);	\
-        if ((error = dlerror()))  {		\
-                fprintf(stderr, "%s\n", error);	\
+	if ((error = dlerror()))  {		\
+		fprintf(stderr, "%s\n", error);	\
 		exit(1);			\
 	}					\
 }
