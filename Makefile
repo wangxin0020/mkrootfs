@@ -376,6 +376,19 @@ check-computed-variables:
 		fi; \
 	done
 
+build-tools/bin/fakeroot:
+	$(Q)mkdir -p build-tools/fakeroot
+	$(Q)echo Building build system fakeroot...
+	$(Q) $(MAKE) \
+		-C build-tools/fakeroot \
+		-f $(srctree)/build-tools/fakeroot-1.14.4/Makefile \
+		$(O)/build-tools/bin/fakeroot \
+		> build-tools/fakeroot/.mkr.log 2>&1
+	$(Q)echo Building build system fakeroot... done
+
+$(filter-out linux/staging,$(call pkg-targets,staging)): \
+	build-tools/bin/fakeroot
+
 $(call pkg-targets,clean staging): %: prepare check-computed-variables
 	$(Q)echo Building $(dir $@)...
 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \

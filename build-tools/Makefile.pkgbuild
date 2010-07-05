@@ -96,7 +96,7 @@ mkr-configure-args-y = \
 	CC="$(CC)" CXX="$(CXX)" LD="$(mkr-cross)ld" AR="$(mkr-cross)ar" \
 	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
-mkr-fakeroot = fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
+mkr-fakeroot = $(O)/build-tools/bin/fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
 mkr-install = $(mkr-fakeroot) install
 
 include $(mkr-pkgmk)
