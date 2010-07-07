@@ -42,28 +42,28 @@ endif
 # 1) O=
 # Use "make O=dir/to/store/output/files/"
 #
-# 2) Set MKR_BUILD_OUTPUT
-# Set the environment variable MKR_BUILD_OUTPUT to point to the directory
+# 2) Set mkr-build-output
+# Set the environment variable mkr-build-output to point to the directory
 # where the output files shall be placed.
-# export MKR_BUILD_OUTPUT=dir/to/store/output/files/
+# export mkr-build-output=dir/to/store/output/files/
 # make
 #
-# The O= assignment takes precedence over the MKR_BUILD_OUTPUT environment
+# The O= assignment takes precedence over the mkr-build-output environment
 # variable.
 
 ifeq ($(O),)
 	O := $(PWD)/build
-	MKR_BUILD_OUTPUT := $(O)
+	mkr-build-output := $(O)
 endif
 
-# MKR_BUILD_SRC is set on invocation of make in OBJ directory
-# MKR_BUILD_SRC is not intended to be used by the regular user (for now)
-ifeq ($(MKR_BUILD_SRC),)
+# mkr-build-src is set on invocation of make in OBJ directory
+# mkr-build-src is not intended to be used by the regular user (for now)
+ifeq ($(mkr-build-src),)
 
 # OK, Make called in directory where kernel src resides
 # Do we want to locate output files in a separate directory?
 ifeq ("$(origin O)", "command line")
-  MKR_BUILD_OUTPUT := $(O)
+  mkr-build-output := $(O)
 endif
 
 # That's our default target when none is given on the command line
@@ -73,12 +73,12 @@ _all:
 # Cancel implicit rules on top Makefile
 $(CURDIR)/Makefile Makefile: ;
 
-ifneq ($(MKR_BUILD_OUTPUT),)
+ifneq ($(mkr-build-output),)
 # Invoke a second make in the output directory, passing relevant variables
 # check that the output directory actually exists
-saved-output := $(MKR_BUILD_OUTPUT)
-MKR_BUILD_OUTPUT := $(shell cd $(MKR_BUILD_OUTPUT) && /bin/pwd)
-$(if $(MKR_BUILD_OUTPUT),, \
+saved-output := $(mkr-build-output)
+mkr-build-output := $(shell cd $(mkr-build-output) && /bin/pwd)
+$(if $(mkr-build-output),, \
      $(error output directory "$(saved-output)" does not exist))
 
 PHONY += $(MAKECMDGOALS) sub-make
@@ -87,15 +87,15 @@ $(filter-out _all sub-make $(CURDIR)/Makefile, $(MAKECMDGOALS)) _all: sub-make
 	$(Q)@:
 
 sub-make: FORCE
-	$(if $(KBUILD_VERBOSE:1=),@)$(MAKE) -C $(MKR_BUILD_OUTPUT) \
-	MKR_BUILD_SRC=$(CURDIR) \
+	$(if $(KBUILD_VERBOSE:1=),@)$(MAKE) -C $(mkr-build-output) \
+	mkr-build-src=$(CURDIR) \
 	-f $(CURDIR)/Makefile \
 	$(filter-out _all sub-make,$(MAKECMDGOALS))
 
 # Leave processing to above invocation of make
 skip-makefile := 1
-endif # ifneq ($(MKR_BUILD_OUTPUT),)
-endif # ifeq ($(MKR_BUILD_SRC),)
+endif # ifneq ($(mkr-build-output),)
+endif # ifeq ($(mkr-build-src),)
 
 # We process the rest of the Makefile if this is the final invocation of make
 ifeq ($(skip-makefile),)
@@ -105,7 +105,7 @@ ifeq ($(skip-makefile),)
 PHONY += all
 _all: all
 
-srctree		:= $(if $(MKR_BUILD_SRC),$(MKR_BUILD_SRC),$(CURDIR))
+srctree		:= $(if $(mkr-build-src),$(mkr-build-src),$(CURDIR))
 objtree		:= $(CURDIR)
 src		:= $(srctree)
 obj		:= $(objtree)
@@ -114,10 +114,10 @@ VPATH		:= $(srctree)
 
 export srctree objtree VPATH
 
-MKR_CONFIG	?= .config
+mkr-config	?= .config
 
 # SHELL used by kbuild
-MKR_SHELL := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
+mkr-shell := $(shell if [ -x "$$BASH" ]; then echo $$BASH; \
 	  else if [ -x /bin/bash ]; then echo /bin/bash; \
 	  else echo sh; fi ; fi)
 
@@ -126,7 +126,7 @@ HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
 HOSTCXXFLAGS = -O2
 
-export MKR_BUILD_SRC
+export mkr-build-src
 
 # Beautify output
 # ---------------------------------------------------------------------------
@@ -199,9 +199,9 @@ PHONY += outputmakefile
 # separate output directory. This allows convenient use of make in the
 # output directory.
 outputmakefile:
-ifneq ($(MKR_BUILD_SRC),)
+ifneq ($(mkr-build-src),)
 	$(Q)ln -fsn $(srctree) source
-	$(Q)$(MKR_SHELL) $(srctree)/build-tools/mkmakefile \
+	$(Q)$(mkr-shell) $(srctree)/build-tools/mkmakefile \
 	    $(srctree) $(objtree) $(VERSION) $(PATCHLEVEL)
 endif
 
@@ -242,7 +242,7 @@ ifeq ($(mixed-targets),1)
 # Handle them one by one.
 
 %:: FORCE
-	$(Q)$(MAKE) -C $(srctree) MKR_BUILD_SRC= $@
+	$(Q)$(MAKE) -C $(srctree) mkr-build-src= $@
 
 else
 ifeq ($(config-targets),1)
@@ -250,7 +250,7 @@ ifeq ($(config-targets),1)
 # *config targets only - make sure prerequisites are updated, and descend
 # in build-tools/kconfig to make the *config target
 
-export MKR_CONFIG
+export mkr-config
 
 $(allconfigs): build-tools_basic outputmakefile FORCE
 	$(Q)mkdir -p include/config
@@ -285,13 +285,13 @@ checksrcdir = $(if $(call mksrcdir,$($(1))),:,\
 -include include/config/auto.conf.cmd
 
 # To avoid any implicit rule to kick in, define an empty command
-$(MKR_CONFIG) include/config/auto.conf.cmd: ;
+$(mkr-config) include/config/auto.conf.cmd: ;
 
 # If .config is newer than include/config/auto.conf, someone tinkered
 # with it and forgot to run make oldconfig.
 # if auto.conf.cmd is missing then we are probably in a cleaned tree so
 # we execute the config step to be sure to catch updated Kconfig files
-include/config/%.conf: $(MKR_CONFIG) include/config/auto.conf.cmd
+include/config/%.conf: $(mkr-config) include/config/auto.conf.cmd
 	$(Q)$(MAKE) -f $(srctree)/Makefile silentoldconfig
 else
 # Dummy target needed, because used as prerequisite

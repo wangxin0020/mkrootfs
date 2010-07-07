@@ -24,7 +24,7 @@ include/autoconf.h: .config
 	$(MAKE) $(configargs) silentoldconfig
 
 # Building busybox
-buildargs = $(configargs) CONFIG_PREFIX=$(MKR_STAGING)
+buildargs = $(configargs) CONFIG_PREFIX=$(mkr-staging)
 
 compile: include/autoconf.h
 	$(MAKE) $(buildargs)

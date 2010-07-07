@@ -3,8 +3,7 @@
 match($0, /MKR_([0-9A-Z_]*)/, sym) {
 	rest = $0
 	do {
-		if (sym[1] != "SHELL")
-			list[gensub(/_/, "/", "g", tolower(sym[1]))] = 1;
+		list[gensub(/_/, "/", "g", tolower(sym[1]))] = 1;
 		rest = substr(rest, RSTART + RLENGTH + 1);
 	} while (match(rest, /MKR_([0-9A-Z_]*)/, sym));
 }

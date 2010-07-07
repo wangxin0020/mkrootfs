@@ -36,7 +36,7 @@ compile: default-autotools-compile
 staging: default-autotools-staging
 
 # staging: config.status
-# 	$(MAKE) DESTDIR=$(MKR_STAGING) install-user
+# 	$(MAKE) DESTDIR=$(mkr-staging) install-user
 
 # Checking configuration
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \

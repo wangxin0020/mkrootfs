@@ -135,7 +135,7 @@ endif
 # If building the kernel in a separate objtree expand all occurrences
 # of -Idir to -I$(srctree)/dir except for absolute paths (starting with '/').
 
-ifeq ($(MKR_BUILD_SRC),)
+ifeq ($(mkr-build-src),)
 __c_flags	= $(_c_flags)
 __a_flags	= $(_a_flags)
 __cpp_flags     = $(_cpp_flags)

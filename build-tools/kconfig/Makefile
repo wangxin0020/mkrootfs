@@ -127,8 +127,8 @@ check-lxdialog  := $(srctree)/$(src)/lxdialog/check-lxdialog.sh
 
 # Use recursively expanded variables so we do not call gcc unless
 # we really need to do so. (Do not call gcc as part of make mrproper)
-HOST_EXTRACFLAGS = $(shell $(MKR_SHELL) $(check-lxdialog) -ccflags) -ggdb3
-HOST_LOADLIBES   = $(shell $(MKR_SHELL) $(check-lxdialog) -ldflags $(HOSTCC))
+HOST_EXTRACFLAGS = $(shell $(mkr-shell) $(check-lxdialog) -ccflags) -ggdb3
+HOST_LOADLIBES   = $(shell $(mkr-shell) $(check-lxdialog) -ldflags $(HOSTCC))
 
 HOST_EXTRACFLAGS += -DLOCALE
 
@@ -183,12 +183,12 @@ clean-files     += config.pot linux.pot
 PHONY += $(obj)/dochecklxdialog
 $(addprefix $(obj)/,$(lxdialog)): $(obj)/dochecklxdialog
 $(obj)/dochecklxdialog:
-	$(Q)$(MKR_SHELL) $(check-lxdialog) -check $(HOSTCC) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES)
+	$(Q)$(mkr-shell) $(check-lxdialog) -check $(HOSTCC) $(HOST_EXTRACFLAGS) $(HOST_LOADLIBES)
 
 always := dochecklxdialog
 
 # Add environment specific flags
-HOST_EXTRACFLAGS += $(shell $(MKR_SHELL) $(srctree)/$(src)/check.sh $(HOSTCC) $(HOSTCFLAGS))
+HOST_EXTRACFLAGS += $(shell $(mkr-shell) $(srctree)/$(src)/check.sh $(HOSTCC) $(HOSTCFLAGS))
 
 # generated files seem to need this to find local include files
 HOSTCFLAGS_lex.zconf.o	:= -I$(src)

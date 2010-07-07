@@ -64,7 +64,7 @@ ifneq ($(hostprogs-y)$(hostprogs-m),)
 include build-tools/Makefile.host
 endif
 
-ifneq ($(MKR_BUILD_SRC),)
+ifneq ($(mkr-build-src),)
 # Create output directory if not already present
 _dummy := $(shell [ -d $(obj) ] || mkdir -p $(obj))
 
@@ -240,7 +240,7 @@ $(single-used-m): $(obj)/%.o: $(src)/%.c FORCE
 
 quiet_cmd_cc_lst_c = MKLST   $@
       cmd_cc_lst_c = $(CC) $(c_flags) -g -c -o $*.o $< && \
-		     $(MKR_SHELL) $(srctree)/build-tools/makelst $*.o \
+		     $(mkr-shell) $(srctree)/build-tools/makelst $*.o \
 				     System.map $(OBJDUMP) > $@
 
 $(obj)/%.lst: $(src)/%.c FORCE

@@ -8,7 +8,7 @@ CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration
 LDFLAGS := $(ldflags-y) -rdynamic
 
 ifeq ($(MKR_XENO),y)
-XENO_CONFIG = DESTDIR="$(MKR_STAGING)" $(MKR_STAGING)/usr/bin/xeno-config
+XENO_CONFIG = DESTDIR="$(mkr-staging)" $(mkr-staging)/usr/bin/xeno-config
 
 XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
 XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
@@ -33,7 +33,7 @@ all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
 compile: $(all)
 
 staging:
-	$(mkr-install) -o 0 -D $(all) $(MKR_STAGING)/usr/bin
+	$(mkr-install) -o 0 -D $(all) $(mkr-staging)/usr/bin
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 

@@ -95,7 +95,7 @@ _hostc_flags   = $(HOSTCFLAGS)   $(HOST_EXTRACFLAGS)   \
 _hostcxx_flags = $(HOSTCXXFLAGS) $(HOST_EXTRACXXFLAGS) \
                  $(HOSTCXXFLAGS_$(basetarget).o)
 
-ifeq ($(MKR_BUILD_SRC),)
+ifeq ($(mkr-build-src),)
 __hostc_flags	= $(_hostc_flags)
 __hostcxx_flags	= $(_hostcxx_flags)
 else

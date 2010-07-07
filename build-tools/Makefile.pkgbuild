@@ -28,19 +28,19 @@ override cflags-y := $(MKR_CFLAGS)
 override ldflags-y := $(MKR_LDFLAGS)
 
 # Unexport variables exported by top makefile
-unexport srctree objtree VPATH MKR_BUILD_SRC
+unexport srctree objtree VPATH mkr-build-src
 unexport quiet Q KBUILD_VERBOSE
 unexport HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
 unexport AWK
 unexport RCS_TAR_IGNORE KBUILD_EXTMOD
-unexport MKR_CONFIG O obj
+unexport mkr-config O obj
 
 # Avoid leaking variables (the one passed on command-line) to sub-makes
 MAKEOVERRIDES=
 NOPRINT_MAKEFLAGS=$(filter-out --no-print-directory, $(MAKEFLAGS))
 MAKE=make MAKEFLAGS="$(NOPRINT_MAKEFLAGS)"
 
-MKR_STAGING := $(O)/staging
+mkr-staging := $(O)/staging
 MKR_ROOTFS := $(O)/rootfs
 
 MAKE_UNI := $(MAKE) -j 1
@@ -98,7 +98,7 @@ mkr-configure-args-y = \
 
 include $(mkr-pkgmk)
 
-ifneq ($(MKR_BUILD_SRC),)
+ifneq ($(mkr-build-src),)
 # Create output directory if not already present
 _dummy := $(shell [ -d $(O)/$(obj) ] || mkdir -p $(O)/$(obj))
 
@@ -129,8 +129,8 @@ config.status: $(mkr-deps)
 
 .PHONY: default-autotools-compile
 default-autotools-compile: config.status
-	$(MAKE) DESTDIR=$(MKR_STAGING)
+	$(MAKE) DESTDIR=$(mkr-staging)
 
 .PHONY: default-autotools-staging
 default-autotools-staging:
-	$(MAKE) DESTDIR=$(MKR_STAGING) install
+	$(MAKE) DESTDIR=$(mkr-staging) install
