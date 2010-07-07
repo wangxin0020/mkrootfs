@@ -39,7 +39,7 @@ bins-y := \
 
 # Installing stuff
 bins:
-	$(mkr-fakeroot) mkdir -p "$(MKR_STAGING)/bin" "$(MKR_STAGING)/sbin"\
+	mkdir -p "$(MKR_STAGING)/bin" "$(MKR_STAGING)/sbin"\
 		"$(MKR_STAGING)/usr/bin" "$(MKR_STAGING)/usr/sbin"; \
 	for b in $(bins-y); do \
 		for d in $(BINDIRS); do \
@@ -51,15 +51,15 @@ bins:
 				*/sbin/*) dest=sbin;; \
 				*) dest=bin;; \
 				esac; \
-				$(mkr-install) -o 0 "$$bin" "$(MKR_STAGING)/$$dest"; \
+				install -o 0 "$$bin" "$(MKR_STAGING)/$$dest"; \
 				break; \
 			fi; \
 		done; \
 	done; \
 	sed -i 's/bash/ash/g' $(MKR_STAGING)/bin/ldd > /dev/null 2>&1 || :
 
-libs: bins
-	$(mkr-fakeroot) mkdir -p "$(MKR_STAGING)/lib" "$(MKR_STAGING)/usr/lib"; \
+libs:
+	mkdir -p "$(MKR_STAGING)/lib" "$(MKR_STAGING)/usr/lib"; \
 	rm -f "$(MKR_STAGING)/lib32" "$(MKR_STAGING)/lib64" \
 		"$(MKR_STAGING)/usr/lib32" "$(MKR_STAGING)/usr/lib64"; \
 	ln -s lib "$(MKR_STAGING)/lib64"; \
@@ -75,7 +75,7 @@ libs: bins
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					$(mkr-install) -o 0 "$$d"/"$$l".[0-9] "$(MKR_STAGING)/$$dest"; \
+					install -o 0 "$$d"/"$$l".[0-9] "$(MKR_STAGING)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -87,7 +87,7 @@ libs: bins
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					fakeroot install -o 0 "$$d"/"$$l"-*.so "$(MKR_STAGING)/$$dest"; \
+					install -o 0 "$$d"/"$$l"-*.so "$(MKR_STAGING)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -95,7 +95,9 @@ libs: bins
 		esac; \
 	done
 
-staging: libs
+compile: ;
+
+staging: bins libs
 
 # Configuration checks
 confcheck-y += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)

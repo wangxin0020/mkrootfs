@@ -26,6 +26,8 @@ $(MKR_STAGING)/ltp/configure: $(create-stamp)
 	$(sync-y) $(mkr-srcdir)/* $(MKR_STAGING)/ltp
 endif
 
+compile: ;
+
 # Configure
 $(MKR_STAGING)/ltp/config.status: $(MKR_STAGING)/ltp/configure
 	cd $(dir $@) && ./configure $(mkr-configure-args-y)

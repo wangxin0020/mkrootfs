@@ -386,14 +386,21 @@ build-tools/bin/fakeroot:
 		> build-tools/fakeroot/.mkr.log 2>&1
 	$(Q)echo Building build system fakeroot... done
 
-$(filter-out linux/staging,$(call pkg-targets,staging)): \
-	build-tools/bin/fakeroot
+mkr-fakeroot = $(O)/build-tools/bin/fakeroot \
+	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
 
-$(call pkg-targets,clean staging): %: prepare check-computed-variables
-	$(Q)echo Building $(dir $@)...
+
+$(call pkg-targets,compile): %/compile: prepare check-computed-variables
+	$(Q)echo Compiling $(dir $@)...
 	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \
 	> $(dir $@)/.mkr.log 2>&1
-	$(Q)echo Building $(dir $@)... done.
+	$(Q)echo Compiling $(dir $@)... done.
+
+$(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
+	$(Q)echo Installing $(dir $@)...
+	$(Q)$(mkr-fakeroot) $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \
+	>> $(dir $@)/.mkr.log 2>&1
+	$(Q)echo Installing $(dir $@)... done.
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

@@ -63,16 +63,20 @@ buildargs := $(configargs) CROSS_COMPILE=$(mkr-kcross) CC=$(KCC)
 cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a
 
-staging: include/generated/autoconf.h
+compile: include/generated/autoconf.h
 ifeq ($(CONFIG_MODULES),y)
 	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS) modules
-	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install
 else
 	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS)
 endif
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
+endif
+
+staging:
+ifeq ($(CONFIG_MODULES),y)
+	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(MKR_STAGING) modules_install
 endif
 
 # Catch-all target, allow to run all the targets (including the

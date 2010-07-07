@@ -28,8 +28,12 @@ cyclictest_nonxeno: LDLIBS += -lpthread -lrt
 cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
 
 # Generic rules
-staging: $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
-	$(mkr-install) -o 0 -D $^ $(MKR_STAGING)/usr/bin
+all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
+
+compile: $(all)
+
+staging:
+	$(mkr-install) -o 0 -D $(all) $(MKR_STAGING)/usr/bin
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 

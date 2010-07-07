@@ -30,6 +30,9 @@ mkr-configure-args-$(MKR_ARM_EABI) += --enable-arm-eabi
 endif
 
 # Compilation
+compile: default-autotools-compile
+
+# Installation
 staging: default-autotools-staging
 
 # staging: config.status

@@ -26,9 +26,12 @@ include/autoconf.h: .config
 # Building busybox
 buildargs = $(configargs) CONFIG_PREFIX=$(MKR_STAGING)
 
-staging: include/autoconf.h
+compile: include/autoconf.h
 	$(MAKE) $(buildargs)
-	$(mkr-fakeroot) $(MAKE) $(buildargs) install
+
+# Installing it
+staging:
+	$(MAKE) $(buildargs) install
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones)

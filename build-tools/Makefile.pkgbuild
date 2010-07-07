@@ -96,9 +96,6 @@ mkr-configure-args-y = \
 	CC="$(CC)" CXX="$(CXX)" LD="$(mkr-cross)ld" AR="$(mkr-cross)ar" \
 	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
-mkr-fakeroot = $(O)/build-tools/bin/fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
-mkr-install = $(mkr-fakeroot) install
-
 include $(mkr-pkgmk)
 
 ifneq ($(MKR_BUILD_SRC),)
@@ -130,7 +127,10 @@ config.status: $(mkr-deps)
 	rm -Rf * || :
 	$(mkr-srcdir)/configure $(mkr-configure-args-y)
 
-.PHONY: default-autotools-staging
-default-autotools-staging: config.status
+.PHONY: default-autotools-compile
+default-autotools-compile: config.status
 	$(MAKE) DESTDIR=$(MKR_STAGING)
-	$(mkr-fakeroot) $(MAKE) DESTDIR=$(MKR_STAGING) install
+
+.PHONY: default-autotools-staging
+default-autotools-staging:
+	$(MAKE) DESTDIR=$(MKR_STAGING) install

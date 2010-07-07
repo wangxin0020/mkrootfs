@@ -67,7 +67,7 @@ static void print_build_dir(void *cookie, struct symbol *sym, const char *name)
 		return;
 
 	if (!d->printed)
-		fprintf(d->out, "%s/staging: ", d->sym->file->dir->name);
+		fprintf(d->out, "%s/compile: ", d->sym->file->dir->name);
 
 	fprintf(d->out, "%s/staging ", sym->file->dir->name);
 	++d->printed;

@@ -11,28 +11,31 @@ DIRS= \
 	/var \
 	/mnt
 
+# Nothing to build
+compile: ;
+
 # Installing stuff
 devices:
-	$(mkr-fakeroot) $(mkr-pkgdir)/mkdevices.sh "$(MKR_STAGING)" < $(dev_txt)
+	$(mkr-pkgdir)/mkdevices.sh "$(MKR_STAGING)" < $(dev_txt)
 
 # FIXME: needs fakeroot
-dirs: devices
+dirs:
 	for d in $(DIRS); do mkdir -p "$(MKR_STAGING)/$$d"; done
 	chmod a+rwx+t "$(MKR_STAGING)/tmp"
 
-skel: dirs
+skel:
 	cd $(skeldir) && { \
 		find . -! -type d | while read f; do { \
-			$(mkr-install) -D $$f "$(MKR_STAGING)/$$f"; \
+			install -D $$f "$(MKR_STAGING)/$$f"; \
 			sed -i \
 			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
 		"$(MKR_STAGING)/$$f"; \
 		}; \
 		done; \
-		$(mkr-install) -D /etc/localtime "$(MKR_STAGING)/etc/localtime" || :; \
+		install -D /etc/localtime "$(MKR_STAGING)/etc/localtime" || :; \
 	}
 
-staging: skel
+staging: devices dirs skel
 
 # Checking configuration
 confcheck-y := $(call confcheck-exists,$(dev_txt),MKR_BOARD)
