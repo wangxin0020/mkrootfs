@@ -37,10 +37,13 @@ bins-y := \
 	ldd \
 	lspci
 
+# Compiling: nothing to do
+compile: ;
+
 # Installing stuff
 bins:
-	mkdir -p "$(mkr-staging)/bin" "$(mkr-staging)/sbin"\
-		"$(mkr-staging)/usr/bin" "$(mkr-staging)/usr/sbin"; \
+	mkdir -p "$(mkr-pkginst)/bin" "$(mkr-pkginst)/sbin"\
+		"$(mkr-pkginst)/usr/bin" "$(mkr-pkginst)/usr/sbin"; \
 	for b in $(bins-y); do \
 		for d in $(BINDIRS); do \
 			bin="$$d/$$b"; \
@@ -51,21 +54,21 @@ bins:
 				*/sbin/*) dest=sbin;; \
 				*) dest=bin;; \
 				esac; \
-				install -o 0 "$$bin" "$(mkr-staging)/$$dest"; \
+				install -o 0 "$$bin" "$(mkr-pkginst)/$$dest"; \
 				break; \
 			fi; \
 		done; \
 	done; \
-	sed -i 's/bash/ash/g' $(mkr-staging)/bin/ldd > /dev/null 2>&1 || :
+	sed -i 's/bash/ash/g' $(mkr-pkginst)/bin/ldd > /dev/null 2>&1 || :
 
 libs:
-	mkdir -p "$(mkr-staging)/lib" "$(mkr-staging)/usr/lib"; \
-	rm -f "$(mkr-staging)/lib32" "$(mkr-staging)/lib64" \
-		"$(mkr-staging)/usr/lib32" "$(mkr-staging)/usr/lib64"; \
-	ln -s lib "$(mkr-staging)/lib64"; \
-	ln -s lib "$(mkr-staging)/lib32"; \
-	ln -s lib "$(mkr-staging)/usr/lib64"; \
-	ln -s lib "$(mkr-staging)/usr/lib32"; \
+	mkdir -p "$(mkr-pkginst)/lib" "$(mkr-pkginst)/usr/lib"; \
+	rm -f "$(mkr-pkginst)/lib32" "$(mkr-pkginst)/lib64" \
+		"$(mkr-pkginst)/usr/lib32" "$(mkr-pkginst)/usr/lib64"; \
+	ln -s lib "$(mkr-pkginst)/lib64"; \
+	ln -s lib "$(mkr-pkginst)/lib32"; \
+	ln -s lib "$(mkr-pkginst)/usr/lib64"; \
+	ln -s lib "$(mkr-pkginst)/usr/lib32"; \
 	for l in $(libs-y); do \
 		case "$$l" in \
 		*.so) \
@@ -75,7 +78,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					install -o 0 "$$d"/"$$l".[0-9] "$(mkr-staging)/$$dest"; \
+					install -o 0 "$$d"/"$$l".[0-9] "$(mkr-pkginst)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -87,15 +90,13 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					install -o 0 "$$d"/"$$l"-*.so "$(mkr-staging)/$$dest"; \
+					install -o 0 "$$d"/"$$l"-*.so "$(mkr-pkginst)/$$dest"; \
 					break; \
 				fi; \
 			done; \
 			;; \
 		esac; \
 	done
-
-compile: ;
 
 staging: bins libs
 

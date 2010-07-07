@@ -304,7 +304,7 @@ endif # $(dot-config)
 # Defaults vmlinux but it is usually overridden in the arch makefile
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
-all: $(call pkg-targets,staging)
+all: $(call pkg-targets,staging) clean-removed-packages
 PHONY += $(call pkg-targets,clean staging)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
@@ -315,11 +315,11 @@ PHONY += $(call pkg-targets,clean staging)
 
 linux/%:
 	$(Q)mkdir -p linux
-	$(Q)$(MAKE) $(call pkg-build,linux/) $*
+	$(Q)$(MAKE) $(call pkg-recurse,linux/) $*
 
 busybox/%:
 	$(Q)mkdir -p busybox
-	$(Q)$(MAKE) $(call pkg-build,busybox/) $*
+	$(Q)$(MAKE) $(call pkg-recurse,busybox/) $*
 
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
@@ -331,7 +331,7 @@ confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
 	echo Linux kernel Makefile \($(linux/srcdir)/Makefile\) not found; \
 	success=false; };
 sub-confcheck = { mkdir -p $(1) && \
-	$(MAKE) $(call pkg-build,$(1)) $(if $(V),,-s) confcheck; } || success=false;
+	$(MAKE) $(call pkg-recurse,$(1)) $(if $(V),,-s) confcheck; } || success=false;
 
 .mkr.basecheck: include/config/auto.conf
 	$(Q)$(confcheck-awk) \
@@ -381,26 +381,55 @@ build-tools/bin/fakeroot:
 	$(Q)echo Building build system fakeroot...
 	$(Q) $(MAKE) \
 		-C build-tools/fakeroot \
-		-f $(srctree)/build-tools/fakeroot-1.14.4/Makefile \
+		-f $(srctree)/build-tools/fakeroot-1.11/Makefile \
 		$(O)/build-tools/bin/fakeroot \
 		> build-tools/fakeroot/.mkr.log 2>&1
 	$(Q)echo Building build system fakeroot... done
 
-mkr-fakeroot = $(O)/build-tools/bin/fakeroot \
+mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
 
 
 $(call pkg-targets,compile): %/compile: prepare check-computed-variables
 	$(Q)echo Compiling $(dir $@)...
-	$(Q)$(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \
+	$(Q)$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@) \
 	> $(dir $@)/.mkr.log 2>&1
 	$(Q)echo Compiling $(dir $@)... done.
 
 $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 	$(Q)echo Installing $(dir $@)...
-	$(Q)$(mkr-fakeroot) $(MAKE) $(call pkg-build,$(dir $@)) $(notdir $@) \
-	>> $(dir $@)/.mkr.log 2>&1
+	$(Q)$(mkr-fakeroot) sh -c '{ \
+		mkr_pkginst=$(dir $@).mkr.inst; \
+		mkdir -p $$mkr_pkginst; \
+		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@) \
+		>> $(dir $@)/.mkr.log 2>&1; \
+		{ cd $$mkr_pkginst && find .; } \
+			| sort > $(dir $@)/.mkr.newlist; \
+		if [ -e $(dir $@)/.mkr.list ]; then \
+			comm -2 -3 \
+				$(dir $@)/.mkr.list $(dir $@)/.mkr.newlist \
+			| { cd staging && xargs -r rm -f; }; \
+			comm -2 -3 \
+				$(dir $@)/.mkr.list $(dir $@)/.mkr.newlist \
+			| { cd staging && xargs -r \
+				rmdir --ignore-fail-on-non-empty; }; \
+		fi; \
+		mv $(dir $@)/.mkr.newlist $(dir $@)/.mkr.list; \
+		rsync -ac $$mkr_pkginst/ staging/; \
+		rm -Rf $$mkr_pkginst; \
+	}'
 	$(Q)echo Installing $(dir $@)... done.
+
+dis_packages:=$(filter-out $(packages),$(all_packages))
+
+clean-removed-packages:
+	$(Q)lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.list))"; \
+	if [ -n "$$lists" ]; then \
+		cat $$lists | { cd staging; xargs rm -f; } > /dev/null 2>&1; \
+		cat $$lists | { cd staging; xargs \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		rm -f $$lists; \
+	fi
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

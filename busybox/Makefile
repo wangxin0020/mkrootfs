@@ -3,12 +3,12 @@ defconfig:=y
 endif
 
 board-config = $(srctree)/boards/$(MKR_BOARD)/$(MKR_BUSYBOX_CONFIG)
-defconfig-$(defconfig) = $(MAKE) $(configargs) defconfig
-defconfig-$(call not,$(defconfig)) = cp $(board-defconfig)
+defconfig-$(defconfig) = $(MAKE) $(args) defconfig
+defconfig-$(call not,$(defconfig)) = cp $(board-defconfig) .config
 
 # Configuring busybox
-configargs := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) \
-	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$()ar" \
+args := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) \
+	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(mkr-cross)ar" \
 	EXTRA_CFLAGS="$(ARCH_FLAGS)" \
 	EXTRA_LDFLAGS="$(ARCH_FLAGS)" \
 	CROSS_COMPILE="$(shell expr $(CC) : '\(.*\)gcc')" \
@@ -21,22 +21,22 @@ include/autoconf.h: .config
 	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(configargs) distclean || :
 	mv saved-busybox-config .config
-	$(MAKE) $(configargs) silentoldconfig
+	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(mkr-pkginst)",' .config
+	$(MAKE) $(args) silentoldconfig
 
 # Building busybox
-buildargs = $(configargs) CONFIG_PREFIX=$(mkr-staging)
 
 compile: include/autoconf.h
-	$(MAKE) $(buildargs)
+	$(MAKE) $(args)
 
 # Installing it
 staging:
-	$(MAKE) $(buildargs) install
+	$(MAKE) $(args) install
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones)
 %:
-	$(MAKE) $(buildargs) $@
+	$(MAKE) $(args) $@
 
 # Checking configuration
 confcheck-$(call not,$(defconfig)) += \

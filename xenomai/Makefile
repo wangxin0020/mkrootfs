@@ -35,9 +35,6 @@ compile: default-autotools-compile
 # Installation
 staging: default-autotools-staging
 
-# staging: config.status
-# 	$(MAKE) DESTDIR=$(mkr-staging) install-user
-
 # Checking configuration
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \
 	test "$(MKR_XENO_SMP)" = "n", \

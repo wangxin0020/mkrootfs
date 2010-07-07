@@ -11,28 +11,27 @@ DIRS= \
 	/var \
 	/mnt
 
-# Nothing to build
+# Compiling: nothing to do
 compile: ;
 
 # Installing stuff
 devices:
-	$(mkr-pkgdir)/mkdevices.sh "$(mkr-staging)" < $(dev_txt)
+	$(mkr-pkgdir)/mkdevices.sh "$(mkr-pkginst)" < $(dev_txt)
 
-# FIXME: needs fakeroot
 dirs:
-	for d in $(DIRS); do mkdir -p "$(mkr-staging)/$$d"; done
-	chmod a+rwx+t "$(mkr-staging)/tmp"
+	for d in $(DIRS); do mkdir -p "$(mkr-pkginst)/$$d"; done
+	chmod a+rwx+t "$(mkr-pkginst)/tmp"
 
 skel:
 	cd $(skeldir) && { \
-		find . -! -type d | while read f; do { \
-			install -D $$f "$(mkr-staging)/$$f"; \
+		find . -! -type d -! -name '*~' | while read f; do { \
+			install -D $$f "$(mkr-pkginst)/$$f"; \
 			sed -i \
 			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
-		"$(mkr-staging)/$$f"; \
+		"$(mkr-pkginst)/$$f"; \
 		}; \
 		done; \
-		install -D /etc/localtime "$(mkr-staging)/etc/localtime" || :; \
+		install -D /etc/localtime "$(mkr-pkginst)/etc/localtime" || :; \
 	}
 
 staging: devices dirs skel

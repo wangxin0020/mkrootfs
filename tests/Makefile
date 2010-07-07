@@ -33,7 +33,7 @@ all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
 compile: $(all)
 
 staging:
-	$(mkr-install) -o 0 -D $(all) $(mkr-staging)/usr/bin
+	install -o 0 -D $(all) $(mkr-pkginst)/usr/bin
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 

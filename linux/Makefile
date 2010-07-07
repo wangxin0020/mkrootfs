@@ -76,7 +76,7 @@ endif
 
 staging:
 ifeq ($(CONFIG_MODULES),y)
-	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(mkr-staging) modules_install
+	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(mkr-pkginst) modules_install
 endif
 
 # Catch-all target, allow to run all the targets (including the
