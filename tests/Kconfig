@@ -16,7 +16,7 @@ config TESTS_SRCDIR
        default "$(srctree)/tests"
 
 config TESTS_XENO
-       def_bool XENO
+       def_bool y
        build_depends on XENO
        select XENO_TESTSUITE
 
