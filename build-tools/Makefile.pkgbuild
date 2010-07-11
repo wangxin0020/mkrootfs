@@ -43,6 +43,8 @@ MAKE=make MAKEFLAGS="$(NOPRINT_MAKEFLAGS)"
 mkr-pkginst := $(CURDIR)/.mkr.inst
 mkr-staging := $(O)/staging
 mkr-rootfs := $(O)/rootfs
+mksrcdir=$(shell $(srctree)/build-tools/mksrcdir.sh \
+		"$(srctree)" "$(MKR_SRC_BASEDIR)" "$(1)")
 
 MAKE_UNI := $(MAKE) -j 1
 

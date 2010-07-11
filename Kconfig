@@ -3,12 +3,13 @@ source "toolchain/Kconfig"
 menu "Packages"
 
 config SRC_BASEDIR
-	string "Package source trees base directory"
-	default "/usr/src"
+	string "Package source trees search path"
+	default "$(HOME)/src:/usr/src"
 
 	help
-	  The directory under which the package source trees will be
-	  looked for. If relative, it is relative to Mkrootfs directory.
+	  The list of directories, separated by columns, under which
+	  the packages source trees will be looked for. If relative,
+	  it is relative to Mkrootfs directory.
 
 source "base/Kconfig"
 source "linux/Kconfig"

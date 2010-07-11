@@ -270,12 +270,10 @@ else
 
 ifeq ($(dot-config),1)
 
-_may-prefix = $(shell if expr ""$(2) : '^/' > /dev/null; then echo $(2); else echo $(1)/$(2); fi)
-_newest = $(lastword $(sort $(wildcard $(strip $(1)))))
-mkr-basedir = $(call _may-prefix,$(srctree),$(MKR_SRC_BASEDIR))
-mksrcdir = $(call _newest,$(call _may-prefix,$(mkr-basedir),$(1)))
+mksrcdir=$(shell $(srctree)/build-tools/mksrcdir.sh \
+		"$(srctree)" "$(MKR_SRC_BASEDIR)" "$(1)")
 checksrcdir = $(if $(call mksrcdir,$($(1))),:,\
-	echo Error: $(call _may-prefix,$(mkr-basedir),$($(1))) not found, see $(1); false)
+	echo Error: $($(1)) not found in $(MKSR_SRC_BASEDIR), see $(1); false)
 
 # Read in config
 -include include/config/auto.conf
