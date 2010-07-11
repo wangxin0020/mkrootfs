@@ -35,6 +35,8 @@ compile: $(all)
 staging:
 	install -o 0 -D $(all) $(mkr-pkginst)/usr/bin
 
+rootfs: default-copyall-rootfs
+
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
 $(bin_C_PROGRAMS): %:

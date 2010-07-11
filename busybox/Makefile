@@ -19,7 +19,7 @@ args := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) \
 
 include/autoconf.h: .config
 	cp .config saved-busybox-config
-	test -f Makefile && $(MAKE) $(configargs) distclean || :
+	test -f Makefile && $(MAKE) $(args) distclean || :
 	mv saved-busybox-config .config
 	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(mkr-pkginst)",' .config
 	$(MAKE) $(args) silentoldconfig
@@ -33,11 +33,13 @@ compile: include/autoconf.h
 staging:
 	$(MAKE) $(args) install
 
-# Catch-all target, allow to run all the targets (including the
-# *config ones)
-%:
-	$(MAKE) $(args) $@
+rootfs: default-copyall-rootfs
 
 # Checking configuration
 confcheck-$(call not,$(defconfig)) += \
 	$(call confcheck-exists $(board-config),MKR_BUSYBOX_CONFIG)
+
+# Catch-all target, allow to run all the targets (including the
+# *config ones)
+%:
+	$(MAKE) $(args) $@

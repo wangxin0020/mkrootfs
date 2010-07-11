@@ -100,6 +100,8 @@ libs:
 
 staging: bins libs
 
+rootfs: default-copyall-rootfs
+
 # Configuration checks
 confcheck-y += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
 confcheck-y += $(call confcheck-ifnot, \

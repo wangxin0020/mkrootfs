@@ -32,7 +32,7 @@ compile: ;
 $(mkr-staging)/ltp/config.status: $(mkr-staging)/ltp/configure
 	cd $(dir $@) && ./configure $(mkr-configure-args-y)
 
-# Build
+# Build & install
 staging: $(mkr-staging)/ltp/config.status
 	cd $(mkr-staging)/ltp && PATH=$(LTP_PATH) $(MAKE) \
 	CROSS_COMPILE="$(mkr-cross)" \
@@ -44,6 +44,8 @@ staging: $(mkr-staging)/ltp/config.status
 		output \
 		results; \
 	do mkdir -p $(mkr-staging)/ltp/$$dir || exit 1; done
+
+rootfs: default-copyall-rootfs
 
 confcheck-$(MKR_LTP_MAINT) := $(call confcheck-tool,rsync,MKR_LTP_MAINT)
 

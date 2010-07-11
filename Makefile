@@ -302,7 +302,7 @@ endif # $(dot-config)
 # Defaults vmlinux but it is usually overridden in the arch makefile
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
-all: .mkr.fakeroot clean-removed-packages
+all: rootfs clean-removed-packages
 PHONY += $(call pkg-targets,clean staging)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
@@ -395,7 +395,7 @@ $(call pkg-targets,compile): %/compile: prepare check-computed-variables
 	$(Q)echo Compiling $(dir $@)... done.
 
 $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
-	$(Q)echo Installing $(dir $@)...
+	$(Q)echo Installing $(dir $@) in staging directory...
 	$(Q)$(mkr-fakeroot) sh -c '{ \
 		mkr_pkginst=$(dir $@).mkr.inst; \
 		mkdir -p $$mkr_pkginst; \
@@ -420,7 +420,28 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		rsync -ac $$mkr_pkginst/ staging/; \
 		rm -Rf $$mkr_pkginst; \
 	}'
-	$(Q)echo Installing $(dir $@)... done.
+	$(Q)echo Installing $(dir $@) in staging directory... done.
+
+ltp/rootfs: ltp/staging
+	$(Q)echo Installing $(dir $@) in rootfs directory...
+	$(Q)$(mkr-fakeroot) rsync -a staging/ltp/ rootfs/ltp
+	$(Q)echo Installing $(dir $@) in rootfs directory... done.
+
+$(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
+	$(Q)echo Installing $(dir $@) in rootfs directory...
+	$(Q)$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@)
+	$(Q)echo Installing $(dir $@) in rootfs directory... done.
+
+staging: $(call pkg-targets,staging)
+	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
+
+mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
+
+rootfs: $(call pkg-targets,rootfs)
+	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
+		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
+		xargs -r $(mkr-cross)strip > /dev/null 2>&1 || :
+	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
@@ -428,17 +449,17 @@ clean-removed-packages:
 	$(Q)lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.filelist))"; \
 	if [ -n "$$lists" ]; then \
 		cat $$lists | { cd staging; xargs rm -f; } > /dev/null	2>&1; \
+		cat $$lists | { cd rootfs; xargs rm -f; } > /dev/null	2>&1; \
 		rm -f $$lists; \
 	fi; \
 	lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.dirlist))"; \
 	if [ -n "$$lists" ]; then \
 		cat $$lists | { cd staging; xargs \
 			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		cat $$lists | { cd rootfs; xargs \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		rm -f $$lists; \
 	fi
-
-.mkr.fakeroot: $(call pkg-targets,staging)
-	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > $@
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

@@ -81,10 +81,7 @@ ifeq ($(CONFIG_MODULES),y)
 	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(mkr-pkginst) modules_install
 endif
 
-# Catch-all target, allow to run all the targets (including the
-# *config ones)
-%:
-	$(MAKE) $(buildargs) $@
+rootfs: default-copyall-rootfs
 
 # Checking mkrootfs configuration for building the kernel
 confcheck-$(call not, $(defconfig)) += \
@@ -100,3 +97,8 @@ confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
 confcheck-$(MKR_XENO) += $(call confcheck-tool,lndir,MKR_XENO)
 
 confcheck: default-confcheck
+
+# Catch-all target, allow to run all the targets (including the
+# *config ones)
+%:
+	$(MAKE) $(buildargs) $@

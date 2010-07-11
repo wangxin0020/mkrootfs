@@ -137,3 +137,17 @@ default-autotools-compile: config.status
 .PHONY: default-autotools-staging
 default-autotools-staging:
 	$(MAKE) DESTDIR=$(mkr-pkginst) install
+
+.PHONY: rootfs
+rootfs:
+
+.PHONY: default-copyall-rootfs
+default-copyall-rootfs:
+	$(Q)cat .mkr.filelist .mkr.dirlist | \
+		{ mkdir -p $(mkr-rootfs); cd $(mkr-staging); \
+			xargs -r -i rsync -lptgodDR \{\} $(mkr-rootfs); }
+
+.PHONY: default-rootfs
+default-rootfs:
+	$(Q){ mkdir -p $(mkr-rootfs); cd $(mkr-staging); \
+		rsync -lptgodDR $(patsubst %,.%,$(rootfs-y)) $(mkr-rootfs); }

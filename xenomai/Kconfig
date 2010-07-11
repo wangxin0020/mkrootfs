@@ -29,6 +29,9 @@ config XENO_SMP
 
 menu "Skin components selection"
 
+config XENO_A4L
+       bool "Install analogy libraries and utilities"
+
 config XENO_NATIVE
        bool "Install native skin library"
        default y
@@ -39,6 +42,9 @@ config XENO_POSIX
 
 config XENO_PSOS
        bool "Install PSOS skin library"
+
+config XENO_RTCAN
+       bool "Install RT socket CAN utilities"
 
 config XENO_RTDM
        bool "Install RTDM skin library"

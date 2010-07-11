@@ -35,6 +35,60 @@ compile: default-autotools-compile
 # Installation
 staging: default-autotools-staging
 
+rootfs-y := \
+	/dev/rtheap \
+	/dev/rtp*
+rootfs-$(MKR_XENO_A4L) += \
+	/usr/lib/libanalogy.so.* \
+	/usr/bin/insn_read \
+	/usr/bin/insn_write \
+	/usr/bin/cmd_bits \
+	/usr/bin/cmd_read \
+	/usr/bin/cmd_write
+rootfs-$(MKR_XENO_NATIVE) += \
+	/usr/lib/libnative.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_POSIX) += \
+	/usr/lib/libpthread_rt.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_PSOS) += \
+	/usr/lib/libpsos.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_RTCAN) += \
+	/usr/bin/rtcanrecv \
+	/usr/bin/rtcansend
+rootfs-$(MKR_XENO_RTDM) += \
+	/usr/lib/librtdm.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_UITRON) += \
+	/usr/lib/libuitron.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_VRTX) += \
+	/usr/lib/libvrtx.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_VXWORKS) += \
+	/usr/lib/libvxworks.so.* \
+	/usr/lib/libxenomai.so.*
+rootfs-$(MKR_XENO_TESTSUITE) += \
+	/usr/bin/arith \
+	/usr/bin/check-vdso \
+	/usr/bin/clocktest \
+	/usr/bin/cyclictest \
+	/usr/bin/cond-torture-native \
+	/usr/bin/cond-torture-posix \
+	/usr/bin/irqloop \
+	/usr/bin/klatency \
+	/usr/bin/latency \
+	/usr/bin/mutex-torture-native \
+	/usr/bin/mutex-torture-posix \
+	/usr/bin/rtdm \
+	/usr/bin/sigtest \
+	/usr/bin/switchtest \
+	/usr/bin/wakeup-time \
+	/usr/bin/xeno-test
+
+rootfs: default-rootfs
+
 # Checking configuration
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \
 	test "$(MKR_XENO_SMP)" = "n", \
