@@ -302,7 +302,7 @@ endif # $(dot-config)
 # Defaults vmlinux but it is usually overridden in the arch makefile
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
-all: $(call pkg-targets,staging) clean-removed-packages
+all: .mkr.fakeroot clean-removed-packages
 PHONY += $(call pkg-targets,clean staging)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
@@ -401,18 +401,22 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		mkdir -p $$mkr_pkginst; \
 		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@) \
 		>> $(dir $@)/.mkr.log 2>&1; \
-		{ cd $$mkr_pkginst && find .; } \
-			| sort > $(dir $@)/.mkr.newlist; \
-		if [ -e $(dir $@)/.mkr.list ]; then \
-			comm -2 -3 \
-				$(dir $@)/.mkr.list $(dir $@)/.mkr.newlist \
+		{ cd $$mkr_pkginst && find . -! -type d; } \
+			| sort > $(dir $@)/.mkr.newfilelist; \
+		{ cd $$mkr_pkginst && find . -type d; } \
+			| sort > $(dir $@)/.mkr.newdirlist; \
+		if [ -e $(dir $@)/.mkr.filelist ]; then \
+			comm -2 -3 $(dir $@)/.mkr.filelist \
+				$(dir $@)/.mkr.newfilelist \
 			| { cd staging && xargs -r rm -f; }; \
-			comm -2 -3 \
-				$(dir $@)/.mkr.list $(dir $@)/.mkr.newlist \
+		fi; if [ -e $(dir $@)/.mkr.dirlist ]; then \
+			comm -2 -3 $(dir $@)/.mkr.dirlist \
+				$(dir $@)/.mkr.newdirlist \
 			| { cd staging && xargs -r \
 				rmdir --ignore-fail-on-non-empty; }; \
 		fi; \
-		mv $(dir $@)/.mkr.newlist $(dir $@)/.mkr.list; \
+		mv $(dir $@)/.mkr.newfilelist $(dir $@)/.mkr.filelist; \
+		mv $(dir $@)/.mkr.newdirlist $(dir $@)/.mkr.dirlist; \
 		rsync -ac $$mkr_pkginst/ staging/; \
 		rm -Rf $$mkr_pkginst; \
 	}'
@@ -421,13 +425,20 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
 clean-removed-packages:
-	$(Q)lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.list))"; \
+	$(Q)lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.filelist))"; \
 	if [ -n "$$lists" ]; then \
-		cat $$lists | { cd staging; xargs rm -f; } > /dev/null 2>&1; \
+		cat $$lists | { cd staging; xargs rm -f; } > /dev/null	2>&1; \
+		rm -f $$lists; \
+	fi; \
+	lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.dirlist))"; \
+	if [ -n "$$lists" ]; then \
 		cat $$lists | { cd staging; xargs \
 			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		rm -f $$lists; \
 	fi
+
+.mkr.fakeroot: $(call pkg-targets,staging)
+	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > $@
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

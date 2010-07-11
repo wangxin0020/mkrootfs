@@ -23,8 +23,8 @@ mkr-xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
 	lndir -silent -ignorelinks $(mkr-srcdir) && \
-	$(mkr-xeno-srcdir)/scripts/prepare-kernel.sh \
-		--linux=. --arch=$(MKR_KARCH) && \
+		$(mkr-xeno-srcdir)/scripts/prepare-kernel.sh \
+			--linux=. --arch=$(MKR_KARCH) && \
 	: > .mkr.prepared
 	$(Q)echo Preparing linux sources directory...done.
 
