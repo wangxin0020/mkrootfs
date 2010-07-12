@@ -54,7 +54,7 @@ config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 	$(defconfig-y)
 
 include/generated/autoconf.h: .config $(mkr-deps) .mkr.xeno
-	$(MAKE) $(configargs) silentoldconfig
+	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
 # get CONFIG_MODULES from kernel configuration

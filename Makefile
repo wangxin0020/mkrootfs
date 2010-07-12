@@ -516,7 +516,7 @@ nfsroot: $(rootfs-y) .rsync.port .rsync.pass .rsyncd.pid
 		--exclude ltp/.installed --exclude root/* \
 		--exclude /etc/ld.so.cache \
 		$(rootfs-y)/* rsync://root@localhost:$$PORT/nfsroot; then \
-		echo Synchronizing NFS root failed, erasing rsync data; \
+		echo Synchronizing NFS root failed, erasing rsync configuration; \
 		echo Please try again; \
 		rm .rsync*; \
 	else \
