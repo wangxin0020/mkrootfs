@@ -1,0 +1,12 @@
+address = localhost
+pid file = .rsyncd.pid
+[nfsroot]
+path = @MKR_NFSROOT@
+auth users = root
+strict modes = false
+secrets file = .rsyncd.secrets
+use chroot = true
+read only = false
+munge symlinks = false
+uid = 0
+gid = 0

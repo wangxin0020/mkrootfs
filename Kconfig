@@ -22,3 +22,50 @@ source "ltp/Kconfig"
 source "tests/Kconfig"
 
 endmenu
+
+menu "Output"
+
+config OUT_TGZ
+       bool "Generate a tarball"
+
+       help
+	 Generate a root filesystem tarball.
+
+config OUT_NFS
+       bool "Generate an NFS root filesystem"
+
+       help
+	 Generate root filesystem for mounting over NFS. Note that
+	 this option uses an rsync daemon to be run as super user,
+	 launched with sudo. So, in order for this option to work, you
+	 will need to be sudoer at least for the rsync command.
+
+if OUT_NFS
+
+config OUT_RSYNCD_PORT
+       int "Rsync daemon port start"
+       range 0 65535
+       default 31000
+
+       help
+	 NFS root filesystem uses an rsync daemon running as
+	 root. This configuration option allows to choose at what port
+	 the daemon will start to try running.
+
+endif
+
+config SKIP_ROOTFS
+       bool "Skip reduced root filesystem generation"
+
+       help
+	 By default, mkrootfs works in two steps: it generates a
+	 "staging" directory where all files of all packages are
+	 installed, then a "rootfs" directory which contains only
+	 files which will be needed at run-time.
+
+	 Enabling this option will skip the generation of the "rootfs"
+	 directory. This speeds-up compilation in cases like using an
+	 NFS root filesystem when the size of the root filesystem does
+	 not matter.
+
+endmenu

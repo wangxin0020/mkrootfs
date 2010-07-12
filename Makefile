@@ -126,6 +126,8 @@ HOSTCXX      = g++
 HOSTCFLAGS   = -Wall -Wmissing-prototypes -Wstrict-prototypes -O2 -fomit-frame-pointer
 HOSTCXXFLAGS = -O2
 
+not = $(if $(strip $(1)),,y)
+
 export mkr-build-src
 
 # Beautify output
@@ -302,7 +304,14 @@ endif # $(dot-config)
 # Defaults vmlinux but it is usually overridden in the arch makefile
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
-all: rootfs clean-removed-packages
+rootfs-$(MKR_SKIP_ROOTFS) := staging
+rootfs-$(call not,$(MKR_SKIP_ROOTFS)) := rootfs
+
+outputs-y := $(rootfs-y)
+outputs-$(MKR_OUT_TGZ) += rootfs.tar
+outputs-$(MKR_OUT_NFS) += nfsroot
+
+all: $(outputs-y) clean-removed-packages
 PHONY += $(call pkg-targets,clean staging)
 
 # Handle descending into subdirectories listed in $(vmlinux-dirs)
@@ -432,11 +441,13 @@ $(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
 	$(Q)$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@)
 	$(Q)echo Installing $(dir $@) in rootfs directory... done.
 
+PHONY += staging
 staging: $(call pkg-targets,staging)
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
 mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
 
+PHONY += rootfs
 rootfs: $(call pkg-targets,rootfs)
 	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
@@ -445,21 +456,78 @@ rootfs: $(call pkg-targets,rootfs)
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
+PHONY += clean-removed-packages
 clean-removed-packages:
 	$(Q)lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.filelist))"; \
 	if [ -n "$$lists" ]; then \
-		cat $$lists | { cd staging; xargs rm -f; } > /dev/null	2>&1; \
-		cat $$lists | { cd rootfs; xargs rm -f; } > /dev/null	2>&1; \
+		cat $$lists | \
+			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
+		cat $$lists | \
+			{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
 		rm -f $$lists; \
 	fi; \
 	lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.dirlist))"; \
 	if [ -n "$$lists" ]; then \
-		cat $$lists | { cd staging; xargs \
+		cat $$lists | { cd staging; xargs -r \
 			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
-		cat $$lists | { cd rootfs; xargs \
+		cat $$lists | { cd rootfs; xargs -r \
 			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		rm -f $$lists; \
 	fi
+
+.rsyncd.secrets .rsync.pass:
+	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
+	umask 077; \
+	echo $$PASS > .rsync.pass; \
+	echo root:$$PASS > .rsyncd.secrets
+
+.rsyncd.conf: $(srctree)/build-tools/rsyncd.conf.in
+	$(Q)sed 's,@MKR_NFSROOT@,$(O)/nfsroot,' $< > $@
+
+.rsync.port .rsyncd.pid: .rsyncd.conf .rsyncd.secrets .rsync.pass
+	$(Q)PORT=$(MKR_OUT_RSYNCD_PORT); \
+	LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; rm -f .rsyncd.pid; \
+	while [ ! -e .rsyncd.pid ]; do \
+		echo $$PORT > .rsync.port; \
+		echo Launching rsync on port $$PORT...; \
+		sudo rsync --daemon --port=$$PORT --config=.rsyncd.conf; \
+		sleep 1; \
+		if [ ! -e .rsyncd.pid ]; then \
+			echo Launching rsync on port $$PORT... failed; \
+			PORT=`expr $$PORT + 1`; \
+			if [ "$$PORT" -eq "$$LIMIT" ]; then \
+				echo Unable to launch rsync daemon. Giving up.; \
+				exit 1; \
+			fi; \
+		else \
+			echo Launching rsync on port $$PORT... done; \
+			exit 0; \
+		fi; \
+	done
+
+PHONY += nfsroot
+nfsroot: $(rootfs-y) .rsync.port .rsync.pass .rsyncd.pid
+	$(Q)echo Synchronizing NFS root...
+	$(Q)mkdir -p nfsroot; \
+	PORT=`cat .rsync.port`; \
+	if ! $(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
+		rsync --password-file=.rsync.pass --delete -a \
+		--exclude ltp/output/* --exclude ltp/results/* \
+		--exclude ltp/.installed --exclude root/* \
+		--exclude /etc/ld.so.cache \
+		$(rootfs-y)/* rsync://root@localhost:$$PORT/nfsroot; then \
+		echo Synchronizing NFS root failed, erasing rsync data; \
+		echo Please try again; \
+		rm .rsync*; \
+	else \
+		echo Synchronizing NFS root... done; \
+	fi
+
+PHONY += rootfs.tar
+rootfs.tar: $(rootfs-y)
+	$(Q)echo Generating $@...
+	$(Q)tar -C $(rootfs-y) -cf $@ .
+	$(Q)echo Generating $@... done
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".
