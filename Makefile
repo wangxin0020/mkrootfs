@@ -340,6 +340,29 @@ confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
 sub-confcheck = { mkdir -p $(1) && \
 	$(MAKE) $(call pkg-recurse,$(1)) $(if $(V),,-s) confcheck; } || success=false;
 
+confcheck-tool = type $(1) > /dev/null 2>&1 || { \
+	echo Error: Command $(1) not found, mkrootfs needs it, \
+please install it; \
+	success=false; };
+
+confcheck-tool-var = type $(1) > /dev/null 2>&1 || { \
+	echo Error: Command $(1) not found, install it or see $(2); \
+	success=false; };
+
+output-confcheck-y = \
+	$(call confcheck-tool,cmp) \
+	$(call confcheck-tool,rsync) \
+	$(call confcheck-tool,find) \
+	$(call confcheck-tool,xargs) \
+	$(call confcheck-tool,yes)
+
+output-confcheck-$(call not,$(MKR_SKIP_ROOTFS)) += \
+	$(call confcheck-tool-var,$(mkr-cross)strip,SKIP_ROOTFS)
+output-confcheck-$(MKR_OUT_NFS) += \
+	$(call confcheck-tool-var,hexdump,OUT_NFS)
+output-confcheck-$(MKR_OUT_TGZ) += \
+	$(call confcheck-tool-var,tar,OUT_TGZ)
+
 .mkr.basecheck: include/config/auto.conf
 	$(Q)$(confcheck-awk) \
 	$(confcheck-srcdirs) \
@@ -353,6 +376,7 @@ linux/.mkr.confcheck: .mkr.basecheck linux/.config
 .mkr.confcheck: linux/.mkr.confcheck
 	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
 				$(call sub-confcheck,$(t)/)) \
+	$(output-confcheck-y) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
 ARCH:=$(MKR_ARCH)

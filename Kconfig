@@ -29,7 +29,8 @@ config OUT_TGZ
        bool "Generate a tarball"
 
        help
-	 Generate a root filesystem tarball.
+	 Generate a root filesystem tarball. Enabling this option
+	 requires tar to be installed.
 
 config OUT_NFS
        bool "Generate an NFS root filesystem"
@@ -38,7 +39,8 @@ config OUT_NFS
 	 Generate root filesystem for mounting over NFS. Note that
 	 this option uses an rsync daemon to be run as super user,
 	 launched with sudo. So, in order for this option to work, you
-	 will need to be sudoer at least for the rsync command.
+	 will need to be sudoer at least for the rsync command. You
+	 will also need hexdump to generate the rsync daemon password.
 
 if OUT_NFS
 
@@ -67,5 +69,8 @@ config SKIP_ROOTFS
 	 directory. This speeds-up compilation in cases like using an
 	 NFS root filesystem when the size of the root filesystem does
 	 not matter.
+
+	 Note that if you do not enable this option, you will need the
+	 strip tool provided by the toolchain you use.
 
 endmenu
