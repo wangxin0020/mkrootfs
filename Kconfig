@@ -58,6 +58,7 @@ endif
 
 config SKIP_ROOTFS
        bool "Skip reduced root filesystem generation"
+       default y
 
        help
 	 By default, mkrootfs works in two steps: it generates a
