@@ -7,13 +7,13 @@ defconfig-$(defconfig) = $(MAKE) $(args) defconfig
 defconfig-$(call not,$(defconfig)) = cp $(board-defconfig) .config
 
 # Configuring busybox
-args := V=$(KBUILD_VERBOSE) -C $(mkr-srcdir) O=$(CURDIR) \
-	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(mkr-cross)ar" \
+args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
+	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(cross)ar" \
 	EXTRA_CFLAGS="$(ARCH_FLAGS)" \
 	EXTRA_LDFLAGS="$(ARCH_FLAGS)" \
 	CROSS_COMPILE="$(shell expr $(CC) : '\(.*\)gcc')" \
 
-.config:  $(mkr-deps)
+.config:  $(deps)
 	@echo Resetting busybox configuration to $(MKR_BUSYBOX_CONFIG)
 	$(defconfig-y)
 
@@ -21,7 +21,7 @@ include/autoconf.h: .config
 	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(args) distclean || :
 	mv saved-busybox-config .config
-	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(mkr-pkginst)",' .config
+	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 	yes "" | $(MAKE) $(args) oldconfig
 
 # Building busybox

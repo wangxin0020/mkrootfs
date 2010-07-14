@@ -1,32 +1,32 @@
 # Configuration
-mkr-configure-args-y += --includedir=/usr/include/xenomai
-mkr-configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
-mkr-configure-args-$(MKR_XENO_DEBUG) += --enable-debug
+configure-args-y += --includedir=/usr/include/xenomai
+configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
+configure-args-$(MKR_XENO_DEBUG) += --enable-debug
 
-mkr-configure-args-$(MKR_XENO_SMP) += --enable-smp
-mkr-configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
+configure-args-$(MKR_XENO_SMP) += --enable-smp
+configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
 
 ifneq ($(strip $(MKR_ARCH_X86_32)$(MKR_ARCH_X86_64)),)
-mkr-configure-args-$(MKR_XENO_X86_SEP) += --enable-x86-sep
-mkr-configure-args-$(call not, $(MKR_XENO_X86_SEP)) += --disable-x86-sep
+configure-args-$(MKR_XENO_X86_SEP) += --enable-x86-sep
+configure-args-$(call not, $(MKR_XENO_X86_SEP)) += --disable-x86-sep
 
-mkr-configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
-mkr-configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
+configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
+configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
 endif
 
-mkr-configure-args-$(MKR_XENO_THREAD) += --with-__thread
-mkr-configure-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
+configure-args-$(MKR_XENO_THREAD) += --with-__thread
+configure-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
 
-mkr-configure-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
-mkr-configure-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
-mkr-configure-args-$(MKR_PSOS_MLOCKALL) += --enable-psos-auto-mlockall
-mkr-configure-args-$(MKR_UITRON_MLOCKALL) += --enable-uitron-auto-mlockall
+configure-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
+configure-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
+configure-args-$(MKR_PSOS_MLOCKALL) += --enable-psos-auto-mlockall
+configure-args-$(MKR_UITRON_MLOCKALL) += --enable-uitron-auto-mlockall
 
 ifeq ($(MKR_ARCH_ARM),y)
 -include ../toolchain/.mkr.eabi
 
-mkr-configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)"
-mkr-configure-args-$(MKR_ARM_EABI) += --enable-arm-eabi
+configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)"
+configure-args-$(MKR_ARM_EABI) += --enable-arm-eabi
 endif
 
 # Compilation

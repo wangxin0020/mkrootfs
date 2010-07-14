@@ -12,7 +12,7 @@ END {
 	printf("mkr-optdeps :=");
 	for (s in list)
 		printf(" \\\n    $(wildcard $(O)/include/config/"s".h)");
-	printf("\n\n$(mkr-optdeps): ;\n\nmkr-deps :=");
+	printf("\n\n$(mkr-optdeps): ;\n\ndeps :=");
 	printf(" \\\n    $(mkr-optdeps)")
 	printf(" \\\n    .mkr.makefile.deps");
 	printf(" \\\n    .mkr.srcdir");

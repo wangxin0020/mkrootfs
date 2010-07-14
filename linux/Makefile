@@ -7,7 +7,7 @@ board-defconfig = $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_DEFCONFIG)
 # Getting the kernel version
 # Upper Makefile checked that Makefile existed in Linux sources directory
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
-	$(eval $(shell grep '^$(t) =' $(mkr-srcdir)/Makefile)))
+	$(eval $(shell grep '^$(t) =' $(srcdir)/Makefile)))
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 # Checking whether MKR_XENO changed
@@ -16,14 +16,14 @@ KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
-mkr-xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
+xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 
 .mkr.prepared: .mkr.xeno
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
-	lndir -silent -ignorelinks $(mkr-srcdir) && \
-		$(mkr-xeno-srcdir)/scripts/prepare-kernel.sh \
+	lndir -silent -ignorelinks $(srcdir) && \
+		$(xeno-srcdir)/scripts/prepare-kernel.sh \
 			--linux=. --arch=$(MKR_KARCH) && \
 	: > .mkr.prepared
 	$(Q)echo Preparing linux sources directory...done.
@@ -33,11 +33,11 @@ config-deps-y += .mkr.prepared
 # In maintainer mode, trigger prepare-kernel for every compilation
 ifeq ($(MKR_XENO_MAINT),y)
 .PHONY: .mkr.prepared
-mkr-deps += .mkr.prepared
+deps += .mkr.prepared
 endif
 
 else
-configargs := -C $(mkr-srcdir) O=$(CURDIR)
+configargs := -C $(srcdir) O=$(CURDIR)
 endif
 
 # Configuring the kernel
@@ -53,14 +53,14 @@ config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
 	+$(defconfig-y)
 
-include/generated/autoconf.h: .config $(mkr-deps) .mkr.xeno
+include/generated/autoconf.h: .config $(deps) .mkr.xeno
 	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
 # get CONFIG_MODULES from kernel configuration
 $(eval $(shell grep '^CONFIG_MODULES=y' .config 2> /dev/null))
 
-buildargs := $(configargs) CROSS_COMPILE=$(mkr-kcross) CC=$(KCC)
+buildargs := $(configargs) CROSS_COMPILE=$(kcross) CC=$(KCC)
 
 cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a
@@ -78,7 +78,7 @@ endif
 
 staging:
 ifeq ($(CONFIG_MODULES),y)
-	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(mkr-pkginst) modules_install
+	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(pkginst) modules_install
 endif
 
 rootfs: default-copyall-rootfs

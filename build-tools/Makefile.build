@@ -39,8 +39,8 @@ include build-tools/Kbuild.include
 save-cflags := $(CFLAGS)
 
 # The filename Kbuild has precedence over Makefile
-mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
-mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
+pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+mkr-pkgmk := $(if $(wildcard $(pkgdir)/Kbuild),$(pkgdir)/Kbuild,$(pkgdir)/Makefile)
 
 include $(mkr-pkgmk)
 

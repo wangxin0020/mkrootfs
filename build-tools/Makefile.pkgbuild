@@ -40,17 +40,17 @@ MAKEOVERRIDES=
 NOPRINT_MAKEFLAGS=$(filter-out --no-print-directory, $(MAKEFLAGS))
 MAKE=make MAKEFLAGS="$(NOPRINT_MAKEFLAGS)"
 
-mkr-pkginst := $(CURDIR)/.mkr.inst
-mkr-staging := $(O)/staging
-mkr-rootfs := $(O)/rootfs
+pkginst := $(CURDIR)/.mkr.inst
+staging := $(O)/staging
+rootfs := $(O)/rootfs
 mksrcdir=$(shell $(srctree)/build-tools/mksrcdir.sh \
 		"$(srctree)" "$(MKR_SRC_BASEDIR)" "$(1)")
 
 MAKE_UNI := $(MAKE) -j 1
 
 # The filename Kbuild has precedence over Makefile
-mkr-pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
-mkr-pkgmk := $(if $(wildcard $(mkr-pkgdir)/Kbuild),$(mkr-pkgdir)/Kbuild,$(mkr-pkgdir)/Makefile)
+pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
+mkr-pkgmk := $(if $(wildcard $(pkgdir)/Kbuild),$(pkgdir)/Kbuild,$(pkgdir)/Makefile)
 
 ifeq ($(mkr-pkgmk),)
 $(error No Makefile or Kbuild for package $(obj))
@@ -77,7 +77,7 @@ confcheck-exists = test -e $(1) > /dev/null 2>&1 || { \
 	echo Error: File $(1) not found, see $(2); success=false; };
 
 # Macro for recursing
-mkr-recurse = $(Q)failcom='exit 1'; success=:; \
+recurse = $(Q)failcom='exit 1'; success=:; \
 	for f in x $$MAKEFLAGS; do \
 		case $$f in \
 			*=* | --[!k]*);; \
@@ -90,13 +90,13 @@ mkr-recurse = $(Q)failcom='exit 1'; success=:; \
 	done; \
 	$$success
 
-mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
-mkr-kcross := $(shell expr $(KCC) : '\(.*\)gcc')
+cross := $(shell expr $(CC) : '\(.*\)gcc')
+kcross := $(shell expr $(KCC) : '\(.*\)gcc')
 
-mkr-configure-args-y = \
+configure-args-y = \
 	--host="$(MKR_CONFIGURE_HOST)" \
 	--prefix=/usr \
-	CC="$(CC)" CXX="$(CXX)" LD="$(mkr-cross)ld" AR="$(mkr-cross)ar" \
+	CC="$(CC)" CXX="$(CXX)" LD="$(cross)ld" AR="$(cross)ar" \
 	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
 include $(mkr-pkgmk)
@@ -126,9 +126,9 @@ default-confcheck:
 staging:
 
 # Rules for building autoconf packages
-config.status: $(mkr-deps)
+config.status: $(deps)
 	rm -Rf * || :
-	$(mkr-srcdir)/configure $(mkr-configure-args-y)
+	$(srcdir)/configure $(configure-args-y)
 
 .PHONY: default-autotools-compile
 default-autotools-compile: config.status
@@ -136,7 +136,7 @@ default-autotools-compile: config.status
 
 .PHONY: default-autotools-staging
 default-autotools-staging:
-	$(MAKE) DESTDIR=$(mkr-pkginst) install
+	$(MAKE) DESTDIR=$(pkginst) install
 
 .PHONY: rootfs
 rootfs:
@@ -144,10 +144,10 @@ rootfs:
 .PHONY: default-copyall-rootfs
 default-copyall-rootfs:
 	$(Q)cat .mkr.filelist .mkr.dirlist | \
-		{ mkdir -p $(mkr-rootfs); cd $(mkr-staging); \
-			xargs -r -i rsync -lptgodDR \{\} $(mkr-rootfs); }
+		{ mkdir -p $(rootfs); cd $(staging); \
+			xargs -r -i rsync -lptgodDR \{\} $(rootfs); }
 
 .PHONY: default-rootfs
 default-rootfs:
-	$(Q){ mkdir -p $(mkr-rootfs); cd $(mkr-staging); \
-		rsync -lptgodDR $(patsubst %,.%,$(rootfs-y)) $(mkr-rootfs); }
+	$(Q){ mkdir -p $(rootfs); cd $(staging); \
+		rsync -lptgodDR $(patsubst %,.%,$(rootfs-y)) $(rootfs); }

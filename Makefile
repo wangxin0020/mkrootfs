@@ -357,7 +357,7 @@ output-confcheck-y = \
 	$(call confcheck-tool,yes)
 
 output-confcheck-$(call not,$(MKR_SKIP_ROOTFS)) += \
-	$(call confcheck-tool-var,$(mkr-cross)strip,SKIP_ROOTFS)
+	$(call confcheck-tool-var,$(cross)strip,SKIP_ROOTFS)
 output-confcheck-$(MKR_OUT_NFS) += \
 	$(call confcheck-tool-var,hexdump,OUT_NFS)
 output-confcheck-$(MKR_OUT_TGZ) += \
@@ -398,7 +398,7 @@ check-computed-variables:
 	/bin/echo -n -e $(foreach p,$(packages), \
 		$(p) $(call mksrcdir,$($($(p)/srcdir-var)))\\n) | \
 	while read p srcdir; do \
-		echo "mkr-srcdir=$$srcdir" > .tmp.mkr.srcdir; \
+		echo "srcdir=$$srcdir" > .tmp.mkr.srcdir; \
 		if ! cmp -s .tmp.mkr.srcdir $$p/.mkr.srcdir; then \
 			mkdir -p $$p; \
 			mv .tmp.mkr.srcdir $$p/.mkr.srcdir; \
@@ -469,13 +469,13 @@ PHONY += staging
 staging: $(call pkg-targets,staging)
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
-mkr-cross := $(shell expr $(CC) : '\(.*\)gcc')
+cross := $(shell expr $(CC) : '\(.*\)gcc')
 
 PHONY += rootfs
 rootfs: $(call pkg-targets,rootfs)
 	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		xargs -r $(mkr-cross)strip > /dev/null 2>&1 || :
+		xargs -r $(cross)strip > /dev/null 2>&1 || :
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
 dis_packages:=$(filter-out $(packages),$(all_packages))

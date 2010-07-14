@@ -16,22 +16,22 @@ compile: ;
 
 # Installing stuff
 devices:
-	$(mkr-pkgdir)/mkdevices.sh "$(mkr-pkginst)" < $(dev_txt)
+	$(pkgdir)/mkdevices.sh "$(pkginst)" < $(dev_txt)
 
 dirs:
-	for d in $(DIRS); do mkdir -p "$(mkr-pkginst)/$$d"; done
-	chmod a+rwx+t "$(mkr-pkginst)/tmp"
+	for d in $(DIRS); do mkdir -p "$(pkginst)/$$d"; done
+	chmod a+rwx+t "$(pkginst)/tmp"
 
 skel:
 	cd $(skeldir) && { \
 		find . -! -type d -! -name '*~' | while read f; do { \
-			install -D $$f "$(mkr-pkginst)/$$f"; \
+			install -D $$f "$(pkginst)/$$f"; \
 			sed -i \
 			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
-		"$(mkr-pkginst)/$$f"; \
+		"$(pkginst)/$$f"; \
 		}; \
 		done; \
-		install -D /etc/localtime "$(mkr-pkginst)/etc/localtime" || :; \
+		install -D /etc/localtime "$(pkginst)/etc/localtime" || :; \
 	}
 
 staging: devices dirs skel

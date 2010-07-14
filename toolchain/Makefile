@@ -1,6 +1,6 @@
 ifeq ($(MKR_SYSROOT_AUTO),y)
-.mkr.toolchain_dirs: $(mkr-deps)
-	$(mkr-pkgdir)/toolchain-dirs.sh $(CC) $(MKR_CFLAGS) > $@ || :
+.mkr.toolchain_dirs: $(deps)
+	$(pkgdir)/toolchain-dirs.sh $(CC) $(MKR_CFLAGS) > $@ || :
 
 -include .mkr.toolchain_dirs
 else
@@ -42,8 +42,8 @@ compile: ;
 
 # Installing stuff
 bins:
-	mkdir -p "$(mkr-pkginst)/bin" "$(mkr-pkginst)/sbin"\
-		"$(mkr-pkginst)/usr/bin" "$(mkr-pkginst)/usr/sbin"; \
+	mkdir -p "$(pkginst)/bin" "$(pkginst)/sbin"\
+		"$(pkginst)/usr/bin" "$(pkginst)/usr/sbin"; \
 	for b in $(bins-y); do \
 		for d in $(BINDIRS); do \
 			bin="$$d/$$b"; \
@@ -54,21 +54,21 @@ bins:
 				*/sbin/*) dest=sbin;; \
 				*) dest=bin;; \
 				esac; \
-				install -o 0 "$$bin" "$(mkr-pkginst)/$$dest"; \
+				install -o 0 "$$bin" "$(pkginst)/$$dest"; \
 				break; \
 			fi; \
 		done; \
 	done; \
-	sed -i 's/bash/ash/g' $(mkr-pkginst)/bin/ldd > /dev/null 2>&1 || :
+	sed -i 's/bash/ash/g' $(pkginst)/bin/ldd > /dev/null 2>&1 || :
 
 libs:
-	mkdir -p "$(mkr-pkginst)/lib" "$(mkr-pkginst)/usr/lib"; \
-	rm -f "$(mkr-pkginst)/lib32" "$(mkr-pkginst)/lib64" \
-		"$(mkr-pkginst)/usr/lib32" "$(mkr-pkginst)/usr/lib64"; \
-	ln -s lib "$(mkr-pkginst)/lib64"; \
-	ln -s lib "$(mkr-pkginst)/lib32"; \
-	ln -s lib "$(mkr-pkginst)/usr/lib64"; \
-	ln -s lib "$(mkr-pkginst)/usr/lib32"; \
+	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"; \
+	rm -f "$(pkginst)/lib32" "$(pkginst)/lib64" \
+		"$(pkginst)/usr/lib32" "$(pkginst)/usr/lib64"; \
+	ln -s lib "$(pkginst)/lib64"; \
+	ln -s lib "$(pkginst)/lib32"; \
+	ln -s lib "$(pkginst)/usr/lib64"; \
+	ln -s lib "$(pkginst)/usr/lib32"; \
 	for l in $(libs-y); do \
 		case "$$l" in \
 		*.so) \
@@ -78,7 +78,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					install -o 0 "$$d"/"$$l".[0-9] "$(mkr-pkginst)/$$dest"; \
+					install -o 0 "$$d"/"$$l".[0-9] "$(pkginst)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -90,7 +90,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					install -o 0 "$$d"/"$$l"-*.so "$(mkr-pkginst)/$$dest"; \
+					install -o 0 "$$d"/"$$l"-*.so "$(pkginst)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -105,7 +105,7 @@ rootfs: default-copyall-rootfs
 # Configuration checks
 confcheck-y += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
 confcheck-y += $(call confcheck-ifnot, \
-	$(mkr-pkgdir)/toolchain-ok.sh \
+	$(pkgdir)/toolchain-ok.sh \
 		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
 	Error in toolchain or sysroot settings\
 	maybe SYSROOT_MANUAL is necessary?)
@@ -113,8 +113,8 @@ confcheck-y += $(call confcheck-ifnot, \
 
 # ARM EABI check
 ifeq ($(MKR_ARCH_ARM),y)
-.mkr.arm.eabi: $(mkr-deps)
-	$(CC) -o $@ $(cflags-y) -E $(mkr-pkgdir)/arm-eabi-check.h || :
+.mkr.arm.eabi: $(deps)
+	$(CC) -o $@ $(cflags-y) -E $(pkgdir)/arm-eabi-check.h || :
 
 -include .mkr.arm.eabi
 

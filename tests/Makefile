@@ -1,14 +1,14 @@
 # Can't use VPATH here, not sure why, but it may be because it is
 # unexported in Makefile.pkgbuild
-vpath % $(mkr-srcdir)
+vpath % $(srcdir)
 
-CPPFLAGS := -D_GNU_SOURCE -D_REENTRANT -DPIC -I. -I$(mkr-srcdir)
+CPPFLAGS := -D_GNU_SOURCE -D_REENTRANT -DPIC -I. -I$(srcdir)
 CXXFLAGS := $(cflags-y) -W -Wall -fPIC
 CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration
 LDFLAGS := $(ldflags-y) -rdynamic
 
 ifeq ($(MKR_XENO),y)
-XENO_CONFIG = DESTDIR="$(mkr-staging)" $(mkr-staging)/usr/bin/xeno-config
+XENO_CONFIG = DESTDIR="$(staging)" $(staging)/usr/bin/xeno-config
 
 XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
 XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
@@ -33,7 +33,7 @@ all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
 compile: $(all)
 
 staging:
-	install -o 0 -D $(all) $(mkr-pkginst)/usr/bin
+	install -o 0 -D $(all) $(pkginst)/usr/bin
 
 rootfs: default-copyall-rootfs
 
@@ -57,14 +57,14 @@ $(bin_CXX_PROGRAMS): %:
 
 # Automatic dependencies
 DEPENDENCIES := \
-	$(patsubst $(mkr-srcdir)/%.c, %.d, $(wildcard $(mkr-srcdir)/*.c)) \
-	$(patsubst $(mkr-srcdir)/%.cc, %.d, $(wildcard $(mkr-srcdir)/*.cc)) \
-	$(patsubst $(mkr-srcdir)/%.cxx, %.d, $(wildcard $(mkr-srcdir)/*.cxx)) \
-	$(patsubst $(mkr-srcdir)/%.C, %.d, $(wildcard $(mkr-srcdir)/*.C))
+	$(patsubst $(srcdir)/%.c, %.d, $(wildcard $(srcdir)/*.c)) \
+	$(patsubst $(srcdir)/%.cc, %.d, $(wildcard $(srcdir)/*.cc)) \
+	$(patsubst $(srcdir)/%.cxx, %.d, $(wildcard $(srcdir)/*.cxx)) \
+	$(patsubst $(srcdir)/%.C, %.d, $(wildcard $(srcdir)/*.C))
 
 ifneq ($(strip $(DEPENDENCIES)),)
 mkdeps_cmd= -M $(CPPFLAGS) $< 2> /dev/null | \
-	sed 's,\($*\)\.o[ :]*,\1.o $@: $$(mkr-deps) ,g' > $@; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@: $$(deps) ,g' > $@; \
 	test -s $@ || $(RM) $@
 
 %.d: %.c

@@ -1,9 +1,9 @@
 Available variables in package Makefile:
 
-mkr-pkgdir: package directory in mkrootfs tree
-mkr-deps: package makefile dependencies, in order to trigger a re-configure
+pkgdir: package directory in mkrootfs tree
+deps: package makefile dependencies, in order to trigger a re-configure
 if these options change
-mkr-srcdir: package source directory
+srcdir: package source directory
 
 
 Kconfig additions:
