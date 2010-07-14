@@ -450,7 +450,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		fi; \
 		mv $(dir $@)/.mkr.newfilelist $(dir $@)/.mkr.filelist; \
 		mv $(dir $@)/.mkr.newdirlist $(dir $@)/.mkr.dirlist; \
-		rsync -ac $$mkr_pkginst/ staging/; \
+		rsync -rlpgoDc $$mkr_pkginst/ staging/; \
 		rm -Rf $$mkr_pkginst; \
 	}'
 	$(Q)echo Installing $(dir $@) in staging directory... done.
