@@ -499,7 +499,7 @@ clean-removed-packages:
 		rm -f $$lists; \
 	fi
 
-.rsyncd.secrets .rsync.pass:
+.rsyncd.secrets:
 	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
 	umask 077; \
 	echo $$PASS > .rsync.pass; \
@@ -508,7 +508,7 @@ clean-removed-packages:
 .rsyncd.conf: $(srctree)/build-tools/rsyncd.conf.in
 	$(Q)sed 's,@MKR_NFSROOT@,$(O)/nfsroot,' $< > $@
 
-.rsync.port .rsyncd.pid: .rsyncd.conf .rsyncd.secrets .rsync.pass
+.rsyncd.pid: .rsyncd.conf .rsyncd.secrets
 	$(Q)PORT=$(MKR_OUT_RSYNCD_PORT); \
 	LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; rm -f .rsyncd.pid; \
 	while [ ! -e .rsyncd.pid ]; do \
@@ -530,7 +530,7 @@ clean-removed-packages:
 	done
 
 PHONY += nfsroot
-nfsroot: $(rootfs-y) .rsync.port .rsync.pass .rsyncd.pid
+nfsroot: $(rootfs-y) .rsyncd.pid
 	$(Q)echo Synchronizing NFS root...
 	$(Q)mkdir -p nfsroot; \
 	PORT=`cat .rsync.port`; \
@@ -542,7 +542,7 @@ nfsroot: $(rootfs-y) .rsync.port .rsync.pass .rsyncd.pid
 		$(rootfs-y)/* rsync://root@localhost:$$PORT/nfsroot; then \
 		echo Synchronizing NFS root failed, erasing rsync configuration; \
 		echo Please try again; \
-		rm .rsync*; \
+		rm -f .rsync*; \
 	else \
 		echo Synchronizing NFS root... done; \
 	fi
