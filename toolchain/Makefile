@@ -113,17 +113,17 @@ confcheck-y += $(call confcheck-ifnot, \
 
 # ARM EABI check
 ifeq ($(MKR_ARCH_ARM),y)
-.mkr.arm.eabi: $(deps)
+arm-eabi: $(deps)
 	$(CC) -o $@ $(cflags-y) -E $(pkgdir)/arm-eabi-check.h || :
 
--include .mkr.arm.eabi
+-include arm-eabi
 
 # Invalid configurations:
-# CONFIG_AEABI CONFIG_OABI_COMPAT MKR_ARM_EABI
+# CONFIG_AEABI CONFIG_OABI_COMPAT TOOLCHAIN_ARM_EABI
 #     y			n		n
 #     n			*		y
 
-confcheck-$(MKR_ARM_EABI) += \
+confcheck-$(TOOLCHAIN_ARM_EABI) += \
 	$(call confcheck-if, \
 		test "$(CONFIG_AEABI)" != "y", \
 		EABI toolchain but EABI not enabled in kernel configuration)
@@ -131,7 +131,7 @@ confcheck-$(MKR_ARM_EABI) += \
 confcheck-$(CONFIG_AEABI) += \
 	$(call confcheck-if, \
 		test "$(CONFIG_OABI_COMPAT)" != "y" \
-			-a "$(MKR_ARM_EABI)" != "y", \
+			-a "$(TOOLCHAIN_ARM_EABI)" != "y", \
 		EABI-only kernel with non-EABI toolchain)
 
 confcheck-$(MKR_ARM_VFP) += \

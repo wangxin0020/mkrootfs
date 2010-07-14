@@ -23,10 +23,10 @@ configure-args-$(MKR_PSOS_MLOCKALL) += --enable-psos-auto-mlockall
 configure-args-$(MKR_UITRON_MLOCKALL) += --enable-uitron-auto-mlockall
 
 ifeq ($(MKR_ARCH_ARM),y)
--include ../toolchain/.mkr.eabi
+-include ../toolchain/arm-eabi
 
 configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)"
-configure-args-$(MKR_ARM_EABI) += --enable-arm-eabi
+configure-args-$(TOOLCHAIN_ARM_EABI) += --enable-arm-eabi
 endif
 
 # Compilation
