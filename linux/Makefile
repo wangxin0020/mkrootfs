@@ -51,7 +51,7 @@ config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 .config: $(config-deps-y)
 	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
-	$(defconfig-y)
+	+$(defconfig-y)
 
 include/generated/autoconf.h: .config $(mkr-deps) .mkr.xeno
 	yes "" | $(MAKE) $(configargs) oldconfig
