@@ -97,6 +97,7 @@ configure-args-y = \
 	--host="$(MKR_CONFIGURE_HOST)" \
 	--prefix=/usr \
 	CC="$(CC)" CXX="$(CXX)" LD="$(cross)ld" AR="$(cross)ar" \
+	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
 	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
 include $(mkr-pkgmk)
