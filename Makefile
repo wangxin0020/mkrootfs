@@ -426,29 +426,29 @@ mkr-run-and-log-on-failure = \
 	$(mkr-locked-echo) $(1)...; \
 	if ! { $(3); } >> $(2)/.mkr.log 2>&1; then \
 		$(mkr-shortlog) $(2)/.mkr.log > $(2)/.mkr.shortlog; \
-		$(mkr-lock); echo '\*\*\*' $(1)... failed; \
+		$(mkr-lock); echo '+++' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
 			cat $(2)/.mkr.shortlog; \
-			echo '\*\*\*' Type make $(2)/log for more details; \
+			echo '+++' Type make $(2)/log for more details; \
 		else \
-			echo '\*\*\*' Type make $(2)/shortlog or $(2)/log for more details; \
+			echo '+++' Type make $(2)/shortlog or $(2)/log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
 	fi; \
-	$(mkr-locked-echo) $(1)...done
+	$(mkr-locked-echo) $(1)... done
 
 mkr-run-and-log = \
 	mkdir -p $(2); \
 	$(mkr-locked-echo) $(1)...; \
 	if ! { $(3); } >> $(2).mkr.log 2>&1; then \
 		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
-		$(mkr-lock); echo '\*\*\*' $(1)... failed; \
+		$(mkr-lock); echo '+++' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
 			cat $(2).mkr.shortlog; \
-			echo '\*\*\*' Type make $(2)log for more details; \
+			echo '+++' Type make $(2)log for more details; \
 		else \
-			echo '\*\*\*' Type make $(2)shortlog or $(2)log for more details; \
+			echo '+++' Type make $(2)shortlog or $(2)log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
@@ -456,15 +456,15 @@ mkr-run-and-log = \
 		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
 		if [ -s $(2)/.mkr.shortlog ]; then \
 			$(mkr-lock); \
-			echo '\*\*\*' $(1)... done, with warnings; \
+			echo '+++' $(1)... done, with warnings; \
 			if [ ! -e .mkr.displayed ]; then \
 				cat $(2).mkr.shortlog; \
-				echo '\*\*\*' Type make $(2)log for more details; \
+				echo '+++' Type make $(2)log for more details; \
 			else \
-				echo '\*\*\*' Type make $(2)shortlog or $(2)log for more details; \
+				echo '+++' Type make $(2)shortlog or $(2)log for more details; \
 			fi; : > .mkr.displayed; $(mkr-unlock); \
 		else \
-			$(mkr-locked-echo) $(1)...done; \
+			$(mkr-locked-echo) $(1)... done; \
 		fi; \
 	fi
 
@@ -505,16 +505,27 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		if [ -e $(dir $@)/.mkr.filelist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.filelist \
 				$(dir $@)/.mkr.newfilelist \
-			| { cd staging && xargs -r rm -f; }; \
+			| { mkdir -p staging; cd staging && xargs -r rm -f; }; \
 		fi; if [ -e $(dir $@)/.mkr.dirlist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.dirlist \
 				$(dir $@)/.mkr.newdirlist \
-			| { cd staging && xargs -r \
+			| { mkdir -p staging; cd staging && xargs -r \
 				rmdir --ignore-fail-on-non-empty; }; \
 		fi; \
 		mv $(dir $@)/.mkr.newfilelist $(dir $@)/.mkr.filelist; \
 		mv $(dir $@)/.mkr.newdirlist $(dir $@)/.mkr.dirlist; \
-		rsync -rlpgoDc $$mkr_pkginst/ staging/; \
+		if ! rsync -rlpgoDc $$mkr_pkginst/ staging/; then \
+			$(mkr-locked-echo) rsync failed, please try again; \
+			rm $(dir $@).mkr.fakeroot; \
+			cat $(dir $@).mkr.filelist | \
+			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
+			cat $(dir $@).mkr.filelist | \
+			{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
+			cat $(dir $@).mkr.dirlist | { cd staging; xargs -r \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			cat $(dir $@).mkr.dirlist | { cd rootfs; xargs -r \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		fi; \
 		rm -Rf $$mkr_pkginst; \
 	}'
 
@@ -618,7 +629,7 @@ nfsroot: $(rootfs-y) .rsyncd.pid
 		$(rootfs-y)/* rsync://root@localhost:$$PORT/nfsroot; then \
 		echo Synchronizing NFS root failed, erasing rsync configuration; \
 		echo Please try again; \
-		rm -f .rsync*; \
+		rm -Rf .rsync* .mkr.fakeroot */.mkr.fakeroot staging rootfs; \
 	else \
 		echo Synchronizing NFS root... done; \
 	fi
