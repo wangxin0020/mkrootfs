@@ -38,6 +38,9 @@ staging: devices dirs skel
 
 rootfs: default-copyall-rootfs
 
+# Cleaning: nothing to do
+clean: ;
+
 # Checking configuration
 confcheck-y := $(call confcheck-exists,$(dev_txt),MKR_BOARD)
 confcheck-y += $(call confcheck-exists,$(skeldir),MKR_BOARD)

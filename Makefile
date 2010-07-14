@@ -218,8 +218,7 @@ endif
 allconfigs := oldconfig xconfig gconfig menuconfig config silentoldconfig \
 	localmodconfig localyesconfig allyesconfig allnoconfig allmodconfig
 
-no-dot-config-targets := clean mrproper distclean \
-			 help
+no-dot-config-targets := help
 
 config-targets := 0
 mixed-targets  := 0
@@ -471,7 +470,7 @@ mkr-run-and-log = \
 mkr-run-staging-$(call not,$(MKR_SKIP_ROOTFS)) = $(mkr-run-and-log-on-failure)
 mkr-run-staging-$(MKR_SKIP_ROOTFS) = $(mkr-run-and-log)
 
-build-tools/bin/fakeroot: remove-displayed
+build-tools/bin/fakeroot:
 	$(Q)rm -f build-tools/fakeroot/.mkr.log
 	$(Q)$(call mkr-run-and-log, \
 		Building build system fakeroot, \
@@ -482,7 +481,7 @@ build-tools/bin/fakeroot: remove-displayed
 
 PHONY += $(call pkg-targets,compile)
 $(call pkg-targets,compile): \
-	%/compile: prepare check-computed-variables remove-displayed
+	%/compile: prepare check-computed-variables
 	$(Q)rm -f $(dir $@).mkr.log
 	$(Q)$(call mkr-run-and-log-on-failure, \
 		Compiling $(dir $@), \
@@ -533,9 +532,11 @@ PHONY += staging
 staging: $(call only-pkg-targets,staging)
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
+PHONY += $(call pkg-targets,log)
 $(call pkg-targets,log): %:
 	$(Q)cat $(dir $@).mkr.log 2> /dev/null || :
 
+PHONY += $(call pkg-targets,shortlog)
 $(call pkg-targets,shortlog): %:
 	$(Q)cat $(dir $@).mkr.shortlog 2> /dev/null || :
 
@@ -653,7 +654,7 @@ endif
 PHONY += prepare archprepare prepare0 prepare1 prepare2
 
 # prepare2 creates a makefile if using a separate output directory
-prepare2: outputmakefile
+prepare2: outputmakefile remove-displayed
 
 prepare1: prepare2 include/config/auto.conf
 
@@ -672,49 +673,50 @@ prepare: prepare0 .mkr.confcheck
 # make clean     Delete most generated files
 # make mrproper  Delete the current configuration, and all generated files
 
-# Directories & files removed with 'make clean'
-CLEAN_DIRS  += $(packages)
+# Per package clean target
+PHONY += $(call pkg-targets,clean)
+$(call pkg-targets,clean): %:
+	$(Q)echo Cleaning $(dir $@)...; \
+	if [ -e $(dir $@) ] \
+		&& ! $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@) \
+		> /dev/null 2>&1; then \
+		echo Cleaning $(dir $@)... failed; \
+		exit 1; \
+	else \
+		echo Cleaning $(dir $@)... done; \
+	fi
 
-# Directories & files removed with 'make mrproper'
-MRPROPER_DIRS  += include build-tools
-MRPROPER_FILES += .config .config.old
-
-# clean - Delete most, but leave enough to build external modules
-#
-clean: rm-dirs  := $(CLEAN_DIRS)
-
-PHONY += clean
-
-clean: $(clean-dirs)
-	$(call cmd,rmdirs)
-	@find . \
-		\( -name '*.[oas]' -o -name '.*.cmd' -o -name '.*.d' \) \
-		-type f -print | xargs rm -f
+clean: $(call pkg-targets,clean)
+	$(Q)rm -Rf staging/* rootfs/* .mkr.fakeroot */.mkr.fakeroot
 
 # mrproper - Delete all generated files, including .config
 #
-mrproper: rm-dirs  := $(wildcard $(MRPROPER_DIRS))
-mrproper: rm-files := $(wildcard $(MRPROPER_FILES))
+ifeq ($(MKR_OUT_NFS),y)
+PHONY += clean-nfsroot
+clean-nfsroot: .rsyncd.pid
+	$(Q)rm -Rf staging/*
+	$(Q)PORT=`cat .rsync.port`; \
+	rsync --password-file=.rsync.pass --delete -a staging/ \
+		rsync://root@localhost:$$PORT/nfsroot
+
+mrproper: clean-nfsroot
+endif
 
 PHONY += mrproper
-
-mrproper: clean
-	$(call cmd,rmdirs)
-	$(call cmd,rmfiles)
+mrproper:
+	$(Q)rm -Rf .config .mkr.* *
 
 # distclean
 #
 PHONY += distclean
-
 distclean: mrproper
 	@find $(srctree) $(RCS_FIND_IGNORE) \
 		\( -name '*.orig' -o -name '*.rej' -o -name '*~' \
 		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
-		-o -name '.*.rej' -o -size 0 \
+		-o -name '.*.rej' \
 		-o -name '*%' -o -name '.*.cmd' -o -name 'core' \) \
 		-type f -print | xargs rm -f
 
-# FIXME
 help:
 	@echo  'Cleaning targets:'
 	@echo  '  clean		  - Remove most generated files but keep the config and'

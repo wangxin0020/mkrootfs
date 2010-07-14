@@ -38,6 +38,9 @@ staging: $(all)
 
 rootfs: default-copyall-rootfs
 
+clean:
+	rm -f $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) *.o *.d
+
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
 $(bin_C_PROGRAMS): %:

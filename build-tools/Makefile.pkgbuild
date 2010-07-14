@@ -152,3 +152,9 @@ default-copyall-rootfs:
 default-rootfs:
 	$(Q){ mkdir -p $(rootfs); cd $(staging); \
 		rsync -lptgodDR $(patsubst %,.%,$(rootfs-y)) $(rootfs); }
+
+.PHONY: default-clean
+default-clean:
+	$(Q)if test -e Makefile; then \
+		$(MAKE) clean; \
+	fi

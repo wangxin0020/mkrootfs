@@ -25,7 +25,6 @@ include/autoconf.h: .config
 	yes "" | $(MAKE) $(args) oldconfig
 
 # Building busybox
-
 compile: include/autoconf.h
 	$(MAKE) $(args)
 
@@ -40,6 +39,6 @@ confcheck-$(call not,$(defconfig)) += \
 	$(call confcheck-exists $(board-config),MKR_BUSYBOX_CONFIG)
 
 # Catch-all target, allow to run all the targets (including the
-# *config ones)
+# *config ones and clean)
 %:
 	$(MAKE) $(args) $@

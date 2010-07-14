@@ -89,6 +89,8 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 
 rootfs: default-rootfs
 
+clean: default-clean
+
 # Checking configuration
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \
 	test "$(MKR_XENO_SMP)" = "n", \

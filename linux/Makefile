@@ -99,6 +99,6 @@ confcheck-$(MKR_XENO) += $(call confcheck-tool,lndir,MKR_XENO)
 confcheck: default-confcheck
 
 # Catch-all target, allow to run all the targets (including the
-# *config ones)
+# *config ones, and clean)
 %:
 	$(MAKE) $(buildargs) $@

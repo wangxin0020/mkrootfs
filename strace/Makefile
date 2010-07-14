@@ -5,3 +5,5 @@ staging: default-autotools-staging
 rootfs-y := /usr/bin/strace
 
 rootfs: default-rootfs
+
+clean: default-clean

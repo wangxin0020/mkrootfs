@@ -47,6 +47,13 @@ staging: $(staging)/ltp/config.status
 
 rootfs: default-copyall-rootfs
 
+# Cleaning
+clean: ;
+	$(Q)if test -e $(staging)/ltp/Makefile; then \
+		 $(MAKE) -C $(staging)/ltp clean; \
+	fi
+
+# Checking configuration
 confcheck-$(MKR_LTP_MAINT) := $(call confcheck-tool,rsync,MKR_LTP_MAINT)
 
 confcheck: default-confcheck
