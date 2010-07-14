@@ -337,8 +337,8 @@ confcheck-awk = type $(AWK) > /dev/null 2>&1 || { \
 confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
 	echo Linux kernel Makefile \($(linux/srcdir)/Makefile\) not found; \
 	success=false; };
-sub-confcheck = { mkdir -p $(1) && \
-	$(MAKE) $(call pkg-recurse,$(1)) $(if $(V),,-s) confcheck; } || success=false;
+sub-confcheck = { mkdir -p $(2) && \
+	$(1) $(call pkg-recurse,$(2)) $(if $(V),,-s) confcheck; } || success=false;
 
 confcheck-tool = type $(1) > /dev/null 2>&1 || { \
 	echo Error: Command $(1) not found, mkrootfs needs it, \
@@ -370,12 +370,12 @@ output-confcheck-$(MKR_OUT_TGZ) += \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
 linux/.mkr.confcheck: .mkr.basecheck linux/.config
-	$(Q)success=:; $(call sub-confcheck,linux/) \
+	$(Q)success=:; $(call sub-confcheck,$(MAKE),linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
 .mkr.confcheck: linux/.mkr.confcheck
 	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
-				$(call sub-confcheck,$(t)/)) \
+				$(call sub-confcheck,$(MAKE),$(t)/)) \
 	$(output-confcheck-y) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
