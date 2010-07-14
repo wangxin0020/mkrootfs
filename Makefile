@@ -298,10 +298,19 @@ else
 include/config/auto.conf: ;
 endif # $(dot-config)
 
+only-packages:=$(filter $(packages),$(MAKECMDGOALS))
+ifeq ($(strip $(only-packages)),)
+only-packages:=$(packages)
+endif
+
+PHONY += $(only-packages)
+$(only-packages): %: all
+
 # The all: target is the default when no target is given on the
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules
 # Defaults vmlinux but it is usually overridden in the arch makefile
+only-pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(only-packages)))
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
 rootfs-$(MKR_SKIP_ROOTFS) := staging
@@ -312,7 +321,6 @@ outputs-$(MKR_OUT_TAR) += rootfs.tar
 outputs-$(MKR_OUT_NFS) += nfsroot
 
 all: $(outputs-y) clean-removed-packages
-PHONY += $(call pkg-targets,clean staging)
 
 mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
@@ -418,12 +426,12 @@ mkr-run-and-log-on-failure = \
 	$(mkr-locked-echo) $(1)...; \
 	if ! { $(3); } >> $(2)/.mkr.log 2>&1; then \
 		$(mkr-shortlog) $(2)/.mkr.log > $(2)/.mkr.shortlog; \
-		$(mkr-lock); echo '***' $(1)... failed; \
+		$(mkr-lock); echo '\*\*\*' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
 			cat $(2)/.mkr.shortlog; \
-			echo '***' Type make $(2)/log for more details; \
+			echo '\*\*\*' Type make $(2)/log for more details; \
 		else \
-			echo '***' Type make $(2)/shortlog or $(2)/log for more details; \
+			echo '\*\*\*' Type make $(2)/shortlog or $(2)/log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
@@ -435,12 +443,12 @@ mkr-run-and-log = \
 	$(mkr-locked-echo) $(1)...; \
 	if ! { $(3); } >> $(2).mkr.log 2>&1; then \
 		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
-		$(mkr-lock); echo '***' $(1)... failed; \
+		$(mkr-lock); echo '\*\*\*' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
 			cat $(2).mkr.shortlog; \
-			echo '***' Type make $(2)log for more details; \
+			echo '\*\*\*' Type make $(2)log for more details; \
 		else \
-			echo '***' Type make $(2)shortlog or $(2)log for more details; \
+			echo '\*\*\*' Type make $(2)shortlog or $(2)log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
@@ -448,12 +456,12 @@ mkr-run-and-log = \
 		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
 		if [ -s $(2)/.mkr.shortlog ]; then \
 			$(mkr-lock); \
-			echo '***' $(1)... done, with warnings; \
+			echo '\*\*\*' $(1)... done, with warnings; \
 			if [ ! -e .mkr.displayed ]; then \
 				cat $(2).mkr.shortlog; \
-				echo '***' Type make $(2)log for more details; \
+				echo '\*\*\*' Type make $(2)log for more details; \
 			else \
-				echo '***' Type make $(2)shortlog or $(2)log for more details; \
+				echo '\*\*\*' Type make $(2)shortlog or $(2)log for more details; \
 			fi; : > .mkr.displayed; $(mkr-unlock); \
 		else \
 			$(mkr-locked-echo) $(1)...done; \
@@ -472,6 +480,7 @@ build-tools/bin/fakeroot: remove-displayed
 			-f $(srctree)/build-tools/fakeroot-1.11/Makefile \
 			$(O)/build-tools/bin/fakeroot)
 
+PHONY += $(call pkg-targets,compile)
 $(call pkg-targets,compile): \
 	%/compile: prepare check-computed-variables remove-displayed
 	$(Q)rm -f $(dir $@).mkr.log
@@ -480,6 +489,7 @@ $(call pkg-targets,compile): \
 		$(dir $@), \
 		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
+PHONY += $(call pkg-targets,staging)
 $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 	$(Q)$(mkr-fakeroot) sh -c '{ \
 		mkr_pkginst=$(dir $@).mkr.inst; \
@@ -509,7 +519,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 	}'
 
 PHONY += staging
-staging: $(call pkg-targets,staging)
+staging: $(call only-pkg-targets,staging)
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
 $(call pkg-targets,log): %:
@@ -520,6 +530,7 @@ $(call pkg-targets,shortlog): %:
 
 # Rootfs rules, only needed if not skipping rootfs generation.
 ifneq ($(MKR_SKIP_ROOTFS),y)
+PHONY += $(call pkg-targets,rootfs)
 ltp/rootfs: ltp/staging
 	$(Q)$(call mkr-run-and-log, \
 		Installing $(dir $@) in rootfs directory, \
@@ -535,7 +546,7 @@ $(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
 cross := $(shell expr $(CC) : '\(.*\)gcc')
 
 PHONY += rootfs
-rootfs: $(call pkg-targets,rootfs)
+rootfs: $(call only-pkg-targets,rootfs)
 	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
 		xargs -r $(cross)strip > /dev/null 2>&1 || :
