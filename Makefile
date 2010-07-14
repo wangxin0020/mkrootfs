@@ -423,14 +423,14 @@ remove-displayed:
 mkr-run-and-log-on-failure = \
 	mkdir -p $(2); \
 	$(mkr-locked-echo) $(1)...; \
-	if ! { $(3); } >> $(2)/.mkr.log 2>&1; then \
-		$(mkr-shortlog) $(2)/.mkr.log > $(2)/.mkr.shortlog; \
+	if ! { $(3); } >> $(2).mkr.log 2>&1; then \
+		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
 		$(mkr-lock); echo '+++' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
-			cat $(2)/.mkr.shortlog; \
-			echo '+++' Type make $(2)/log for more details; \
+			cat $(2).mkr.shortlog; \
+			echo '+++' Type make $(2)log for more details; \
 		else \
-			echo '+++' Type make $(2)/shortlog or $(2)/log for more details; \
+			echo '+++' Type make $(2)shortlog or $(2)log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
@@ -453,7 +453,7 @@ mkr-run-and-log = \
 		$(mkr-unlock); exit 1; \
 	else \
 		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
-		if [ -s $(2)/.mkr.shortlog ]; then \
+		if [ -s $(2).mkr.shortlog ]; then \
 			$(mkr-lock); \
 			echo '+++' $(1)... done, with warnings; \
 			if [ ! -e .mkr.displayed ]; then \
