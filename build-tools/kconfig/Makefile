@@ -104,7 +104,7 @@ else
 endif
 
 %_defconfig: $(obj)/conf
-	$(Q)$< -D arch/$(SRCARCH)/configs/$@ $(Kconfig)
+	$(Q)$< -D boards/$@ $(Kconfig)
 
 # Help text used by make help
 help:

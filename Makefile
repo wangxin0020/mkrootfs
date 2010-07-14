@@ -215,8 +215,9 @@ endif
 # Detect when mixed targets is specified, and make a second invocation
 # of make so .config is not included in this case either (for *config).
 
-allconfigs := oldconfig xconfig gconfig menuconfig config silentoldconfig \
-	localmodconfig localyesconfig allyesconfig allnoconfig allmodconfig
+allconfigs := oldconfig xconfig gconfig menuconfig config defconfig \
+	silentoldconfig localmodconfig localyesconfig \
+	allyesconfig allnoconfig allmodconfig
 
 no-dot-config-targets := help
 
@@ -230,9 +231,12 @@ ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
-ifneq ($(filter $(allconfigs),$(MAKECMDGOALS)),)
+boards := $(wildcard $(srctree)/boards/*_defconfig)
+boards := $(notdir $(boards))
+
+ifneq ($(filter $(allconfigs) $(boards),$(MAKECMDGOALS)),)
       config-targets := 1
-      ifneq ($(filter-out $(allconfigs),$(MAKECMDGOALS)),)
+      ifneq ($(filter-out $(allconfigs) $(boards),$(MAKECMDGOALS)),)
 	     mixed-targets := 1
       endif
 endif
@@ -253,7 +257,11 @@ ifeq ($(config-targets),1)
 
 export mkr-config
 
-$(allconfigs): build-tools_basic outputmakefile FORCE
+$(allconfigs): %: build-tools_basic outputmakefile FORCE
+	$(Q)mkdir -p include/config
+	$(Q)$(MAKE) $(build)=build-tools/kconfig $@
+
+$(boards): %: build-tools_basic outputmakefile FORCE
 	$(Q)mkdir -p include/config
 	$(Q)$(MAKE) $(build)=build-tools/kconfig $@
 
@@ -328,13 +336,34 @@ mkr-lock = . $(srctree)/build-tools/display.sh lock
 mkr-unlock = . $(srctree)/build-tools/display.sh unlock
 mkr-locked-echo = . $(srctree)/build-tools/display.sh locked-echo
 
-linux/%:
+$(patsubst %, linux/%, $(allconfigs) mkr-config): %: check-computed-variables
 	$(Q)mkdir -p linux
-	$(Q)$(MAKE) $(call pkg-recurse,linux/) $*
+	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
+	$(Q)if [ -e linux/.config ]; then \
+		cp -a linux/.config .linux_config; \
+	fi
 
-busybox/%:
+ linux/.config:
+	$(Q)mkdir -p linux
+	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
+	$(Q)if [ -e linux/.config ]; then \
+		cp -a linux/.config .linux_config; \
+	fi
+
+linux/%_defconfig:
+	$(Q)mkdir -p linux
+	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
+	$(Q)if [ -e linux/.config ]; then \
+		cp -a linux/.config .linux_config; \
+	fi
+
+$(patsubst %, busybox/%, $(allconfigs) mkr-config): \
+	%: prepare check-computed-variables
 	$(Q)mkdir -p busybox
-	$(Q)$(MAKE) $(call pkg-recurse,busybox/) $*
+	$(Q)$(MAKE) $(call pkg-recurse,busybox/) $(notdir $@)
+	$(Q)if [ -e busybox/.config ]; then \
+		cp -a busybox/.config .busybox_config; \
+	fi
 
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
@@ -694,10 +723,13 @@ clean: $(call pkg-targets,clean)
 ifeq ($(MKR_OUT_NFS),y)
 PHONY += clean-nfsroot
 clean-nfsroot: .rsyncd.pid
-	$(Q)rm -Rf staging/*
-	$(Q)PORT=`cat .rsync.port`; \
-	rsync --password-file=.rsync.pass --delete -a staging/ \
-		rsync://root@localhost:$$PORT/nfsroot
+	$(Q)if [ -e nfsroot ]; then \
+		mkdir -p staging; \
+		rm -Rf staging/*; \
+		PORT=`cat .rsync.port`; \
+		rsync --password-file=.rsync.pass --delete -a staging/ \
+			rsync://root@localhost:$$PORT/nfsroot; \
+	fi
 
 mrproper: clean-nfsroot
 endif
@@ -717,19 +749,40 @@ distclean: mrproper
 		-o -name '*%' -o -name '.*.cmd' -o -name 'core' \) \
 		-type f -print | xargs rm -f
 
+# Brief documentation of the typical targets used
+# ---------------------------------------------------------------------------
+
 help:
 	@echo  'Cleaning targets:'
 	@echo  '  clean		  - Remove most generated files but keep the config and'
-	@echo  '                    enough build support to build external modules'
+	@echo  '                    Makefiles'
 	@echo  '  mrproper	  - Remove all generated files + config + various backup files'
 	@echo  '  distclean	  - mrproper + remove editor backup and patch files'
 	@echo  ''
 	@echo  'Configuration targets:'
 	@$(MAKE) -f $(srctree)/build-tools/kconfig/Makefile help
 	@echo  ''
+	@echo  'Pre-canned board configurations:'
+	@$(foreach b, $(boards), \
+		printf "  %-24s - %s board configuration\\n" $(b) $(subst _defconfig,,$(b));)
+	@echo  ''
 	@echo  'Other generic targets:'
 	@echo  '  all		  - Build all targets marked with [*]'
-	@echo  '  dir/            - Build all files in dir and below'
+	@echo  '* staging         - Build all packages and install them in the staging directory'
+	@echo  '* rootfs          - Copy and strip from staging on the files useful at run-time'
+	@echo  '* nfsroot         - Copy rootfs in a directory shared through NFS'
+	@echo  '  package/target  - run target in the package build directory, where rule is'
+	@echo  '                  one of compile, staging, rootfs, clean, shortlog, log,'
+	@echo  '                  or one of the *config targets for busybox and linux.'
+	@echo  ''
+	@echo  '                  busybox and linux also have a mkr-config target which'
+	@echo  '                  restores the .config from mkrootfs configuration.'
+	@echo  ''
+	@echo  '                  The log and shortlog target print the last compilation log.'
+	@echo  ''
+	@echo  '  package         - build package and if need be, update the staging, rootfs'
+	@echo  '                  and nfsroot directories.'
+	@echo  '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
 	@echo  '  make O=dir [targets] Locate all output files in "dir", including .config'
 	@echo  'Execute "make" or "make all" to build all targets marked with [*] '
 	@echo  'For further info see the ./README file'
@@ -750,38 +803,6 @@ $(help-board-dirs): help-%:
 
 endif #ifeq ($(config-targets),1)
 endif #ifeq ($(mixed-targets),1)
-
-# Single targets
-# ---------------------------------------------------------------------------
-# Single targets are compatible with:
-# - build with mixed source and output
-# - build with separate output dir 'make O=...'
-# - external modules
-#
-#  target-dir => where to store outputfile
-#  build-dir  => directory in kernel source tree to use
-
-build-dir  = $(patsubst %/,%,$(dir $@))
-target-dir = $(dir $@)
-
-# FIXME Should go into a make.lib or something
-# ===========================================================================
-
-quiet_cmd_rmdirs = $(if $(wildcard $(rm-dirs)),CLEAN   $(wildcard $(rm-dirs)))
-      cmd_rmdirs = rm -rf $(rm-dirs)
-
-quiet_cmd_rmfiles = $(if $(wildcard $(rm-files)),CLEAN   $(wildcard $(rm-files)))
-      cmd_rmfiles = rm -f $(rm-files)
-
-# read all saved command lines
-
-targets := $(wildcard $(sort $(targets)))
-cmd_files := $(wildcard .*.cmd $(foreach f,$(targets),$(dir $(f)).$(notdir $(f)).cmd))
-
-ifneq ($(cmd_files),)
-  $(cmd_files): ;	# Do not try to update included dependency files
-  include $(cmd_files)
-endif
 
 endif	# skip-makefile
 

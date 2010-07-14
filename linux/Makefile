@@ -44,14 +44,31 @@ endif
 configargs += V=$(KBUILD_VERBOSE) ARCH=$(MKR_KARCH)
 
 defconfig-$(call not,$(defconfig)) := cp $(board-defconfig) $@
-defconfig-$(defconfig) := $(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG)
+defconfig-$(defconfig) = \
+	$(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG) && mv .config $@
 
 config-deps-y += $(O)/include/config/linux/defconfig.h
 config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
-.config: $(config-deps-y)
-	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
+.mkr_config: $(config-deps-y)
+	$(Q)rm -f ../.linux_config
 	+$(defconfig-y)
+
+../.linux_config: ;
+
+.config: .mkr_config $(wildcard ../.linux_config)
+	@if [ -e ../.linux_config ]; then \
+		echo Resetting Linux configuration to .linux_config; \
+		cp ../.linux_config .config; \
+	else \
+		echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG); \
+		cp .mkr_config .config; \
+	fi
+
+mkr-config: .mkr_config
+	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
+	$(Q)cp .mkr_config .config
+	$(Q)rm -f ../.linux_config
 
 include/generated/autoconf.h: .config $(deps) .mkr.xeno
 	yes "" | $(MAKE) $(configargs) oldconfig
@@ -100,5 +117,8 @@ confcheck: default-confcheck
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones, and clean)
-%:
+%config: .config
+	$(MAKE) $(buildargs) $@
+
+clean: .config
 	$(MAKE) $(buildargs) $@

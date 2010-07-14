@@ -3,8 +3,8 @@ defconfig:=y
 endif
 
 board-config = $(srctree)/boards/$(MKR_BOARD)/$(MKR_BUSYBOX_CONFIG)
-defconfig-$(defconfig) = $(MAKE) $(args) defconfig
-defconfig-$(call not,$(defconfig)) = cp $(board-defconfig) .config
+defconfig-$(defconfig) = $(MAKE) $(args) defconfig && mv .config $@
+defconfig-$(call not,$(defconfig)) = cp $(board-defconfig) $@
 
 # Configuring busybox
 args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
@@ -13,9 +13,25 @@ args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
 	EXTRA_LDFLAGS="$(ARCH_FLAGS)" \
 	CROSS_COMPILE="$(shell expr $(CC) : '\(.*\)gcc')" \
 
-.config:  $(deps)
-	@echo Resetting busybox configuration to $(MKR_BUSYBOX_CONFIG)
-	$(defconfig-y)
+.mkr_config:  $(deps-y)
+	$(Q)rm -f ../.busybox_config
+	+$(defconfig-y)
+
+../.busybox_config: ;
+
+.config: .mkr_config $(wildcard ../.busybox_config)
+	@if [ -e ../.busybox_config ]; then \
+		echo Resetting Linux configuration to .busybox_config; \
+		cp ../.busybox_config .config; \
+	else \
+		echo Resetting busybox configuration to $(MKR_BUSYBOX_CONFIG); \
+		cp .mkr_config .config; \
+	fi
+
+mkr-config: .mkr_config
+	@echo Resetting busybox configuration to $(MKR_BUSYBOX_CONFIG); \
+	$(Q)cp .mkr_config .config
+	$(Q)rm -f ../.busybox_config
 
 include/autoconf.h: .config
 	cp .config saved-busybox-config
@@ -40,5 +56,8 @@ confcheck-$(call not,$(defconfig)) += \
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones and clean)
-%:
+%config: .config
+	$(MAKE) $(args) $@
+
+clean: .config
 	$(MAKE) $(args) $@
