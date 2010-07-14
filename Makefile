@@ -308,17 +308,18 @@ rootfs-$(MKR_SKIP_ROOTFS) := staging
 rootfs-$(call not,$(MKR_SKIP_ROOTFS)) := rootfs
 
 outputs-y := $(rootfs-y)
-outputs-$(MKR_OUT_TGZ) += rootfs.tar
+outputs-$(MKR_OUT_TAR) += rootfs.tar
 outputs-$(MKR_OUT_NFS) += nfsroot
 
 all: $(outputs-y) clean-removed-packages
 PHONY += $(call pkg-targets,clean staging)
 
-# Handle descending into subdirectories listed in $(vmlinux-dirs)
-# Preset locale variables to speed up the build process. Limit locale
-# tweaks to this spot to avoid wrong language settings when running
-# make menuconfig etc.
-# Error messages still appears in the original language
+mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
+	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
+mkr-shortlog = $(srctree)/build-tools/shortlog.awk
+mkr-lock = . $(srctree)/build-tools/display.sh lock
+mkr-unlock = . $(srctree)/build-tools/display.sh unlock
+mkr-locked-echo = . $(srctree)/build-tools/display.sh locked-echo
 
 linux/%:
 	$(Q)mkdir -p linux
@@ -330,7 +331,8 @@ busybox/%:
 
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
-			$(call checksrcdir,$($(p)/srcdir-var)) || success=false;)
+			$(call checksrcdir,$($(p)/srcdir-var)) \
+			|| success=false;)
 confcheck-awk = type $(AWK) > /dev/null 2>&1 || { \
 	echo Error: $(AWK) not found, use PATH or AWK on make command line; \
 	success=false; };
@@ -338,7 +340,8 @@ confcheck-lnxmf = test -e $(linux/srcdir)/Makefile || { \
 	echo Linux kernel Makefile \($(linux/srcdir)/Makefile\) not found; \
 	success=false; };
 sub-confcheck = { mkdir -p $(2) && \
-	$(1) $(call pkg-recurse,$(2)) $(if $(V),,-s) confcheck; } || success=false;
+	$(1) $(call pkg-recurse,$(2)) $(if $(V),,-s) confcheck; } \
+		|| success=false;
 
 confcheck-tool = type $(1) > /dev/null 2>&1 || { \
 	echo Error: Command $(1) not found, mkrootfs needs it, \
@@ -407,33 +410,84 @@ check-computed-variables:
 		fi; \
 	done
 
-build-tools/bin/fakeroot:
-	$(Q)mkdir -p build-tools/fakeroot
-	$(Q)echo Building build system fakeroot...
-	$(Q) $(MAKE) \
-		-C build-tools/fakeroot \
-		-f $(srctree)/build-tools/fakeroot-1.11/Makefile \
-		$(O)/build-tools/bin/fakeroot \
-		> build-tools/fakeroot/.mkr.log 2>&1
-	$(Q)echo Building build system fakeroot... done
+remove-displayed:
+	$(Q)rm -f .mkr.displayed
 
-mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
-	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
+mkr-run-and-log-on-failure = \
+	mkdir -p $(2); \
+	$(mkr-locked-echo) $(1)...; \
+	if ! { $(3); } >> $(2)/.mkr.log 2>&1; then \
+		$(mkr-shortlog) $(2)/.mkr.log > $(2)/.mkr.shortlog; \
+		$(mkr-lock); echo '***' $(1)... failed; \
+		if [ ! -e .mkr.displayed ]; then \
+			cat $(2)/.mkr.shortlog; \
+			echo '***' Type make $(2)/log for more details; \
+		else \
+			echo '***' Type make $(2)/shortlog or $(2)/log for more details; \
+		fi; \
+		: > .mkr.displayed; \
+		$(mkr-unlock); exit 1; \
+	fi; \
+	$(mkr-locked-echo) $(1)...done
 
+mkr-run-and-log = \
+	mkdir -p $(2); \
+	$(mkr-locked-echo) $(1)...; \
+	if ! { $(3); } >> $(2).mkr.log 2>&1; then \
+		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
+		$(mkr-lock); echo '***' $(1)... failed; \
+		if [ ! -e .mkr.displayed ]; then \
+			cat $(2).mkr.shortlog; \
+			echo '***' Type make $(2)log for more details; \
+		else \
+			echo '***' Type make $(2)shortlog or $(2)log for more details; \
+		fi; \
+		: > .mkr.displayed; \
+		$(mkr-unlock); exit 1; \
+	else \
+		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
+		if [ -s $(2)/.mkr.shortlog ]; then \
+			$(mkr-lock); \
+			echo '***' $(1)... done, with warnings; \
+			if [ ! -e .mkr.displayed ]; then \
+				cat $(2).mkr.shortlog; \
+				echo '***' Type make $(2)log for more details; \
+			else \
+				echo '***' Type make $(2)shortlog or $(2)log for more details; \
+			fi; : > .mkr.displayed; $(mkr-unlock); \
+		else \
+			$(mkr-locked-echo) $(1)...done; \
+		fi; \
+	fi
 
-$(call pkg-targets,compile): %/compile: prepare check-computed-variables
-	$(Q)echo Compiling $(dir $@)...
-	$(Q)$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@) \
-	> $(dir $@)/.mkr.log 2>&1
-	$(Q)echo Compiling $(dir $@)... done.
+mkr-run-staging-$(call not,$(MKR_SKIP_ROOTFS)) = $(mkr-run-and-log-on-failure)
+mkr-run-staging-$(MKR_SKIP_ROOTFS) = $(mkr-run-and-log)
+
+build-tools/bin/fakeroot: remove-displayed
+	$(Q)rm -f build-tools/fakeroot/.mkr.log
+	$(Q)$(call mkr-run-and-log, \
+		Building build system fakeroot, \
+		build-tools/fakeroot/, \
+		$(MAKE) -C build-tools/fakeroot \
+			-f $(srctree)/build-tools/fakeroot-1.11/Makefile \
+			$(O)/build-tools/bin/fakeroot)
+
+$(call pkg-targets,compile): \
+	%/compile: prepare check-computed-variables remove-displayed
+	$(Q)rm -f $(dir $@).mkr.log
+	$(Q)$(call mkr-run-and-log-on-failure, \
+		Compiling $(dir $@), \
+		$(dir $@), \
+		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
 $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
-	$(Q)echo Installing $(dir $@) in staging directory...
 	$(Q)$(mkr-fakeroot) sh -c '{ \
 		mkr_pkginst=$(dir $@).mkr.inst; \
 		mkdir -p $$mkr_pkginst; \
-		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@) \
-		>> $(dir $@)/.mkr.log 2>&1; \
+		$(call mkr-run-staging-y, \
+			Installing $(dir $@) in staging directory, \
+			$(dir $@), \
+			$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@)); \
 		{ cd $$mkr_pkginst && find . -! -type d; } \
 			| sort > $(dir $@)/.mkr.newfilelist; \
 		{ cd $$mkr_pkginst && find . -type d; } \
@@ -453,21 +507,30 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		rsync -rlpgoDc $$mkr_pkginst/ staging/; \
 		rm -Rf $$mkr_pkginst; \
 	}'
-	$(Q)echo Installing $(dir $@) in staging directory... done.
-
-ltp/rootfs: ltp/staging
-	$(Q)echo Installing $(dir $@) in rootfs directory...
-	$(Q)$(mkr-fakeroot) rsync -a staging/ltp/ rootfs/ltp
-	$(Q)echo Installing $(dir $@) in rootfs directory... done.
-
-$(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
-	$(Q)echo Installing $(dir $@) in rootfs directory...
-	$(Q)$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@)
-	$(Q)echo Installing $(dir $@) in rootfs directory... done.
 
 PHONY += staging
 staging: $(call pkg-targets,staging)
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
+
+$(call pkg-targets,log): %:
+	$(Q)cat $(dir $@).mkr.log 2> /dev/null || :
+
+$(call pkg-targets,shortlog): %:
+	$(Q)cat $(dir $@).mkr.shortlog 2> /dev/null || :
+
+# Rootfs rules, only needed if not skipping rootfs generation.
+ifneq ($(MKR_SKIP_ROOTFS),y)
+ltp/rootfs: ltp/staging
+	$(Q)$(call mkr-run-and-log, \
+		Installing $(dir $@) in rootfs directory, \
+		$(dir $@), \
+		$(mkr-fakeroot) rsync -a staging/ltp/ rootfs/ltp)
+
+$(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
+	$(Q)$(call mkr-run-and-log, \
+		Installing $(dir $@) in rootfs directory, \
+		$(dir $@), \
+		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
 cross := $(shell expr $(CC) : '\(.*\)gcc')
 
@@ -477,6 +540,7 @@ rootfs: $(call pkg-targets,rootfs)
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
 		xargs -r $(cross)strip > /dev/null 2>&1 || :
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
+endif
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
@@ -499,6 +563,7 @@ clean-removed-packages:
 		rm -f $$lists; \
 	fi
 
+ifeq ($(MKR_OUT_NFS),y)
 .rsyncd.secrets:
 	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
 	umask 077; \
@@ -546,12 +611,15 @@ nfsroot: $(rootfs-y) .rsyncd.pid
 	else \
 		echo Synchronizing NFS root... done; \
 	fi
+endif
 
+ifeq ($(MKR_OUT_TAR),y)
 PHONY += rootfs.tar
 rootfs.tar: $(rootfs-y)
 	$(Q)echo Generating $@...
 	$(Q)tar -C $(rootfs-y) -cf $@ .
 	$(Q)echo Generating $@... done
+endif
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".
