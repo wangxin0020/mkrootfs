@@ -18,7 +18,7 @@ XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
 endif
 
 bin_C_PROGRAMS = calibrator cyclictest_nonxeno
-bin_SCRIPTS = dohell fcsehell
+bin_SCRIPTS = dohell noltp_hell
 
 calibrator: calibrator.o
 calibrator: LDLIBS += -lm
