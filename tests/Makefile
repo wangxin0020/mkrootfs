@@ -32,15 +32,16 @@ all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
 
 compile: $(all)
 
-staging:
-	install -o 0 -D $(all) $(pkginst)/usr/bin
+staging: $(all)
+	install -o 0 -d $(pkginst)/usr/bin
+	install -o 0 $^ $(pkginst)/usr/bin
 
 rootfs: default-copyall-rootfs
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
 $(bin_C_PROGRAMS): %:
-	if test -z "$^"; then \
+	@if test -z "$^"; then \
 	echo You need to list which objects files $@ is made of.; \
 	echo Add to Makefile something like:; \
 	echo $@: foo.o bar.o; \
@@ -48,7 +49,7 @@ $(bin_C_PROGRAMS): %:
 	echo $(CC) $(bin_cmd); $(CC) $(bin_cmd)
 
 $(bin_CXX_PROGRAMS): %:
-	if test -z "$^"; then \
+	@if test -z "$^"; then \
 	echo You need to list which objects files $@ is made of.; \
 	echo Add to Makefile something like:; \
 	echo $@: foo.o bar.o; \
