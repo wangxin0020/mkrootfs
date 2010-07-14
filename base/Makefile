@@ -41,5 +41,8 @@ rootfs: default-copyall-rootfs
 # Checking configuration
 confcheck-y := $(call confcheck-exists,$(dev_txt),MKR_BOARD)
 confcheck-y += $(call confcheck-exists,$(skeldir),MKR_BOARD)
+confcheck-$(MKR_OUT_NFS) += $(call confcheck-if, \
+		test "$(CONFIG_ROOT_NFS)" != "y", \
+		NFS root selected but not enabled in kernel configuration.)
 
 confcheck: default-confcheck
