@@ -14,11 +14,11 @@ config LINUX_SRCDIR
 	srcdir "Sources directory"
 	default "linux-*"
 
-config LINUX_DEFCONFIG
+config LINUX_CONFIG
 	string "Configuration file"
 	default "config-$(KERNELVERSION)"
 	help
-	  The kernel configuration file, it may be a relative path, it will be
+	  The kernel configuration file, it may be a path, it will be
 	  taken as relative to the board directory, or a defconfig target name.
 
 config LINUX_TARGETS

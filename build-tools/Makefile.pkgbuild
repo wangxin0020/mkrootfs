@@ -12,6 +12,8 @@ confcheck-y =
 # Read auto.conf if it exists, otherwise ignore
 -include $(O)/include/config/auto.conf
 
+-include $(O)/include/config/auto.conf.cmd
+
 ifneq ($(O),linux/)
 ifneq ($(filter $(MAKECMDGOALS),confcheck),)
 -include $(O)/linux/.config
@@ -56,7 +58,7 @@ ifeq ($(mkr-pkgmk),)
 $(error No Makefile or Kbuild for package $(obj))
 endif
 
-.mkr.makefile.deps: $(mkr-pkgmk)
+.mkr.makefile.deps: $(mkr-pkgmk) $(deps)
 	$(Q)$(AWK) -f $(srctree)/build-tools/makefile-deps.awk $< > $@ || rm -f $@
 
 -include .mkr.makefile.deps

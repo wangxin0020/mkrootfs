@@ -7,7 +7,7 @@ mutex_lock()
     mutex="$1"
 
     while ! (set -C; echo $$ > "$mutex") > /dev/null 2>&1; do
-	if owner=`cat "$mutex" 2> /dev/null` && ! kill -0 "$owner"; then
+	if owner=`cat "$mutex" 2> /dev/null` && ! kill -0 "$owner" 2> /dev/null; then
 	    rm -f "$mutex"
 	elif test -n "$owner" -a "$owner" = $$; then
 	    echo "mutex_lock: we (pid $$) already own mutex $mutex"

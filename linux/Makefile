@@ -1,14 +1,27 @@
-defconfig := $(if $(findstring defconfig,$(MKR_LINUX_DEFCONFIG)),y)
+defconfig := $(if $(findstring defconfig,$(MKR_LINUX_CONFIG)),y)
 netdest := $(if $(findstring :, \
 	$(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)),y)
-
-board-defconfig = $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_DEFCONFIG)
 
 # Getting the kernel version
 # Upper Makefile checked that Makefile existed in Linux sources directory
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(srcdir)/Makefile)))
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
+
+ifeq ($(defconfig),)
+# board-config is $(MKR_LINUX_DECONFIG), but if it contains the
+# kernel version and can not be found, try another config file with the
+# same name but a different version number
+board-config := $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_CONFIG)
+ifeq ($(wildcard $(board-config)),)
+ifneq ($(findstring $(KERNELVERSION),$(board-config)),)
+board-config-wildcard := $(subst $(KERNELVERSION),*,$(board-config))
+board-config := $(lastword $(sort $(wildcard $(board-config-wildcard))))
+endif
+endif
+else
+board-config := $(MKR_LINUX_CONFIG)
+endif
 
 # Checking whether MKR_XENO changed
 .mkr.xeno: $(O)/include/config/xeno.h
@@ -43,11 +56,12 @@ endif
 # Configuring the kernel
 configargs += V=$(KBUILD_VERBOSE) ARCH=$(MKR_KARCH)
 
-defconfig-$(call not,$(defconfig)) := cp $(board-defconfig) $@
+defconfig-$(call not,$(defconfig)) = \
+	test -n "$(board-config)" && cp $(board-config) $@ || :
 defconfig-$(defconfig) = \
-	$(MAKE) $(configargs) $(MKR_LINUX_DEFCONFIG) && mv .config $@
+	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG) && mv .config $@
 
-config-deps-y += $(O)/include/config/linux/defconfig.h
+config-deps-y += $(O)/include/config/linux/config.h
 config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 .mkr_config: $(config-deps-y)
@@ -61,12 +75,12 @@ config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 		echo Resetting Linux configuration to .linux_config; \
 		cp ../.linux_config .config; \
 	else \
-		echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG); \
+		echo Resetting Linux configuration to $(board-config); \
 		cp .mkr_config .config; \
 	fi
 
 mkr-config: .mkr_config
-	@echo Resetting Linux configuration to $(MKR_LINUX_DEFCONFIG)
+	@echo Resetting Linux configuration to $(board-config)
 	$(Q)cp .mkr_config .config
 	$(Q)rm -f ../.linux_config
 
@@ -102,7 +116,10 @@ rootfs: default-copyall-rootfs
 
 # Checking mkrootfs configuration for building the kernel
 confcheck-$(call not, $(defconfig)) += \
-	$(call confcheck-exists,$(board-defconfig),MKR_LINUX_DEFCONFIG)
+	$(call confcheck-if, \
+		test -z "$(board-config)", \
+		No kernel configuration file found see MKR_LINUX_CONFIG) \
+	$(call confcheck-exists,$(board-config),MKR_LINUX_CONFIG)
 confcheck-$(netdest) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
 confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
