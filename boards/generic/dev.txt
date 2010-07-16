@@ -55,6 +55,7 @@ crw-	4,9	/dev/tty9
 crw-	4,64	/dev/ttyS0
 crw-	4,65	/dev/ttyS1
 crw-	4,66	/dev/ttyS2
+crw-	207,16	/dev/ttymxc0
 crw-	10,70	/dev/crypto
 crw-	90,0	/dev/mtd0
 crw-	90,1	/dev/mtdr0

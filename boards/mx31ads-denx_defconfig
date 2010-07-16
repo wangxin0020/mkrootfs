@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Fri Jul 16 13:19:59 2010
+# Fri Jul 16 13:35:49 2010
 #
 
 #
@@ -18,13 +18,13 @@ MKR_ARCH_ARM=y
 MKR_ARCH=arm
 MKR_KARCH=arm
 MKR_CONFIGURE_HOST=$(ARCH)-linux
-MKR_CC=arm-none-linux-gnueabi-gcc
-MKR_CXX=arm-none-linux-gnueabi-g++
-MKR_ARCH_FLAGS=-march=armv4t -msoft-float
+MKR_CC=/opt/eldk/4.2-arm/usr/bin/armVFP-linux-gcc
+MKR_CXX=/opt/eldk/4.2-arm/usr/bin/armVFP-linux-g++
+MKR_ARCH_FLAGS=-march=armv6 -mfpu=vfp -mfloat-abi=softfp
 MKR_CFLAGS=$(ARCH_FLAGS) -g -O2
 MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2
-MKR_ARM_ARCH=4
-# MKR_ARM_VFP is not set
+MKR_ARM_ARCH=6
+MKR_ARM_VFP=y
 MKR_SYSROOT_AUTO=y
 # MKR_SYSROOT_MANUAL is not set
 
@@ -47,8 +47,8 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
 #
 MKR_BASE=y
 MKR_BOARD=generic
-MKR_SERIAL_DEV=ttyS0
-MKR_SERIAL_BAUDRATE=38400
+MKR_SERIAL_DEV=ttymxc0
+MKR_SERIAL_BAUDRATE=115200
 
 #
 # Linux kernel
@@ -56,10 +56,10 @@ MKR_SERIAL_BAUDRATE=38400
 MKR_LINUX=y
 MKR_KCC=$(CC)
 MKR_LINUX_SRCDIR=ipipe-arm
-MKR_LINUX_CONFIG=csb637/config-$(KERNELVERSION)
+MKR_LINUX_CONFIG=mx31ads/config-$(KERNELVERSION)
 MKR_LINUX_TARGETS=uImage
 MKR_LINUX_IMAGE=arch/arm/boot/uImage
-MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/csb637/uImage-gilles-2.5
+MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/mx31ads/uImage-gilles
 MKR_LINUX_EXTRA_FILES=
 MKR_LINUX_EXTRA_INSTALL=
 
@@ -80,7 +80,7 @@ MKR_STRACE_SRCDIR=strace-*
 # Xenomai
 #
 MKR_XENO=y
-MKR_XENO_SRCDIR=xenomai-2.5
+MKR_XENO_SRCDIR=xenomai-*
 # MKR_XENO_MAINT is not set
 MKR_XENO_DEBUG=y
 # MKR_XENO_SMP is not set
@@ -111,33 +111,27 @@ MKR_XENO_TESTSUITE=y
 # MKR_XENO_POSIX_MLOCKALL is not set
 # MKR_XENO_PSOS_MLOCKALL is not set
 # MKR_XENO_UITRON_MLOCKALL is not set
-MKR_XENO_ARM_MACH=at91rm9200
+MKR_XENO_ARM_MACH=mx3
 
 #
 # Netcat
 #
-MKR_NETCAT=y
-MKR_NETCAT_SRCDIR=netcat-*
+# MKR_NETCAT is not set
 
 #
 # Make
 #
-MKR_MAKE=y
-MKR_MAKE_SRCDIR=make-*
+# MKR_MAKE is not set
 
 #
 # LTP
 #
-MKR_LTP=y
-MKR_LTP_SRCDIR=ltp-full-*
-# MKR_LTP_MAINT is not set
+# MKR_LTP is not set
 
 #
 # Real-time tests & benches
 #
-MKR_TESTS=y
-MKR_TESTS_SRCDIR=$(srctree)/tests
-MKR_TESTS_XENO=y
+# MKR_TESTS is not set
 
 #
 # Output
