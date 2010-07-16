@@ -134,8 +134,8 @@ confcheck: default-confcheck
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones, and clean)
-%config: .config
-	$(MAKE) $(buildargs) $@
+%config: .config $(if $(MKR_XENO),.mkr.prepared)
+	$(MAKE) $(configargs) $@
 
 clean: .config
 	$(MAKE) $(buildargs) $@

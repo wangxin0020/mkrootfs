@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Wed Jul 14 21:02:23 2010
+# Fri Jul 16 04:14:11 2010
 #
 
 #
@@ -56,7 +56,7 @@ MKR_SERIAL_BAUDRATE=115200
 MKR_LINUX=y
 MKR_KCC=$(CC)
 MKR_LINUX_SRCDIR=ipipe-arm
-MKR_LINUX_DEFCONFIG=usb-a9263_defconfig
+MKR_LINUX_CONFIG=usb-a9263/config-$(KERNELVERSION)
 MKR_LINUX_TARGETS=uImage
 MKR_LINUX_IMAGE=arch/arm/boot/uImage
 MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/calao/uImage-gilles-2.5
@@ -81,7 +81,7 @@ MKR_STRACE_SRCDIR=strace-*
 #
 MKR_XENO=y
 MKR_XENO_SRCDIR=xenomai-2.5
-# MKR_XENO_MAINT is not set
+MKR_XENO_MAINT=y
 MKR_XENO_DEBUG=y
 # MKR_XENO_SMP is not set
 
