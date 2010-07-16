@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Fri Jul 16 02:34:32 2010
+# Fri Jul 16 08:36:20 2010
 #
 
 #
@@ -81,7 +81,7 @@ MKR_STRACE_SRCDIR=strace-*
 #
 MKR_XENO=y
 MKR_XENO_SRCDIR=xenomai-2.5
-MKR_XENO_MAINT=y
+# MKR_XENO_MAINT is not set
 MKR_XENO_DEBUG=y
 # MKR_XENO_SMP is not set
 
