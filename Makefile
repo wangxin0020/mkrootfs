@@ -10,6 +10,12 @@ LC_COLLATE=C
 LC_NUMERIC=C
 export LC_COLLATE LC_NUMERIC
 
+# Do not:
+# o  use make's built-in rules and variables
+#    (this increases performance and avoids hard-to-debug behaviour);
+# o  print "Entering directory ...";
+MAKEFLAGS += -rR --no-print-directory
+
 # We are using a recursive build, so we need to do a little thinking
 # to get the ordering right.
 #
@@ -622,16 +628,14 @@ ifeq ($(MKR_OUT_NFS),y)
 	echo $$PASS > .rsync.pass; \
 	echo root:$$PASS > .rsyncd.secrets
 
-.rsyncd.conf: $(srctree)/build-tools/rsyncd.conf.in
-	$(Q)sed 's,@MKR_NFSROOT@,$(O)/nfsroot,' $< > $@
-
-.rsyncd.pid: .rsyncd.conf .rsyncd.secrets
+.rsyncd.pid: .rsyncd.secrets
 	$(Q)PORT=$(MKR_OUT_RSYNCD_PORT); \
 	LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; rm -f .rsyncd.pid; \
 	while [ ! -e .rsyncd.pid ]; do \
 		echo $$PORT > .rsync.port; \
 		echo Launching rsync on port $$PORT...; \
-		sudo rsync --daemon --port=$$PORT --config=.rsyncd.conf; \
+		sudo rsync --daemon --port=$$PORT \
+			--config=$(srctree)/build-tools/rsyncd.conf; \
 		sleep 1; \
 		if [ ! -e .rsyncd.pid ]; then \
 			echo Launching rsync on port $$PORT... failed; \
@@ -653,6 +657,7 @@ nfsroot: $(rootfs-y) .rsyncd.pid
 	PORT=`cat .rsync.port`; \
 	if ! $(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
 		rsync --password-file=.rsync.pass --delete -a \
+		--exclude ltp/testcases/bin/* \
 		--exclude ltp/output/* --exclude ltp/results/* \
 		--exclude ltp/.installed --exclude root/* \
 		--exclude /etc/ld.so.cache \
@@ -730,6 +735,8 @@ clean-nfsroot: .rsyncd.pid
 		rsync --password-file=.rsync.pass --delete -a staging/ \
 			rsync://root@localhost:$$PORT/nfsroot; \
 	fi
+
+clean: clean-nfsroot
 
 mrproper: clean-nfsroot
 endif

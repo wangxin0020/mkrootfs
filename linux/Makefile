@@ -31,7 +31,7 @@ endif
 ifeq ($(MKR_XENO),y)
 xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 
-.mkr.prepared: .mkr.xeno
+.mkr.prepared: .mkr.xeno $(if $(MKR_XENO_MAINT),FORCE)
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
@@ -41,11 +41,9 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 	: > .mkr.prepared
 	$(Q)echo Preparing linux sources directory...done.
 
-config-deps-y += .mkr.prepared
-
 # In maintainer mode, trigger prepare-kernel for every compilation
 ifeq ($(MKR_XENO_MAINT),y)
-.PHONY: .mkr.prepared
+.PHONY: FORCE
 deps += .mkr.prepared
 endif
 
@@ -57,7 +55,7 @@ endif
 configargs += V=$(KBUILD_VERBOSE) ARCH=$(MKR_KARCH)
 
 defconfig-$(call not,$(defconfig)) = \
-	test -n "$(board-config)" && cp $(board-config) $@ || :
+	$(Q)test -n "$(board-config)" && cp $(board-config) $@ || :
 defconfig-$(defconfig) = \
 	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG) && mv .config $@
 
@@ -75,14 +73,14 @@ config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 		echo Resetting Linux configuration to .linux_config; \
 		cp ../.linux_config .config; \
 	else \
-		echo Resetting Linux configuration to $(board-config); \
+		echo Resetting Linux configuration to $(board-config);	\
 		cp .mkr_config .config; \
 	fi
 
 mkr-config: .mkr_config
 	@echo Resetting Linux configuration to $(board-config)
-	$(Q)cp .mkr_config .config
-	$(Q)rm -f ../.linux_config
+	cp .mkr_config .config
+	rm -f ../.linux_config
 
 include/generated/autoconf.h: .config $(deps) .mkr.xeno
 	yes "" | $(MAKE) $(configargs) oldconfig
@@ -102,8 +100,10 @@ ifeq ($(CONFIG_MODULES),y)
 else
 	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS)
 endif
+	chmod a+r $(MKR_LINUX_IMAGE)
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
+	chmod a+r $(MKR_LINUX_EXTRA_FILES)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
 endif
 

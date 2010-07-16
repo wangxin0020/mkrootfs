@@ -25,13 +25,14 @@ dirs:
 skel:
 	cd $(skeldir) && { \
 		find . -! -type d -! -name '*~' | while read f; do { \
-			install -D $$f "$(pkginst)/$$f"; \
-			sed -i \
-			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
-		"$(pkginst)/$$f"; \
+			mkdir -p `dirname $(pkginst)/$$f`; \
+			cp -dR --preserve=mode,timestamps $$f "$(pkginst)/$$f"; \
 		}; \
 		done; \
-		install -D /etc/localtime "$(pkginst)/etc/localtime" || :; \
+		cp -dR --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
+		sed -i \
+			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
+		"$(pkginst)/etc/inittab"; \
 	}
 
 staging: devices dirs skel

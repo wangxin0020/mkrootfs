@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Wed Jul 14 21:02:23 2010
+# Fri Jul 16 02:34:32 2010
 #
 
 #
@@ -20,10 +20,10 @@ MKR_KARCH=arm
 MKR_CONFIGURE_HOST=$(ARCH)-linux
 MKR_CC=arm-none-linux-gnueabi-gcc
 MKR_CXX=arm-none-linux-gnueabi-g++
-MKR_ARCH_FLAGS=-march=armv5t -msoft-float
+MKR_ARCH_FLAGS=-march=armv4t -msoft-float
 MKR_CFLAGS=$(ARCH_FLAGS) -g -O2
 MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2
-MKR_ARM_ARCH=5
+MKR_ARM_ARCH=4
 # MKR_ARM_VFP is not set
 MKR_SYSROOT_AUTO=y
 # MKR_SYSROOT_MANUAL is not set
@@ -48,7 +48,7 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
 MKR_BASE=y
 MKR_BOARD=generic
 MKR_SERIAL_DEV=ttyS0
-MKR_SERIAL_BAUDRATE=115200
+MKR_SERIAL_BAUDRATE=38400
 
 #
 # Linux kernel
@@ -56,10 +56,10 @@ MKR_SERIAL_BAUDRATE=115200
 MKR_LINUX=y
 MKR_KCC=$(CC)
 MKR_LINUX_SRCDIR=ipipe-arm
-MKR_LINUX_DEFCONFIG=usb-a9263_defconfig
+MKR_LINUX_CONFIG=csb637/config-$(KERNELVERSION)
 MKR_LINUX_TARGETS=uImage
 MKR_LINUX_IMAGE=arch/arm/boot/uImage
-MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/calao/uImage-gilles-2.5
+MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/csb637/uImage-gilles-2.5
 MKR_LINUX_EXTRA_FILES=
 MKR_LINUX_EXTRA_INSTALL=
 
@@ -81,7 +81,7 @@ MKR_STRACE_SRCDIR=strace-*
 #
 MKR_XENO=y
 MKR_XENO_SRCDIR=xenomai-2.5
-# MKR_XENO_MAINT is not set
+MKR_XENO_MAINT=y
 MKR_XENO_DEBUG=y
 # MKR_XENO_SMP is not set
 

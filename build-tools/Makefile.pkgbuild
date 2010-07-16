@@ -12,8 +12,6 @@ confcheck-y =
 # Read auto.conf if it exists, otherwise ignore
 -include $(O)/include/config/auto.conf
 
--include $(O)/include/config/auto.conf.cmd
-
 ifneq ($(O),linux/)
 ifneq ($(filter $(MAKECMDGOALS),confcheck),)
 -include $(O)/linux/.config
@@ -39,7 +37,7 @@ unexport mkr-config O obj
 
 # Avoid leaking variables (the one passed on command-line) to sub-makes
 MAKEOVERRIDES=
-NOPRINT_MAKEFLAGS=$(filter-out --no-print-directory, $(MAKEFLAGS))
+NOPRINT_MAKEFLAGS=$(filter-out -Rr --no-print-directory, $(MAKEFLAGS))
 MAKE=make MAKEFLAGS="$(NOPRINT_MAKEFLAGS)"
 
 pkginst := $(CURDIR)/.mkr.inst

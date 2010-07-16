@@ -1,3 +1,21 @@
+bin_C_PROGRAMS = calibrator cyclictest_nonxeno
+bin_SCRIPTS = dohell noltp_hell
+
+all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
+
+compile: $(all)
+
+staging: $(all)
+	install -o 0 -d $(pkginst)/usr/bin
+	install -o 0 $^ $(pkginst)/usr/bin
+
+rootfs: default-copyall-rootfs
+
+clean:
+	rm -f $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) *.o *.d
+
+# Build rules
+
 # Can't use VPATH here, not sure why, but it may be because it is
 # unexported in Makefile.pkgbuild
 vpath % $(srcdir)
@@ -17,29 +35,12 @@ XENO_POSIX_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=posix --cflags)
 XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
 endif
 
-bin_C_PROGRAMS = calibrator cyclictest_nonxeno
-bin_SCRIPTS = dohell noltp_hell
-
 calibrator: calibrator.o
 calibrator: LDLIBS += -lm
 
 cyclictest_nonxeno: cyclictest.o
 cyclictest_nonxeno: LDLIBS += -lpthread -lrt
 cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
-
-# Generic rules
-all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
-
-compile: $(all)
-
-staging: $(all)
-	install -o 0 -d $(pkginst)/usr/bin
-	install -o 0 $^ $(pkginst)/usr/bin
-
-rootfs: default-copyall-rootfs
-
-clean:
-	rm -f $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) *.o *.d
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
@@ -58,6 +59,18 @@ $(bin_CXX_PROGRAMS): %:
 	echo $@: foo.o bar.o; \
 	exit 1; fi; \
 	echo $(CXX) $(bin_cmd); $(CXX) $(bin_cmd)
+
+%.o: %.c
+	@$(CC) -o $@ -c $< $(CPPFLAGS) $(CFLAGS)
+
+%.o: %.cc
+	@$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+
+%.o: %.cxx
+	@$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+
+%.o: %.C
+	@$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
 
 # Automatic dependencies
 DEPENDENCIES := \

@@ -4,7 +4,7 @@ mount -a
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
-    /bin/ldconfig
+    ldconfig
     echo done
 fi
 
@@ -19,7 +19,7 @@ if test -e /ltp && test ! -e /ltp/.installed; then
     echo 'Installing LTP'
     dir=`pwd`
     cd /ltp
-    /bin/make install && : > /ltp/.installed
+    make install && : > /ltp/.installed
     cd $dir
 fi
 

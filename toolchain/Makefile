@@ -54,7 +54,7 @@ bins:
 				*/sbin/*) dest=sbin;; \
 				*) dest=bin;; \
 				esac; \
-				install -o 0 "$$bin" "$(pkginst)/$$dest"; \
+				cp --preserve=timestamps "$$bin" "$(pkginst)/$$dest"; \
 				break; \
 			fi; \
 		done; \
@@ -78,7 +78,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					install -o 0 "$$d"/"$$l".[0-9] "$(pkginst)/$$dest"; \
+					cp --preserve=mode,timestamps "$$d"/"$$l".[0-9] "$(pkginst)/$$dest"; \
 					break; \
 				fi; \
 			done; \
@@ -90,7 +90,7 @@ libs:
 					*usr/lib*) dest=usr/lib;; \
 					*) dest=lib;; \
 					esac; \
-					install -o 0 "$$d"/"$$l"-*.so "$(pkginst)/$$dest"; \
+					cp --preserve=mode,timestamps "$$d"/"$$l"-*.so "$(pkginst)/$$dest"; \
 					break; \
 				fi; \
 			done; \
