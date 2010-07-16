@@ -590,7 +590,7 @@ $(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
 		$(dir $@), \
 		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
-cross := $(shell expr $(CC) : '\(.*\)gcc')
+cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 
 PHONY += rootfs
 rootfs: $(call only-pkg-targets,rootfs)

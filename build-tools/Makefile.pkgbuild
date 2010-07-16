@@ -145,13 +145,37 @@ rootfs:
 .PHONY: default-copyall-rootfs
 default-copyall-rootfs:
 	$(Q)cat .mkr.filelist .mkr.dirlist | \
-		{ mkdir -p $(rootfs); cd $(staging); \
-			xargs -r -i rsync -lptgodDR \{\} $(rootfs); }
+		if ! ( mkdir -p $(rootfs); cd $(staging); \
+			xargs -r -i rsync -lptgodDR \{\} $(rootfs); ); then \
+			echo Error: rsync failed, please try again; \
+			rm .mkr.fakeroot; \
+			cat .mkr.filelist | \
+			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
+			cat .mkr.filelist | \
+			{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
+			cat .mkr.dirlist | { cd staging; xargs -r \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			cat .mkr.dirlist | { cd rootfs; xargs -r \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			exit 1; \
+		fi
 
 .PHONY: default-rootfs
 default-rootfs:
-	$(Q){ mkdir -p $(rootfs); cd $(staging); \
-		rsync -lptgodDR $(patsubst %,.%,$(rootfs-y)) $(rootfs); }
+	$(Q)if ! ( mkdir -p $(rootfs); cd $(staging); \
+		rsync -lptgodDR $(patsubst %,.%,$(rootfs-y)) $(rootfs); ); then \
+			echo Error: rsync failed, please try again; \
+			rm .mkr.fakeroot; \
+			cat .mkr.filelist | \
+			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
+			cat .mkr.filelist | \
+			{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
+			cat .mkr.dirlist | { cd staging; xargs -r \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			cat .mkr.dirlist | { cd rootfs; xargs -r \
+			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			exit 1; \
+		fi
 
 .PHONY: default-clean
 default-clean:
