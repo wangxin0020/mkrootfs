@@ -1,5 +1,7 @@
 #! /bin/ash
 
+mount /proc
+echo /sbin/mdev > /proc/sys/kernel/hotplug
 mount -a
 
 if test ! -e /etc/ld.so.cache; then

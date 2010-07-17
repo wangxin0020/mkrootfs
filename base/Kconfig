@@ -23,6 +23,22 @@ config SERIAL_BAUDRATE
 	int "Serial console baud rate"
 	default 115200
 
+config MOUNT
+	bool "Mount storage device"
+	help
+	  Add a storage device to be mounted automatically on
+	  target. This may useful for adding some storage devices
+	  pressure when running tests.
+
+if MOUNT
+
+config MOUNT_DEV
+	string "Storage device name"
+	default "sda1"
+	help
+	  Enter the device name here, without /dev.
+endif
+
 endif
 
 endmenu

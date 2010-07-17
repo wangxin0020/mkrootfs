@@ -11,6 +11,16 @@ DIRS= \
 	/var \
 	/mnt
 
+ifeq ($(MKR_MOUNT),)
+mount-dev-sed := \
+	sed -i 's,@MKR_MOUNT_DEV@,\# /dev/null,g' "$(pkginst)/etc/fstab"; \
+	sed -i 's,@MKR_MOUNT_DEV@,\# -null,g' "$(pkginst)/etc/mdev.conf"
+else
+mount-dev-sed := \
+	sed -i 's,@MKR_MOUNT_DEV@,/dev/$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/fstab"; \
+	sed -i 's,@MKR_MOUNT_DEV@,-$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/mdev.conf"
+endif
+
 # Compiling: nothing to do
 compile: ;
 
@@ -31,8 +41,9 @@ skel:
 		done; \
 		cp -dR --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
 		sed -i \
-			's/@MKR_SERIAL_DEV@/'$(MKR_SERIAL_DEV)'/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
-		"$(pkginst)/etc/inittab"; \
+			's/@MKR_SERIAL_DEV@/$(MKR_SERIAL_DEV)/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
+			"$(pkginst)/etc/inittab"; \
+		$(mount-dev-sed); \
 	}
 
 staging: devices dirs skel
