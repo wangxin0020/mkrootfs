@@ -11,9 +11,9 @@ args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
 	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(cross)ar" \
 	EXTRA_CFLAGS="$(ARCH_FLAGS)" \
 	EXTRA_LDFLAGS="$(ARCH_FLAGS)" \
-	CROSS_COMPILE="$(cross)" \
+	CROSS_COMPILE="$(cross)"
 
-.mkr_config:  $(deps-y)
+.mkr_config:  $(deps)
 	$(Q)rm -f ../.busybox_config
 	+$(defconfig-y)
 

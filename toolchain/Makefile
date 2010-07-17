@@ -8,7 +8,8 @@ LIBDIRS=$(foreach d,lib usr/lib,$(MKR_SYSROOT)/$(d))
 BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
 endif
 
-libs-y := \
+libs-$(MKR_ARCH_X86_64) +=  ld-linux-x86-64.so
+libs-y += \
 	ld-linux.so \
 	libc.so \
 	libnss_files.so \
@@ -34,8 +35,7 @@ bins-y := \
 	gdbserver \
 	ldconfig \
 	ldconfig.real \
-	ldd \
-	lspci
+	ldd
 
 # Compiling: nothing to do
 compile: ;
