@@ -36,7 +36,8 @@ $(staging)/ltp/config.status: $(staging)/ltp/configure
 staging: $(staging)/ltp/config.status
 	cd $(staging)/ltp && PATH=$(LTP_PATH) $(MAKE) \
 	CROSS_COMPILE="$(cross)" \
-	CC="$(CC) $(cflags-y)" CXX="$(CXX) $(cflags-y)"
+	CC="$(CC) $(ARCH_CFLAGS)" CXX="$(CXX) $(ARCH_LDFLAGS)" \
+		AR="$(cross)ar" RANLIB="$(cross)ranlib"
 	for dir in \
 		testcases/bin \
 		testcases/kernel/io/stress_floppy/dumpdir \
