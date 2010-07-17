@@ -717,6 +717,15 @@ $(call pkg-targets,clean): %:
 		echo Cleaning $(dir $@)... failed; \
 		exit 1; \
 	else \
+		rm $(dir $@).mkr.fakeroot; \
+		cat $(dir $@).mkr.filelist | \
+		{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
+		cat $(dir $@).mkr.filelist | \
+		{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
+		cat $(dir $@).mkr.dirlist | { cd staging; xargs -r \
+		rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		cat $(dir $@).mkr.dirlist | { cd rootfs; xargs -r \
+		rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		echo Cleaning $(dir $@)... done; \
 	fi
 
