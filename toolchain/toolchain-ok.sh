@@ -31,12 +31,12 @@ for d in $LIBDIRS; do
 
 	    case "$mach" in
 		"ARM") sr_arch=arm;;
-		"*Blackfin") sr_arch=blackfin;;
-		"*Nios II") sr_arch=nios2;;
+		*Blackfin) sr_arch=blackfin;;
+		*"Nios II") sr_arch=nios2;;
 		"PowerPC64") sr_arch=ppc64;;
 		"PowerPC") sr_arch=ppc;;
-		"*386") sr_arch=i686;;
-		"*X86-64") sr_arch=x86_64;;
+		*386) sr_arch=i686;;
+		*X86-64) sr_arch=x86_64;;
 		*) die Unrecognized machine type "$mach";;
 	    esac
 
