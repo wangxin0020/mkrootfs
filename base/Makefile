@@ -1,6 +1,5 @@
-boarddir := $(srctree)/boards/$(MKR_BOARD)
-dev_txt := $(boarddir)/dev.txt
-skeldir := $(boarddir)/skel
+dev_txt := $(srcdir)/dev.txt
+skeldir := $(srcdir)/skel
 
 DIRS= \
 	/proc \

@@ -551,14 +551,14 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		if ! rsync -rlpgoDc $$mkr_pkginst/ staging/; then \
 			$(mkr-locked-echo) rsync failed, please try again; \
 			rm $(dir $@).mkr.fakeroot; \
-			cat $(dir $@).mkr.filelist | \
+			cat $(dir $@).mkr.filelist 2> /dev/null | \
 			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
-			cat $(dir $@).mkr.filelist | \
+			cat $(dir $@).mkr.filelist 2> /dev/null | \
 			{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
-			cat $(dir $@).mkr.dirlist | { cd staging; xargs -r \
-			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
-			cat $(dir $@).mkr.dirlist | { cd rootfs; xargs -r \
-			rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			cat $(dir $@).mkr.dirlist 2> /dev/null | \
+			{ cd staging; xargs -r rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+			cat $(dir $@).mkr.dirlist 2> /dev/null | \
+			{ cd rootfs; xargs -r rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		fi; \
 		rm -Rf $$mkr_pkginst; \
 	}'
@@ -605,12 +605,13 @@ dis_packages:=$(filter-out $(packages),$(all_packages))
 PHONY += clean-removed-packages
 clean-removed-packages:
 	$(Q)lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.filelist))"; \
-	rm -f $$lists $(foreach p,$(dis_packages),$(p)/.mkr.fakeroot); \
+	rm -f $(foreach p,$(dis_packages),$(p)/.mkr.fakeroot); \
 	if [ -n "$$lists" ]; then \
 		cat $$lists | \
 			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
 		cat $$lists | \
 			{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
+		rm -f $$lists; \
 	fi; \
 	lists="$(wildcard $(foreach p,$(dis_packages),$(p)/.mkr.dirlist))"; \
 	if [ -n "$$lists" ]; then \

@@ -24,7 +24,7 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.xeno: $(deps)
+.mkr.xeno: .mkr.srcdir $(O)/include/config/xeno.h
 	$(Q)rm -Rf * && : > $@
 
 # Patching the kernel with Xenomai

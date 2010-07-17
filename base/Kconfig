@@ -6,6 +6,10 @@ config BASE
 
 if BASE
 
+config BASE_SRCDIR
+       srcdir
+       default "$(srctree)/boards/$(MKR_BOARD)"
+
 config BOARD
 	string "Board directory name"
 	default "generic"
