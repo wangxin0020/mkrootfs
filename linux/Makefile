@@ -9,7 +9,7 @@ $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
 ifeq ($(defconfig),)
-# board-config is $(MKR_LINUX_DECONFIG), but if it contains the
+# board-config is $(MKR_LINUX_CONFIG), but if it contains the
 # kernel version and can not be found, try another config file with the
 # same name but a different version number
 board-config := $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_CONFIG)
@@ -24,14 +24,13 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.xeno: $(O)/include/config/xeno.h
+.mkr.xeno: $(deps)
 	$(Q)rm -Rf * && : > $@
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
 xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
-
-.mkr.prepared: .mkr.xeno $(if $(MKR_XENO_MAINT),FORCE)
+.mkr.prepared: .mkr.xeno
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
@@ -45,6 +44,7 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 ifeq ($(MKR_XENO_MAINT),y)
 .PHONY: FORCE
 deps += .mkr.prepared
+.mkr.prepared: FORCE
 endif
 
 else

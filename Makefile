@@ -414,7 +414,7 @@ output-confcheck-$(MKR_OUT_TGZ) += \
 	$(confcheck-lnxmf) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-linux/.mkr.confcheck: .mkr.basecheck linux/.config
+linux/.mkr.confcheck: .mkr.basecheck $(wildcard linux/.config)
 	$(Q)success=:; $(call sub-confcheck,$(MAKE),linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
@@ -718,14 +718,14 @@ $(call pkg-targets,clean): %:
 		exit 1; \
 	else \
 		rm $(dir $@).mkr.fakeroot; \
-		cat $(dir $@).mkr.filelist | \
+		cat $(dir $@).mkr.filelist 2> /dev/null | \
 		{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
-		cat $(dir $@).mkr.filelist | \
+		cat $(dir $@).mkr.filelist 2> /dev/null | \
 		{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
-		cat $(dir $@).mkr.dirlist | { cd staging; xargs -r \
-		rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
-		cat $(dir $@).mkr.dirlist | { cd rootfs; xargs -r \
-		rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		cat $(dir $@).mkr.dirlist 2> /dev/null | \
+		{ cd staging; xargs -r rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		cat $(dir $@).mkr.dirlist 2> /dev/null | { \
+		cd rootfs; xargs -r rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		echo Cleaning $(dir $@)... done; \
 	fi
 
