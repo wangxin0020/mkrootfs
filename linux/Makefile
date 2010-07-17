@@ -24,13 +24,13 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.xeno: .mkr.srcdir $(O)/include/config/xeno.h
-	$(Q)rm -Rf * && : > $@
+.mkr.cleaned: .mkr.srcdir $(O)/include/config/xeno.h $(O)/include/config/karch.h
+	$(Q)rm -Rf * $(filter-out .mkr%,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
 xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
-.mkr.prepared: .mkr.xeno
+.mkr.prepared: .mkr.cleaned
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
@@ -43,9 +43,9 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 # In maintainer mode, trigger prepare-kernel for every compilation
 ifeq ($(MKR_XENO_MAINT),y)
 .PHONY: FORCE
-deps += .mkr.prepared
 .mkr.prepared: FORCE
 endif
+deps += .mkr.prepared
 
 else
 configargs := -C $(srcdir) O=$(CURDIR)
@@ -82,7 +82,7 @@ mkr-config: .mkr_config
 	cp .mkr_config .config
 	rm -f ../.linux_config
 
-include/generated/autoconf.h: .config $(deps) .mkr.xeno
+include/generated/autoconf.h: .config $(deps) .mkr.cleaned
 	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
