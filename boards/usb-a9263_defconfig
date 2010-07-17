@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Fri Jul 16 13:21:51 2010
+# Sat Jul 17 18:07:46 2010
 #
 
 #
@@ -49,6 +49,8 @@ MKR_BASE=y
 MKR_BOARD=generic
 MKR_SERIAL_DEV=ttyS0
 MKR_SERIAL_BAUDRATE=115200
+MKR_MOUNT=y
+MKR_MOUNT_DEV=sda1
 
 #
 # Linux kernel
@@ -138,6 +140,7 @@ MKR_LTP_SRCDIR=ltp-full-*
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
 MKR_TESTS_XENO=y
+MKR_TESTS_LTP=y
 
 #
 # Output
