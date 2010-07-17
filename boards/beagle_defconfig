@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Sat Jul 17 14:44:29 2010
+# Sat Jul 17 18:46:25 2010
 #
 
 #
@@ -49,6 +49,7 @@ MKR_BASE=y
 MKR_BOARD=generic
 MKR_SERIAL_DEV=ttyS2
 MKR_SERIAL_BAUDRATE=115200
+# MKR_MOUNT is not set
 
 #
 # Linux kernel
@@ -111,7 +112,7 @@ MKR_XENO_TESTSUITE=y
 # MKR_XENO_POSIX_MLOCKALL is not set
 # MKR_XENO_PSOS_MLOCKALL is not set
 # MKR_XENO_UITRON_MLOCKALL is not set
-MKR_XENO_ARM_MACH=at91sam926x
+MKR_XENO_ARM_MACH=omap3
 
 #
 # Netcat
