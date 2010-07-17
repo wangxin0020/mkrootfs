@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Sat Jul 17 14:27:35 2010
+# Sat Jul 17 14:44:29 2010
 #
 
 #
@@ -20,10 +20,10 @@ MKR_KARCH=arm
 MKR_CONFIGURE_HOST=$(ARCH)-linux
 MKR_CC=/opt/eldk/4.2-arm/usr/bin/armVFP-linux-gcc
 MKR_CXX=/opt/eldk/4.2-arm/usr/bin/armVFP-linux-g++
-MKR_ARCH_FLAGS=-march=armv6 -mfpu=vfp -mfloat-abi=softfp
+MKR_ARCH_FLAGS=-march=armv7-a -mfpu=vfp3 -mfloat-abi=softfp
 MKR_CFLAGS=$(ARCH_FLAGS) -g -O2
 MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2
-MKR_ARM_ARCH=6
+MKR_ARM_ARCH=7
 MKR_ARM_VFP=y
 MKR_SYSROOT_AUTO=y
 # MKR_SYSROOT_MANUAL is not set
@@ -47,7 +47,7 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
 #
 MKR_BASE=y
 MKR_BOARD=generic
-MKR_SERIAL_DEV=ttymxc0
+MKR_SERIAL_DEV=ttyS2
 MKR_SERIAL_BAUDRATE=115200
 
 #
@@ -56,10 +56,10 @@ MKR_SERIAL_BAUDRATE=115200
 MKR_LINUX=y
 MKR_KCC=$(CC)
 MKR_LINUX_SRCDIR=ipipe-arm
-MKR_LINUX_CONFIG=mx31ads/config-$(KERNELVERSION)
+MKR_LINUX_CONFIG=beagle/config-$(KERNELVERSION)
 MKR_LINUX_TARGETS=uImage
 MKR_LINUX_IMAGE=arch/arm/boot/uImage
-MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/mx31ads/uImage-gilles
+MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/beagle/uImage-gch
 MKR_LINUX_EXTRA_FILES=
 MKR_LINUX_EXTRA_INSTALL=
 
@@ -80,7 +80,7 @@ MKR_STRACE_SRCDIR=strace-*
 # Xenomai
 #
 MKR_XENO=y
-MKR_XENO_SRCDIR=xenomai-*
+MKR_XENO_SRCDIR=xenomai-2.5
 # MKR_XENO_MAINT is not set
 MKR_XENO_DEBUG=y
 # MKR_XENO_SMP is not set
@@ -111,7 +111,7 @@ MKR_XENO_TESTSUITE=y
 # MKR_XENO_POSIX_MLOCKALL is not set
 # MKR_XENO_PSOS_MLOCKALL is not set
 # MKR_XENO_UITRON_MLOCKALL is not set
-MKR_XENO_ARM_MACH=mx3
+MKR_XENO_ARM_MACH=at91sam926x
 
 #
 # Netcat
@@ -122,12 +122,15 @@ MKR_NETCAT_SRCDIR=netcat-*
 #
 # Make
 #
-# MKR_MAKE is not set
+MKR_MAKE=y
+MKR_MAKE_SRCDIR=make-*
 
 #
 # LTP
 #
-# MKR_LTP is not set
+MKR_LTP=y
+MKR_LTP_SRCDIR=ltp-full-*
+# MKR_LTP_MAINT is not set
 
 #
 # Real-time tests & benches
@@ -135,6 +138,7 @@ MKR_NETCAT_SRCDIR=netcat-*
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
 MKR_TESTS_XENO=y
+MKR_TESTS_LTP=y
 
 #
 # Output

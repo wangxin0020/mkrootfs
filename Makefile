@@ -519,7 +519,7 @@ $(call pkg-targets,compile): \
 	%/compile: prepare check-computed-variables
 	$(Q)rm -f $(dir $@).mkr.log
 	$(Q)$(call mkr-run-and-log-on-failure, \
-		Compiling $(dir $@), \
+		Building package $(dir $@) using $($(strip $(dir $@))srcdir), \
 		$(dir $@), \
 		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
@@ -529,7 +529,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		mkr_pkginst=$(dir $@).mkr.inst; \
 		mkdir -p $$mkr_pkginst; \
 		$(call mkr-run-staging-y, \
-			Installing $(dir $@) in staging directory, \
+			Installing package $(dir $@) in staging directory, \
 			$(dir $@), \
 			$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@)); \
 		{ cd $$mkr_pkginst && find . -! -type d; } \
@@ -580,13 +580,13 @@ ifneq ($(MKR_SKIP_ROOTFS),y)
 PHONY += $(call pkg-targets,rootfs)
 ltp/rootfs: ltp/staging
 	$(Q)$(call mkr-run-and-log, \
-		Installing $(dir $@) in rootfs directory, \
+		Installing package $(dir $@) in rootfs directory, \
 		$(dir $@), \
 		$(mkr-fakeroot) rsync -a staging/ltp/ rootfs/ltp)
 
 $(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
 	$(Q)$(call mkr-run-and-log, \
-		Installing $(dir $@) in rootfs directory, \
+		Installing package $(dir $@) in rootfs directory, \
 		$(dir $@), \
 		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
