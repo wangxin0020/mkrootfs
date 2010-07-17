@@ -93,7 +93,7 @@ clean: default-clean
 
 # Checking configuration
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \
-	test "$(MKR_XENO_SMP)" = "n", \
+	test "$(MKR_XENO_SMP)" != "y", \
 	SMP kernel with non-SMP Xenomai user-space)
 
 confcheck: default-confcheck
