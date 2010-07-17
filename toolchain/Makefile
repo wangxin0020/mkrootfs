@@ -142,17 +142,17 @@ confcheck-$(MKR_ARM_VFP) += \
 		VFP-enabled user-space with non-VFP kernel)
 endif
 
-config-$(MKR_ARCH_PPC32) += \
+confcheck-$(MKR_ARCH_PPC32) += \
 	$(call confcheck-if, \
 		test "$(CONFIG_PPC32)" != "y", \
 		PowerPC 32 user-space with PowerPC 64 kernel configuration)
 
-config-$(MKR_ARCH_PPC64) += \
+confcheck-$(MKR_ARCH_PPC64) += \
 	$(call confcheck-if, \
 		test "$(CONFIG_PPC64)" != "y", \
 		PowerPC 64 user-space with PowerPC 32 kernel configuration)
 
-config-$(MKR_ARCH_X86_64) += \
+confcheck-$(MKR_ARCH_X86_64) += \
 	$(call confcheck-if, \
 		test "$(CONFIG_X86_64)" != "y", \
 		x86 64 user-space with x86 32 kernel configuration)
@@ -160,7 +160,7 @@ config-$(MKR_ARCH_X86_64) += \
 # on x86_64, the kernel may support a 32 bits filesystem if
 # CONFIG_IA32_EMULATION is enabled.
 
-config-$(MKR_ARCH_X86_32) += \
+confcheck-$(MKR_ARCH_X86_32) += \
 	$(call confcheck-if, \
 		test "$(CONFIG_X86_32)" != "y" \
 			-a "$(CONFIG_IA32_EMULATION)" != "y", \
