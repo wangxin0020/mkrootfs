@@ -1,7 +1,8 @@
-bin_C_PROGRAMS = calibrator cyclictest_nonxeno
-bin_SCRIPTS = dohell noltp_hell
+c-exes-y = calibrator cyclictest_nonxeno
+scripts-y = noltp_hell
+scripts-$(MKR_TESTS_LTP) += dohell
 
-all := $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) $(bin_SCRIPTS)
+all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
 
 compile: $(all)
 
@@ -12,7 +13,7 @@ staging: $(all)
 rootfs: default-copyall-rootfs
 
 clean:
-	rm -f $(bin_C_PROGRAMS) $(bin_CXX_PROGRAMS) *.o *.d
+	rm -f $(c-exes-y) $(cxx-exes-y) *.o *.d
 
 # Build rules
 
@@ -25,7 +26,7 @@ CXXFLAGS := $(cflags-y) -W -Wall -fPIC
 CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration
 LDFLAGS := $(ldflags-y) -rdynamic
 
-ifeq ($(MKR_XENO),y)
+ifeq ($(MKR_TESTS_XENO),y)
 XENO_CONFIG = DESTDIR="$(staging)" $(staging)/usr/bin/xeno-config
 
 XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
@@ -44,7 +45,7 @@ cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
-$(bin_C_PROGRAMS): %:
+$(c-exes-y): %:
 	@if test -z "$^"; then \
 	echo You need to list which objects files $@ is made of.; \
 	echo Add to Makefile something like:; \
@@ -52,7 +53,7 @@ $(bin_C_PROGRAMS): %:
 	exit 1; fi; \
 	echo $(CC) $(bin_cmd); $(CC) $(bin_cmd)
 
-$(bin_CXX_PROGRAMS): %:
+$(cxx-exes-y): %:
 	@if test -z "$^"; then \
 	echo You need to list which objects files $@ is made of.; \
 	echo Add to Makefile something like:; \

@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Fri Jul 16 13:35:49 2010
+# Sat Jul 17 14:27:35 2010
 #
 
 #
@@ -116,7 +116,8 @@ MKR_XENO_ARM_MACH=mx3
 #
 # Netcat
 #
-# MKR_NETCAT is not set
+MKR_NETCAT=y
+MKR_NETCAT_SRCDIR=netcat-*
 
 #
 # Make
@@ -131,7 +132,9 @@ MKR_XENO_ARM_MACH=mx3
 #
 # Real-time tests & benches
 #
-# MKR_TESTS is not set
+MKR_TESTS=y
+MKR_TESTS_SRCDIR=$(srctree)/tests
+MKR_TESTS_XENO=y
 
 #
 # Output

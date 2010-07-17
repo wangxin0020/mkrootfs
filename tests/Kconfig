@@ -2,12 +2,11 @@ menu "Real-time tests & benches"
 
 config TESTS
 	package "Real-time tests"
-	select LTP
 	select NETCAT
 	help
-	  This packages contains a few binaries and select everything
-	  which is necessary to run tests and benches on a real-time
-	  system.
+	  This packages contains a few binaries  which is necessary to
+	  run tests and benches on a real-time system. You should enable
+	  the ltp package if you want to use the "dohell" test.
 
 if TESTS
 
@@ -19,6 +18,10 @@ config TESTS_XENO
        def_bool y
        build_depends on XENO
        select XENO_TESTSUITE
+
+config TESTS_LTP
+       def_bool y
+       depends on LTP
 
 endif
 
