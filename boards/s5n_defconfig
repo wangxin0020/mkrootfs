@@ -1,0 +1,154 @@
+#
+# Automatically generated make config: don't edit
+# Linux kernel version: KERNELVERSION
+# Sun Jul 18 06:15:08 2010
+#
+
+#
+# Toolchain and flags selection
+#
+MKR_TOOLCHAIN=y
+# MKR_ARCH_ARM is not set
+# MKR_ARCH_BFIN is not set
+# MKR_ARCH_NIOS2 is not set
+# MKR_ARCH_PPC32 is not set
+# MKR_ARCH_PPC64 is not set
+MKR_ARCH_X86_32=y
+# MKR_ARCH_X86_64 is not set
+MKR_ARCH=i686
+MKR_KARCH=x86
+MKR_CONFIGURE_HOST=$(ARCH)-linux
+MKR_CC=gcc
+MKR_CXX=g++
+MKR_ARCH_FLAGS=-m32
+MKR_CFLAGS=$(ARCH_FLAGS) -g -O2
+MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2
+# MKR_SYSROOT_AUTO is not set
+MKR_SYSROOT_MANUAL=y
+MKR_SYSROOT=/var/ia32-chroot
+
+#
+# Toolchain libraries selection
+#
+MKR_LIBM=y
+MKR_LIBRESOLV=y
+MKR_LIBDL=y
+MKR_LIBPTHREAD=y
+# MKR_LIBSTDCPP is not set
+
+#
+# Packages
+#
+MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
+
+#
+# Base skeleton
+#
+MKR_BASE=y
+MKR_BASE_SRCDIR=$(srctree)/boards/$(MKR_BOARD)
+MKR_BOARD=generic
+MKR_SERIAL_STD=y
+# MKR_SERIAL_CUSTOM is not set
+MKR_SERIAL_DEV=ttyS0
+MKR_SERIAL_BAUDRATE=115200
+MKR_MOUNT=y
+MKR_MOUNT_DEV=sda1
+
+#
+# Linux kernel
+#
+MKR_LINUX=y
+MKR_KCC=$(CC)
+MKR_LINUX_SRCDIR=ipipe-x86
+MKR_LINUX_CONFIG=s5n/config-$(KERNELVERSION)
+MKR_LINUX_TARGETS=bzImage
+MKR_LINUX_IMAGE=arch/x86/boot/bzImage
+MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/s5n/bzImage
+MKR_LINUX_EXTRA_FILES=
+MKR_LINUX_EXTRA_INSTALL=
+
+#
+# BusyBox
+#
+MKR_BUSYBOX=y
+MKR_BUSYBOX_SRCDIR=busybox-*
+MKR_BUSYBOX_CONFIG=defconfig
+
+#
+# Strace
+#
+MKR_STRACE=y
+MKR_STRACE_SRCDIR=strace-*
+
+#
+# Xenomai
+#
+MKR_XENO=y
+MKR_XENO_SRCDIR=xenomai-*
+# MKR_XENO_MAINT is not set
+MKR_XENO_DEBUG=y
+MKR_XENO_SMP=y
+
+#
+# Skin components selection
+#
+# MKR_XENO_A4L is not set
+MKR_XENO_NATIVE=y
+MKR_XENO_POSIX=y
+# MKR_XENO_PSOS is not set
+# MKR_XENO_RTCAN is not set
+MKR_XENO_RTDM=y
+# MKR_XENO_UITRON is not set
+# MKR_XENO_VRTX is not set
+# MKR_XENO_VXWORKS is not set
+MKR_XENO_TESTSUITE=y
+
+#
+# Advanced configuration options
+#
+MKR_XENO_X86_SEP=y
+MKR_XENO_X86_TSC=y
+# MKR_XENO_THREAD is not set
+# MKR_XENO_DLOPEN is not set
+
+#
+# Automatic mlockall
+#
+# MKR_XENO_POSIX_MLOCKALL is not set
+# MKR_XENO_PSOS_MLOCKALL is not set
+# MKR_XENO_UITRON_MLOCKALL is not set
+
+#
+# Netcat
+#
+MKR_NETCAT=y
+MKR_NETCAT_SRCDIR=netcat-*
+
+#
+# Make
+#
+MKR_MAKE=y
+MKR_MAKE_SRCDIR=make-*
+
+#
+# LTP
+#
+MKR_LTP=y
+MKR_LTP_SRCDIR=ltp-full-*
+# MKR_LTP_MAINT is not set
+
+#
+# Real-time tests & benches
+#
+MKR_TESTS=y
+MKR_TESTS_SRCDIR=$(srctree)/tests
+MKR_TESTS_XENO=y
+MKR_TESTS_LTP=y
+
+#
+# Output
+#
+# MKR_OUT_TAR is not set
+MKR_OUT_NFS=y
+MKR_OUT_RSYNCD_PORT=31000
+MKR_SKIP_ROOTFS=y

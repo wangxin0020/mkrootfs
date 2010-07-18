@@ -72,7 +72,7 @@ confcheck-ifnot = $(1) > /dev/null || { echo $(2); success=false; };
 confcheck-tool = type $(1) > /dev/null 2>&1 || { \
 	echo Error: Command $(1) not found, install it or see $(2); \
 	success=false; };
-confcheck-not-empty = test x$($(strip $(1))) != x > /dev/null 2>&1 || { \
+confcheck-not-empty = test x"$($(strip $(1)))" != x > /dev/null 2>&1 || { \
 	echo Error: Variable $(1) can not be empty; success=false; };
 confcheck-exists = test -e $(1) > /dev/null 2>&1 || { \
 	echo Error: File $(1) not found, see $(2); success=false; };
