@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Sat Jul 17 18:49:50 2010
+# Sun Jul 18 02:15:41 2010
 #
 
 #
@@ -46,6 +46,7 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
 # Base skeleton
 #
 MKR_BASE=y
+MKR_BASE_SRCDIR=$(srctree)/boards/$(MKR_BOARD)
 MKR_BOARD=generic
 MKR_SERIAL_DEV=ttyS2
 MKR_SERIAL_BAUDRATE=115200

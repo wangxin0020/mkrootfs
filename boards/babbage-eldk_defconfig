@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Sat Jul 17 21:12:59 2010
+# Sun Jul 18 00:52:10 2010
 #
 
 #
@@ -124,12 +124,15 @@ MKR_NETCAT_SRCDIR=netcat-*
 #
 # Make
 #
-# MKR_MAKE is not set
+MKR_MAKE=y
+MKR_MAKE_SRCDIR=make-*
 
 #
 # LTP
 #
-# MKR_LTP is not set
+MKR_LTP=y
+MKR_LTP_SRCDIR=ltp-full-*
+# MKR_LTP_MAINT is not set
 
 #
 # Real-time tests & benches
@@ -137,6 +140,7 @@ MKR_NETCAT_SRCDIR=netcat-*
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
 MKR_TESTS_XENO=y
+MKR_TESTS_LTP=y
 
 #
 # Output
