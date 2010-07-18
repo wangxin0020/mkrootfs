@@ -17,11 +17,38 @@ config BOARD
 	  Directory where architecture or board specific files will be taken.
 	  This is a path relative to the boards directory in mkrootfs tree.
 
+choice
+	prompt "Serial console device"
+
+config SERIAL_STD
+       bool "Standard device"
+       help
+	 Choose this option if the serial port used by your board is
+       	 one of the standard ports from ttyS0 to ttyS3.
+
+config SERIAL_CUSTOM
+       bool "Custom device"
+       help
+	 Choose this option if the serial port used by your board is
+       	 another device.
+
+endchoice
+
 config SERIAL_DEV
 	string "Serial console device"
 	default "ttyS0"
 	help
 	  Name of the serial console device node in the /dev directory.
+
+if SERIAL_CUSTOM
+
+config SERIAL_MAJOR
+       int "Serial console device node major number"
+
+config SERIAL_MINOR
+       int "Serial console device node minor number"
+
+endif
 
 config SERIAL_BAUDRATE
 	int "Serial console baud rate"

@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Sun Jul 18 00:52:10 2010
+# Sun Jul 18 04:17:10 2010
 #
 
 #
@@ -48,7 +48,11 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
 MKR_BASE=y
 MKR_BASE_SRCDIR=$(srctree)/boards/$(MKR_BOARD)
 MKR_BOARD=generic
+# MKR_SERIAL_STD is not set
+MKR_SERIAL_CUSTOM=y
 MKR_SERIAL_DEV=ttymxc0
+MKR_SERIAL_MAJOR=207
+MKR_SERIAL_MINOR=16
 MKR_SERIAL_BAUDRATE=115200
 # MKR_MOUNT is not set
 

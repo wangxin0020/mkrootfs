@@ -26,6 +26,10 @@ compile: ;
 # Installing stuff
 devices:
 	$(pkgdir)/mkdevices.sh "$(pkginst)" < $(dev_txt)
+ifeq ($(MKR_SERIAL_CUSTOM),y)
+	echo 'crw-	$(MKR_SERIAL_MAJOR),$(MKR_SERIAL_MINOR) /dev/$(MKR_SERIAL_DEV)' | \
+	$(pkgdir)/mkdevices.sh "$(pkginst)"
+endif
 
 dirs:
 	for d in $(DIRS); do mkdir -p "$(pkginst)/$$d"; done

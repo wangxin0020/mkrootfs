@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: KERNELVERSION
-# Sun Jul 18 02:12:11 2010
+# Sun Jul 18 04:02:46 2010
 #
 
 #
@@ -48,7 +48,11 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
 MKR_BASE=y
 MKR_BASE_SRCDIR=$(srctree)/boards/$(MKR_BOARD)
 MKR_BOARD=generic
+# MKR_SERIAL_STD is not set
+MKR_SERIAL_CUSTOM=y
 MKR_SERIAL_DEV=ttymxc0
+MKR_SERIAL_MAJOR=207
+MKR_SERIAL_MINOR=16
 MKR_SERIAL_BAUDRATE=115200
 # MKR_MOUNT is not set
 
@@ -61,7 +65,7 @@ MKR_LINUX_SRCDIR=ipipe-arm
 MKR_LINUX_CONFIG=mx31ads/config-$(KERNELVERSION)
 MKR_LINUX_TARGETS=uImage
 MKR_LINUX_IMAGE=arch/arm/boot/uImage
-MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/mx31ads/uImage-gch
+MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/mx31ads/uImage-gilles
 MKR_LINUX_EXTRA_FILES=
 MKR_LINUX_EXTRA_INSTALL=
 
@@ -124,15 +128,12 @@ MKR_NETCAT_SRCDIR=netcat-*
 #
 # Make
 #
-MKR_MAKE=y
-MKR_MAKE_SRCDIR=make-*
+# MKR_MAKE is not set
 
 #
 # LTP
 #
-MKR_LTP=y
-MKR_LTP_SRCDIR=ltp-full-*
-# MKR_LTP_MAINT is not set
+# MKR_LTP is not set
 
 #
 # Real-time tests & benches
@@ -140,7 +141,6 @@ MKR_LTP_SRCDIR=ltp-full-*
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
 MKR_TESTS_XENO=y
-MKR_TESTS_LTP=y
 
 #
 # Output
