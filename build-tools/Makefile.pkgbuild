@@ -20,6 +20,7 @@ endif
 
 # Toolchain arguments
 override ARCH := $(MKR_ARCH)
+override KARCH := $(MKR_KARCH)
 override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
 override CC := $(MKR_CC)
 override CXX := $(MKR_CXX)

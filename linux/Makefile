@@ -33,10 +33,10 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 .mkr.prepared: .mkr.cleaned
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
-		arch/$(MKR_KARCH)/Makefile init/Kconfig; \
+		arch/$(KARCH)/Makefile init/Kconfig; \
 	lndir -silent -ignorelinks $(srcdir) > /dev/null && \
 		$(xeno-srcdir)/scripts/prepare-kernel.sh \
-			--linux=. --arch=$(MKR_KARCH) && \
+			--linux=. --arch=$(KARCH) && \
 	: > .mkr.prepared
 	$(Q)echo Preparing linux sources directory...done.
 
@@ -54,7 +54,7 @@ configargs := -C $(srcdir) O=$(CURDIR)
 endif
 
 # Configuring the kernel
-configargs += V=$(KBUILD_VERBOSE) ARCH=$(MKR_KARCH)
+configargs += V=$(KBUILD_VERBOSE) ARCH=$(KARCH)
 
 defconfig-$(call not,$(defconfig)) = \
 	$(Q)test -n "$(board-config)" && cp $(board-config) $@ || :

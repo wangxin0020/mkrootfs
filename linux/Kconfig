@@ -23,19 +23,20 @@ config LINUX_CONFIG
 
 config LINUX_TARGETS
 	string "Targets"
-	default "all"
+	default "uImage"
 	help
-	  List of targets to run when compiling the kernel.
+	  Target or list of targets, separated by spaces, to run when compiling
+	  the kernel.
 
 config LINUX_IMAGE
 	string "Image"
-	default "zImage"
+	default "arch/$(KARCH)/boot/uImage"
 	help
 	  Kernel image to be copied to a boot-loader specific directory.
 
 config LINUX_IMAGE_DEST
 	string "Image destination"
-	default "/boot/vmlinuz-$(KERNELVERSION)"
+	default "/var/lib/tftpboot/$(MKR_BOARD)/uImage-$(KERNELVERSION)"
 	help
 	  Directory where the kernel image file will be copied. The copy uses
 	  scp if this destination has the form host:path or user@host:path.
