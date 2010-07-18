@@ -53,7 +53,8 @@ staging: ;
 rootfs: default-copyall-rootfs
 
 # Cleaning
-clean: ;
+clean:
+	rm -Rf $(staging)/ltp/* $(rootfs)/ltp/*
 
 # Checking configuration
 confcheck-$(MKR_LTP_MAINT) := $(call confcheck-tool,rsync,MKR_LTP_MAINT)
