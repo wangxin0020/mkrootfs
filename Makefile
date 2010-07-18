@@ -56,11 +56,19 @@ endif
 #
 # The O= assignment takes precedence over the mkr-build-output environment
 # variable.
+#
+# We enforce a value for O if none was passed on the command-line
 
-ifeq ($(O),)
-	O := $(PWD)/build
-	mkr-build-output := $(O)
-endif
+ifeq ($(strip $(O)$(mkr-build-output)$(mkr-build-src)),)
+PARALLEL=$(if $(findstring j,$(MAKEFLAGS)),, \
+	-j $(shell grep -c '^processor' /proc/cpuinfo))
+
+.PHONY: all
+all:
+	@$(MAKE) $(PARALLEL) O=$(CURDIR)/build $(MAKECMDGOALS)
+
+ $(MAKECMDGOALS): all ;
+else
 
 # mkr-build-src is set on invocation of make in OBJ directory
 # mkr-build-src is not intended to be used by the regular user (for now)
@@ -598,7 +606,9 @@ $(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
 		$(dir $@), \
 		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
+ifneq ($(MKR_CC),)
 cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
+endif
 
 PHONY += rootfs
 rootfs: $(call only-pkg-targets,rootfs)
@@ -631,7 +641,7 @@ clean-removed-packages:
 	fi
 
 ifeq ($(MKR_OUT_NFS),y)
-.rsyncd.secrets: .mkr.builddir $(O)/include/config/out/rsyncd/port.h
+.rsyncd.secrets: .mkr.builddir
 	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
 	umask 077; \
 	echo $$PASS > .rsync.pass; \
@@ -761,13 +771,13 @@ endif
 
 PHONY += mrproper
 mrproper:
-	$(Q)rm -Rf .config .mkr.* *
+	$(Q)rm -Rf .config $(filter-out .mkr.builddir,$(wildcard .mkr.*)) *
 
 # distclean
 #
 PHONY += distclean
 distclean: mrproper
-	@find $(srctree) $(RCS_FIND_IGNORE) \
+	@find $(srctree) $(RCS_FIND_IGNORE) -name build -prune -o \
 		\( -name '*.orig' -o -name '*.rej' -o -name '*~' \
 		-o -name '*.bak' -o -name '#*#' -o -name '.*.orig' \
 		-o -name '.*.rej' \
@@ -837,3 +847,4 @@ FORCE:
 # Declare the contents of the .PHONY variable as phony.  We keep that
 # information in a variable so we can use it in if_changed and friends.
 .PHONY: $(PHONY)
+endif
