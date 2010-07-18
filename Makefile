@@ -581,7 +581,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 
 PHONY += staging
 staging: $(call only-pkg-targets,staging)
-	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
+	$(Q)cat $(wildcard $(call pkg-targets,.mkr.fakeroot)) > .mkr.fakeroot
 
 PHONY += $(call pkg-targets,log)
 $(call pkg-targets,log): %:
