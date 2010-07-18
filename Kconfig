@@ -61,10 +61,11 @@ config SKIP_ROOTFS
        default y
 
        help
-	 By default, mkrootfs works in two steps: it generates a
-	 "staging" directory where all files of all packages are
-	 installed, then a "rootfs" directory which contains only
-	 files which will be needed at run-time.
+	 With this option disabled, mkrootfs works in two steps: it
+	 generates a "staging" directory where all files of all
+	 packages are installed, with debug symbols, then a "rootfs"
+	 directory which contains only stripped files which will be
+	 needed at run-time.
 
 	 Enabling this option will skip the generation of the "rootfs"
 	 directory. This speeds-up compilation in cases like using an
