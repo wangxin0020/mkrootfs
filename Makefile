@@ -427,8 +427,8 @@ linux/.mkr.confcheck: .mkr.basecheck $(wildcard linux/.config)
 ARCH:=$(MKR_ARCH)
 ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
 
-PHONY+= check-computed-variables
-check-computed-variables:
+PHONY+=FORCE
+check-computed-variables: FORCE
 	$(Q){ \
 	echo ARCH=$(MKR_ARCH); \
 	echo CCVERSION='$(shell $(MKR_CC) -v 2>&1 | tail -n 1)'; \
@@ -452,7 +452,15 @@ check-computed-variables:
 		fi; \
 	done
 
-remove-displayed:
+.mkr.builddir: FORCE
+	$(Q)echo builddir=$(O) > .tmp.mkr.builddir; \
+	if ! cmp -s .tmp.mkr.builddir .mkr.builddir; then \
+		mv .tmp.mkr.builddir .mkr.builddir; \
+	else \
+		rm -f .tmp.mkr.builddir; \
+	fi; \
+
+remove-displayed: FORCE
 	$(Q)rm -f .mkr.displayed
 
 mkr-run-and-log-on-failure = \
@@ -516,7 +524,7 @@ build-tools/bin/fakeroot:
 
 PHONY += $(call pkg-targets,compile)
 $(call pkg-targets,compile): \
-	%/compile: prepare check-computed-variables
+	%/compile: prepare check-computed-variables .mkr.builddir
 	$(Q)rm -f $(dir $@).mkr.log
 	$(Q)$(call mkr-run-and-log-on-failure, \
 		Building package $(dir $@) using $($(strip $(dir $@))srcdir), \
@@ -623,7 +631,7 @@ clean-removed-packages:
 	fi
 
 ifeq ($(MKR_OUT_NFS),y)
-.rsyncd.secrets:
+.rsyncd.secrets: .mkr.builddir $(O)/include/config/out/rsyncd/port.h
 	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
 	umask 077; \
 	echo $$PASS > .rsync.pass; \

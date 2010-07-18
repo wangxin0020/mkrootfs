@@ -33,7 +33,7 @@ mkr-config: .mkr_config
 	$(Q)cp .mkr_config .config
 	$(Q)rm -f ../.busybox_config
 
-include/autoconf.h: .config
+include/autoconf.h: .config ../.mkr.builddir
 	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(args) distclean || :
 	mv saved-busybox-config .config
