@@ -590,7 +590,7 @@ ltp/rootfs: ltp/staging
 	$(Q)$(call mkr-run-and-log, \
 		Installing package $(dir $@) in rootfs directory, \
 		$(dir $@), \
-		$(mkr-fakeroot) rsync -a staging/ltp/ rootfs/ltp)
+		$(mkr-fakeroot) rsync -a --delete staging/ltp/ rootfs/ltp)
 
 $(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
 	$(Q)$(call mkr-run-and-log, \
