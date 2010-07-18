@@ -550,7 +550,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		mv $(dir $@)/.mkr.newdirlist $(dir $@)/.mkr.dirlist; \
 		if ! rsync -rlpgoDc $$mkr_pkginst/ staging/; then \
 			$(mkr-locked-echo) rsync failed, please try again; \
-			rm $(dir $@).mkr.fakeroot; \
+			rm -f $(dir $@).mkr.fakeroot; \
 			cat $(dir $@).mkr.filelist 2> /dev/null | \
 			{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
 			cat $(dir $@).mkr.filelist 2> /dev/null | \
@@ -718,7 +718,7 @@ $(call pkg-targets,clean): %:
 		echo Cleaning $(dir $@)... failed; \
 		exit 1; \
 	else \
-		rm $(dir $@).mkr.fakeroot; \
+		rm -f $(dir $@).mkr.fakeroot; \
 		cat $(dir $@).mkr.filelist 2> /dev/null | \
 		{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
 		cat $(dir $@).mkr.filelist 2> /dev/null | \
