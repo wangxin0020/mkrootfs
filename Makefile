@@ -463,9 +463,9 @@ mkr-run-and-log-on-failure = \
 		$(mkr-lock); echo '+++' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
 			cat $(2).mkr.shortlog; \
-			echo '+++' Type make $(2)log for more details; \
+			echo '+++' Use make $(2)log for more details; \
 		else \
-			echo '+++' Type make $(2)shortlog or $(2)log for more details; \
+			echo '+++' Use make $(2)shortlog or $(2)log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
@@ -480,9 +480,9 @@ mkr-run-and-log = \
 		$(mkr-lock); echo '+++' $(1)... failed; \
 		if [ ! -e .mkr.displayed ]; then \
 			cat $(2).mkr.shortlog; \
-			echo '+++' Type make $(2)log for more details; \
+			echo '+++' Use make $(2)log for more details; \
 		else \
-			echo '+++' Type make $(2)shortlog or $(2)log for more details; \
+			echo '+++' Use make $(2)shortlog or $(2)log for more details; \
 		fi; \
 		: > .mkr.displayed; \
 		$(mkr-unlock); exit 1; \
@@ -493,9 +493,9 @@ mkr-run-and-log = \
 			echo '+++' $(1)... done, with warnings; \
 			if [ ! -e .mkr.displayed ]; then \
 				cat $(2).mkr.shortlog; \
-				echo '+++' Type make $(2)log for more details; \
+				echo '+++' Use make $(2)log for more details; \
 			else \
-				echo '+++' Type make $(2)shortlog or $(2)log for more details; \
+				echo '+++' Use make $(2)shortlog or $(2)log for more details; \
 			fi; : > .mkr.displayed; $(mkr-unlock); \
 		else \
 			$(mkr-locked-echo) $(1)... done; \
