@@ -24,7 +24,7 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.cleaned: .mkr.srcdir $(O)/include/config/xeno.h $(O)/include/config/karch.h
+.mkr.cleaned: $(wildcard .mkr.srcdir) $(O)/include/config/xeno.h $(O)/include/config/karch.h
 	$(Q)rm -Rf * $(filter-out .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
@@ -44,7 +44,7 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 ifeq ($(MKR_XENO_MAINT),y)
 .PHONY: FORCE
 .mkr.prepared: FORCE
-config-deps-y += .mkr.prepared
+prepared-deps += .mkr.prepared
 else
 mkr_config-deps-y += .mkr.prepared
 endif
@@ -64,7 +64,7 @@ defconfig-$(defconfig) = \
 mkr_config-deps-y += $(O)/include/config/linux/config.h
 mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
-.mkr_config: $(mkr_config-deps-y)
+.mkr_config: $(mkr_config-deps-y) $(if $(wildcard .mkr.prepared),,.mkr.prepared)
 	$(Q)rm -f ../.linux_config
 	+$(defconfig-y)
 
@@ -84,7 +84,7 @@ mkr-config: .mkr_config
 	cp .mkr_config .config
 	rm -f ../.linux_config
 
-include/generated/autoconf.h: .config $(deps) .mkr.cleaned
+include/generated/autoconf.h: .config $(deps) .mkr.cleaned  $(prepared-deps)
 	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
@@ -136,7 +136,7 @@ confcheck: default-confcheck
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones, and clean)
-%config: .config $(if $(MKR_XENO),.mkr.prepared)
+%config: .config
 	$(MAKE) $(configargs) $@
 
 clean: .config

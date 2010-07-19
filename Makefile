@@ -360,9 +360,6 @@ $(patsubst %, linux/%, $(allconfigs) mkr-config): %: check-computed-variables
  linux/.config:
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
-	$(Q)if [ -e linux/.config ]; then \
-		cp -a linux/.config .linux_config; \
-	fi
 
 linux/%_defconfig:
 	$(Q)mkdir -p linux
@@ -422,7 +419,7 @@ output-confcheck-$(MKR_OUT_TGZ) += \
 	$(confcheck-lnxmf) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-linux/.mkr.confcheck: .mkr.basecheck $(wildcard linux/.config)
+linux/.mkr.confcheck: .mkr.basecheck linux/.config
 	$(Q)success=:; $(call sub-confcheck,$(MAKE),linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
