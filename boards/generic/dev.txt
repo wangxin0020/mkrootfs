@@ -89,4 +89,10 @@ brw-	8,17	/dev/sdb1
 brw-	8,18	/dev/sdb2
 brw-	8,19	/dev/sdb3
 brw-	8,20	/dev/sdb4
+brw-	179,0	/dev/mmcblk0
+brw-	179,1	/dev/mmcblk0p1
+brw-	179,2	/dev/mmcblk0p2
+brw-	179,3	/dev/mmcblk0p3
+brw-	179,4	/dev/mmcblk0p4
 crw-    10,130  /dev/watchdog
+
