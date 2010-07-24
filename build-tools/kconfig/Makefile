@@ -1,5 +1,5 @@
 # ===========================================================================
-# Kernel configuration targets
+# Mkrootfs configuration targets
 # These targets are used from top-level makefile
 
 PHONY += oldconfig xconfig gconfig menuconfig config silentoldconfig update-po-config \

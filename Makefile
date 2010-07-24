@@ -524,7 +524,7 @@ build-tools/bin/fakeroot:
 		Building build system fakeroot, \
 		build-tools/fakeroot/, \
 		$(MAKE) -C build-tools/fakeroot \
-			-f $(srctree)/build-tools/fakeroot-1.11/Makefile \
+			-f $(srctree)/build-tools/fakeroot-1.14.4/Makefile \
 			$(O)/build-tools/bin/fakeroot)
 
 PHONY += $(call pkg-targets,compile)

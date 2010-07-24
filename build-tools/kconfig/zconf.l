@@ -28,8 +28,8 @@ static char *text;
 static int text_size, text_asize;
 
 struct buffer {
-        struct buffer *parent;
-        YY_BUFFER_STATE state;
+	struct buffer *parent;
+	YY_BUFFER_STATE state;
 };
 
 struct buffer *current_buf;
@@ -261,8 +261,7 @@ static void zconf_endhelp(void)
  * Try to open specified file with following names:
  * ./name
  * $(srctree)/name
- * The latter is used when srctree is separate from objtree
- * when compiling the kernel.
+ * The latter is used when srctree is separate from objtree.
  * Return NULL if file is not found.
  */
 FILE *zconf_fopen(const char *name)
