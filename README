@@ -1,23 +1,360 @@
-Available variables in package Makefile:
+I- Using mkrootfs.
+******************
 
-pkgdir: package directory in mkrootfs tree
-deps: package makefile dependencies, in order to trigger a re-configure
-if these options change
-srcdir: package source directory
+Configuring:
+============
+
+mkrootfs uses the Linux kernel build system. So, it works the same
+way. First it needs to be configured with one of the config targets,
+such as xconfig, menuconfig, oldconfig, etc... We also provide a few
+default configuration files, the available list may be seen when
+running "make help".
+
+You may also build the root filesystem out of the mkrootfs tree, by
+using the O variable when configuring. For instance:
+
+mkdir ~/build/myrootfs
+cd ~/build/myrootfs
+make -C /path/to/mkrootfs O=$PWD xconfig
+
+When running the configuration step in mkrootfs tree, the build
+process will take place under the mkroots directory named "build".
 
 
-Kconfig additions:
-"package" should be used instead of "bool" to mark the configure option for a
-package, this has several effects:
-- the Makefile for building the corresponding package is taken in the directory where is the Kconfig file containing this option;
-- the build system recurses in this sub-directory if the option is
-enabled.
+Useful configuration items:
+===========================
 
-"srcdir" can be used instead of "string" to mark the configure option for a
-package source directory.  The value is concatenated to the MKR_SRC_BASEDIR if
-it is a relative path, or is used as path if it is absoute, and is
-used and used as a pattern glob.
+Architecture and toolchain:
+---------------------------
 
-If a Kconfig variable depends or select an option in another
-directory's Kconfig, this dependency is used as a build dependency
-between the corresponding directories.
+The architecture for which the root filesystem will be compiled as
+well as the toolchain used for compilation may be set in the
+"Toolchain and flags selection" menu.
+
+Note that mkrootfs does not work the same way as the Linux kernel
+build system regarding these items, using the ARCH, CROSS_COMPILER
+variables on make command line has no effect, they must be set in the
+configuration menu.
+
+
+Packages sources
+----------------
+
+mkrootfs does not download and patch the package sources. You have to
+do it, and provide mkrootfs with the path where to find these
+sources. To avoid having to type long path over and over again, and
+make rebasing the packages sources easy, the sources directory are
+configured in two parts.
+
+First, a PATH style variable MKR_SRC_BASEDIR, found in the "Packages"
+menu, contains a list of directories under which the package sources
+will be searched.
+
+Then, packages with external sources have a variable allowing to
+configure the name of their source directory. If this directory name
+is relative (not starting with a /), these directories will be
+searched under the directories in the MKR_SRC_BASEDIR variable. These
+package source variables may contain the ? or * wildcard characters,
+the search will then work the same way as globbing in interactive
+shells.
+
+
+Board-specific files
+--------------------
+
+In the same vein, the MKR_BOARD variable contains the name of a
+directory under the boards directory in mkrootfs tree, where some
+board specific files will be search. Most notably, the Linux kernel
+configuration files will be found this way.
+
+
+Linux and busybox:
+------------------
+
+The linux and busybox packages need a configuration too. The
+configuration menu will let you choose a file name which will be
+searched under the board-specific directory, or a defconfig name, but
+you may modify the configuration of linux or busybox by running, for
+instance:
+
+make linux/xconfig
+or
+make busybox/xconfig
+
+This also works, for other targets such as menuconfig, oldconfig,
+*_defconfig, etc... mkrootfs will try and preserve the modifications
+you make to linux and busybox configuration. However, if at any time,
+you wish to return to the mkrootfs configuration, you can run:
+
+make linux/mkr-config
+or
+make busybox/mkr-config
+
+
+mkrootfs output:
+----------------
+
+The result of running mkrootfs is a root filesystem. This root
+filesystem may be produced in several forms, which may be chosen in
+the "Output" menu.
+
+
+Building:
+=========
+
+The compilation is launched by running "make", or "make all". Other
+targets are available, all the details may be obtained by running
+"make help".
+
+Note that prior to compiling anything, mkrootfs will pass your
+configuration through a few sanity checks, checking for instance
+whether all the tools you need are installed, all the sources
+directory exist, and will stop if all these checks do not pass.
+
+Most notably, only one output such as "rootfs" or "staging" may be
+rebuilt, or even only one package by running  "make
+<package-name>". Again, the list of available packages may be obtained
+by running "make help".
+
+Due to the fact that the packages are built in parallel, the
+compilation results are redirected to files. These files may later be
+consulted by running "make package/log" or "make package/shortlog" for
+an abridged version.
+
+
+II- Adding a new board
+**********************
+
+As mentioned earlier, the files specific for a board may be found
+under the boards/$(MKR_BOARD) directory. This includes:
+- the files for the "base" package, which creates the device nodes
+(described in the dev.txt file), as well as a "skeleton", found in the
+"skel" board directory;
+- optionally, the linux kernel and busybox configuration files.
+
+To avoid a lot of duplication for the boards we already support, we
+created a "generic" board directory which contains a basic
+dev.txt and skel directory shared between them, as well as a directory
+per-board which contains the linux kernel configuration files.
+
+So, when adding a new board, you have two choices:
+- create a new sub-directory in the "boards" directory with a dev.txt,
+a skel directory, and a few kernel configurations;
+- or re-use the generic configuration and simply add a new
+sub-directory for your board's linux kernel configuration.
+
+When you are done configuring mkrootfs for your board, you may then
+save mkrootfs' .config file as <board>_defconfig in the boards
+directory.
+
+
+III- Adding a new package
+*************************
+
+A package, in the sense of mkrootfs, is a sub-directory of mkrootfs
+tree, containing a Kconfig and Makefile. The Kconfig being sourced in
+a menu of the Kconfig file found at the top of mkrootfs tree.
+
+
+Kconfig contents
+================
+
+The Kconfig files follows the language of the Linux kernel
+configuration Kconfig files, with a few additions:
+
+- the "package" type identifies a configuration symbol attached to a
+package. This means that the configuration symbol is a boolean, and
+that if it is on, mkrootfs will create, under the build tree, a
+directory with the same name as the directory where the Kconfig may be
+found, and will build the package there.
+
+- the "srcdir" type identifies a configuration symbol containing the
+source directory of a package. This means that the configuration
+symbol is a string, and that its content will be treated as explained
+in the "Packages sources" section.
+
+- the "build_depends" and "build_select" keywords may be used instead
+of "depends" and "select" to identify a dependency at build-time. This
+allows expressing dependencies between package during the build
+process. If a package A "build_depends" on package B, package A's
+compilation will not be started before the completion of the "staging"
+step of "package B". This is useful if, for instance, package B
+installs libraries and header on which package A depends.
+
+
+Makefile contents
+=================
+
+The package Makefile is a regular Makefile residing in mkrootfs
+package-specific directory but will be executed in the package build
+directory.
+
+
+Rules
+-----
+
+This makefile should contain the following rules:
+- compile: should build the package
+- staging: should install the package in a temporary directory
+- clean: should remove all the generated files
+- rootfs: should copy and strip from the staging directory to the
+rootfs directory only the files needed at run-time.
+- optionally confcheck: check the configuration for anomalies, missing installed
+tools, etc...
+
+The following variables and functions are defined while running the
+package Makefile to help you accomplishing this task
+
+
+Variables
+---------
+
+- all the MKR_* variables found in the .config file
+- $(srcdir) is the directory containing the package sources.
+- $(pkgdir) is the package directory in mkrootfs tree, this may be
+useful, if for instance, you need some package-specific helper
+scripts.
+- $(pkginst) is the directory where the "staging" rule should install
+the package.
+- $(staging) is the staging directory, where the package should look for
+libraries and headers installed by other packages.
+- $(rootfs) is the directory where the "rootfs" rule should copy and
+strip files from the staging directory.
+- $(deps) is the list of files, used as dependency of the package. If
+any of this file changes, the package should be rebuilt.
+
+The toolchain and flags are passed to the Makefile through the
+following variables:
+- $(CC) is the C compiler
+- $(CXX) is the C++ compiler
+- $(ARCH) is the architecture
+- $(MKR_CONFIGURE_HOST) is the string identifying the target as
+passed to configure --host option, such as "arm-linux"
+- $(cflags-y) are the C compiler flags, they are initialized with
+$(MKR_CFLAGS) but may be extended or overwritten by the package Makefile
+- $(ldflags-y) are the linkef flags, they are intialized with
+$(MKR_LDFLAGS) by may be extended or overwritten by the package Makefile
+- $(cross) is the cross-compilation prefix
+
+Some rule-specific variables allow to configure the behaviour of a
+default rule:
+- $(configure-args-y) contains the flag which are passed to the
+autoconf-style "configure" script by the "default-autotools-compile"
+default rule.
+- $(confcheck-y) contains a list of checks, written as shell snippets
+which will be run by the "default-confcheck" rule, you may use the
+"concheck-*" functions described in the next section.
+- $(rootfs-y) contains the list of file, given as relative pathes to
+the staging tree, which need be copied to the rootfs directory and
+stripped by the "default-rootfs" rule.
+
+
+Functions
+---------
+
+- $(call mkrsrcdir,$(MKR_STRING_VAR)) will try and apply the process
+described in the "Packages sources" section to the contents of the
+MKR_STRING_VAR variable.
+- $(call not,$(MKR_BOOL_VAR)) will evaluate to empty if MKR_BOOL_VAR
+is not empty or to "y" if MKR_BOOL_VAR is empty.
+- $(call confcheck-if,<shell test>,<message>), if used in the
+confcheck-y variable, will cause the "default-confcheck" target to
+fail if <shell test> is true, and will print <message> explaining the
+reason for the failure.
+- $(call confcheck-ifnot,<shell test>,<message>), works like
+confcheck-if, except that failing <shell test> is considered a
+failure.
+- $(call confcheck-tool,<tool>,MKR_VAR), will check whether
+tool is available, and if it is not, it will display a message
+explaining that the current value of MKR_VAR requires <tool> to be
+available, and will make "default-confcheck" fail.
+- $(call confcheck-not-empty, MKR_VAR) will cause
+"default-confcheck" to fail, if MKR_VAR is empty.
+- $(call confcheck-exists,<file>) will cause "default-confcheck" to
+fail if <file> does not exist.
+- $(call recurse,dir1 dir2 dir3,command) will cause make to call
+command in each of "dir1", "dir2", "dir3".
+
+
+Default rules
+-------------
+
+The following rules are provided to have default implementation of the
+rules for the common cases.
+- default-autotools-compile will define a compile rule for an
+autotools package, using $(configure-args-y) as arguments to the
+configure script, erasing everything and restarting if any of the
+files in $(deps) change.
+- default-autotools-staging will run the autotools "make install"
+target, passing $(pkginst) as value of the DESTDIR variable.
+- default-copyall-rootfs will cause the copy and stripping of all the
+packages files installed in the staging directory under the rootfs
+directory.
+- default-rootfs will cause the copy and stripping of only the files
+listed in $(rootfs-y).
+- default-clean will cause "make clean" to be run in the package build
+directory.
+- default-confcheck will run $(confcheck-y) as a shell script and
+evaluate the shell $success variable. If this contains "false", this
+will cause the target to fail.
+
+
+Example
+=======
+
+Suppose now that we want to add the package "foo", based on the
+autotools, producing a binary /usr/bin/foo, and which configure script
+allows an --enable-bar option, triggering the compilation of a binary
+/usr/bin/bar. Enabling bar also requires the tool "qux" to be available.
+
+In the "foo" directory in mkrootfs tree, we would add the following
+Kconfig:
+
+menu "fooo"
+
+config FOO
+	package "Foo"
+
+if FOO
+
+config FOO_SRCDIR
+       srcdir "Source directory"
+       default "foo-*"
+
+config FOO_BAR
+       bool "Enable compilation of bar"
+
+endif
+
+endmenu
+
+Then in the Makefile, we would write:
+
+configure-args-$(MKR_FOO_BAR) += --enable-bar
+configure-args-$(call not,$(MKR_FOO_BAR)) += --disable-bar
+
+compile: default-autotools-compile
+
+staging: default-autotools-staging
+
+rootfs-y := /usr/bin/foo
+rootfs-$(MKR_FOO_BAR) += /usr/bin/bar
+
+rootfs: default-rootfs
+
+clean: default-clean
+
+concheck-$(MKR_FOO_BAR) += $(call confcheck-tool,qux,MKR_FOO_BAR)
+
+confcheck: default-confcheck
+
+The reason for many variable names finishing with -y is to allow
+appending to them only if some configuration option is true, as done
+in the Linux kernel Makefiles, and for the configure-args-y, rootfs-y
+and confcheck-y variable in this example.
+
+For more examples, you may look at the packages already in
+mkrootfs. The linux and busybox packages may be a bit hard, due to
+their additional configuration step. The "tests" package is
+interesting, because it shows a simple Makefile for compiling files
+without a separated source directory.

@@ -245,8 +245,8 @@ ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
-boards := $(wildcard $(srctree)/boards/*_defconfig)
-boards := $(notdir $(boards))
+boards := $(notdir $(wildcard $(srctree)/boards/*_defconfig))
+packages-dirs := $(notdir $(patsubst %/,%,$(dir $(wildcard $(srctree)/*/Kconfig))))
 
 ifneq ($(filter $(allconfigs) $(boards),$(MAKECMDGOALS)),)
       config-targets := 1
@@ -637,6 +637,12 @@ clean-removed-packages:
 		rm -f $$lists; \
 	fi
 
+$(dis_packages): FORCE
+	@echo Package $@ is not enabled in the configuration.; false
+
+$(foreach p,$(dis_packages),$(p)/%): FORCE
+	@echo Package $@ is not enabled in the configuration.; false
+
 ifeq ($(MKR_OUT_NFS),y)
 .rsyncd.secrets: .mkr.builddir
 	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
@@ -803,6 +809,11 @@ help:
 	@echo  '* staging         - Build all packages and install them in the staging directory'
 	@echo  '* rootfs          - Copy and strip from staging on the files useful at run-time'
 	@echo  '* nfsroot         - Copy rootfs in a directory shared through NFS'
+	@echo  '  package         - build package and if need be, update the staging, rootfs'
+	@echo  '                  and nfsroot directories. The available packages are:'
+	@$(foreach p,$(packages-dirs), \
+	echo  '                   . $(p)';)
+	@echo  ''
 	@echo  '  package/target  - run target in the package build directory, where target is'
 	@echo  '                  one of compile, staging, rootfs, clean, shortlog, log,'
 	@echo  '                  or one of the *config targets for busybox and linux.'
@@ -812,8 +823,6 @@ help:
 	@echo  ''
 	@echo  '                  The log and shortlog target print the last compilation log.'
 	@echo  ''
-	@echo  '  package         - build package and if need be, update the staging, rootfs'
-	@echo  '                  and nfsroot directories.'
 	@echo  '  make V=0|1 [targets] 0 => quiet build (default), 1 => verbose build'
 	@echo  '  make O=dir [targets] Locate all output files in "dir", including .config'
 	@echo  'Execute "make" or "make all" to build all targets marked with [*] '
