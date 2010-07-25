@@ -591,13 +591,7 @@ $(call pkg-targets,shortlog): %:
 # Rootfs rules, only needed if not skipping rootfs generation.
 ifneq ($(MKR_SKIP_ROOTFS),y)
 PHONY += $(call pkg-targets,rootfs)
-ltp/rootfs: ltp/staging
-	$(Q)$(call mkr-run-and-log, \
-		Installing package $(dir $@) in rootfs directory, \
-		$(dir $@), \
-		$(mkr-fakeroot) rsync -a --delete staging/ltp/ rootfs/ltp)
-
-$(filter-out ltp/rootfs,$(call pkg-targets,rootfs)): %/rootfs: %/staging
+$(call pkg-targets,rootfs): %/rootfs: %/staging
 	$(Q)$(call mkr-run-and-log, \
 		Installing package $(dir $@) in rootfs directory, \
 		$(dir $@), \

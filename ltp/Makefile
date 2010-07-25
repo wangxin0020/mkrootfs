@@ -5,39 +5,37 @@ LTP_PATH=$(shell echo $$PATH | sed 's/[^:]*distcc://g')
 sync-$(call not,$(MKR_LTP_MAINT)) := cp --preserve=links,mode -R
 sync-$(MKR_LTP_MAINT) := rsync -rlpgoD
 
-create-stamp := $(staging)/ltp/.mkr.dir-created
+create-stamp := .mkr.created
 
 $(create-stamp): $(deps)
-	rm -Rf $(dir $@)
-	mkdir -p $(dir $@)
+	rm -Rf *
 	: > $@
 
-# Sync the sources between the source tree and the staging directory
+# Sync the sources between the source tree and the build directory
 # In maintainer mode, trigger a sync for every compilation
 ifeq ($(MKR_LTP_MAINT),y)
 do-sync: $(create-stamp)
-	$(sync-y) $(srcdir)/* $(staging)/ltp
+	$(sync-y) $(srcdir)/* .
 
-$(staging)/ltp/configure: do-sync ;
+configure: do-sync ;
 
 configure-args-y += --enable-maintainer-mode
 else
-$(staging)/ltp/configure: $(create-stamp)
-	$(sync-y) $(srcdir)/* $(staging)/ltp
-	if [ -e $(staging)/ltp/config.status ]; then \
+configure: $(create-stamp)
+	$(sync-y) $(srcdir)/* .
+	if [ -e config.status ]; then \
 		echo Something is very wrong !; \
 		exit 1; \
 	fi
 endif
 
 # Configure
-$(staging)/ltp/config.status: $(staging)/ltp/configure
-	cd $(dir $@) && ./configure $(configure-args-y)
+config.status: configure
+	./configure $(configure-args-y)
 
 # Build
-compile: $(staging)/ltp/config.status
-	cd $(staging)/ltp && PATH=$(LTP_PATH) $(MAKE) \
-	CROSS_COMPILE="$(cross)" \
+compile: config.status
+	PATH=$(LTP_PATH) $(MAKE) CROSS_COMPILE="$(cross)" \
 	CC="$(CC) $(ARCH_CFLAGS)" CXX="$(CXX) $(ARCH_LDFLAGS)" \
 		AR="$(cross)ar" RANLIB="$(cross)ranlib"
 	for dir in \
@@ -46,17 +44,19 @@ compile: $(staging)/ltp/config.status
 		testcases/bin/dumpdir \
 		output \
 		results; \
-	do mkdir -p $(staging)/ltp/$$dir || exit 1; done
+	do mkdir -p $$dir || exit 1; done
 
-staging: ;
+# Install
+staging:
+	mkdir -p $(pkginst)/ltp
+	cp -alf * $(pkginst)/ltp
 
 rootfs: default-copyall-rootfs
 
-# Cleaning
-clean:
-	rm -Rf $(staging)/ltp/* $(rootfs)/ltp/*
+# Clean
+clean: default-clean
 
-# Checking configuration
+# Check configuration
 confcheck-$(MKR_LTP_MAINT) := $(call confcheck-tool,rsync,MKR_LTP_MAINT)
 
 confcheck: default-confcheck

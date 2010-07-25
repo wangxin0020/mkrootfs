@@ -128,12 +128,14 @@ default-confcheck:
 staging:
 
 # Rules for building autoconf packages
-config.status: $(deps)
+# Use an improbable stamp name in order to avoid conflicts with
+# packages with custom rules.
+.mkr.autotools.default.configured: $(deps)
 	rm -Rf * || :
-	$(srcdir)/configure $(configure-args-y)
+	$(srcdir)/configure $(configure-args-y) && : > $@
 
 .PHONY: default-autotools-compile
-default-autotools-compile: config.status
+default-autotools-compile: .mkr.autotools.default.configured
 	$(MAKE)
 
 .PHONY: default-autotools-staging
