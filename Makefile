@@ -644,24 +644,33 @@ ifeq ($(MKR_OUT_NFS),y)
 	echo $$PASS > .rsync.pass; \
 	echo root:$$PASS > .rsyncd.secrets
 
-.rsyncd.pid: .rsyncd.secrets
-	$(Q)PORT=$(MKR_OUT_RSYNCD_PORT); \
-	LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; rm -f .rsyncd.pid; \
+.rsync.port:
+	echo $(MKR_OUT_RSYNCD_PORT) > .rsync.port
+
+.rsyncd.pid: .rsyncd.secrets .rsync.port
+	$(Q)first=:; LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; \
+	rm -f .rsyncd.pid; \
 	while [ ! -e .rsyncd.pid ]; do \
-		echo $$PORT > .rsync.port; \
-		echo Launching rsync on port $$PORT...; \
+		PORT=`cat .rsync.port`; \
+		$(mkr-locked-echo) Launching rsync on port $$PORT...; \
 		sudo rsync --daemon --port=$$PORT \
 			--config=$(srctree)/build-tools/rsyncd.conf; \
 		sleep 1; \
 		if [ ! -e .rsyncd.pid ]; then \
-			echo Launching rsync on port $$PORT... failed; \
-			PORT=`expr $$PORT + 1`; \
+			$(mkr-locked-echo) Launching rsync on port $$PORT... failed; \
+			if $first; then \
+				PORT=$(MKR_OUT_RSYNCD_PORT); \
+			else \
+				PORT=`expr $$PORT + 1`; \
+			fi; \
 			if [ "$$PORT" -eq "$$LIMIT" ]; then \
-				echo Unable to launch rsync daemon. Giving up.; \
+				$(mkr-locked-echo) Unable to launch rsync daemon. Giving up.; \
 				exit 1; \
 			fi; \
+			echo $$PORT > .rsync.port; \
+			first=false; \
 		else \
-			echo Launching rsync on port $$PORT... done; \
+			$(mkr-locked-echo) Launching rsync on port $$PORT... done; \
 			exit 0; \
 		fi; \
 	done
