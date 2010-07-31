@@ -31,10 +31,6 @@ endif
 
 # Build
 compile: config.status
-	if ! [ -e $^ ]; then \
-		echo Something went wrong !; \
-		exit 1; \
-	fi; \
 	PATH=$(LTP_PATH) $(MAKE) CROSS_COMPILE="$(cross)" \
 	CC="$(CC) $(ARCH_CFLAGS)" CXX="$(CXX) $(ARCH_LDFLAGS)" \
 		AR="$(cross)ar" RANLIB="$(cross)ranlib"
