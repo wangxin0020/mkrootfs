@@ -14,8 +14,8 @@
 
   title       : fakeroot
   description : create a "fake" root shell, by wrapping
-                functions like chown, stat, etc. Useful for debian
-                packaging mechanism
+		functions like chown, stat, etc. Useful for debian
+		packaging mechanism
 */
 
 /*
@@ -58,12 +58,12 @@
 
   comments:
     I need to wrap unlink because of the following:
-        install -o admin foo bar
+	install -o admin foo bar
 	rm bar
-        touch bar         //bar now may have the same inode:dev as old bar,
-	                  //but unless the rm was caught,
+	touch bar         //bar now may have the same inode:dev as old bar,
+			  //but unless the rm was caught,
 			  //fakeroot still has the old entry.
-        ls -al bar
+	ls -al bar
     Same goes for all other ways to remove inodes form the filesystem,
     like rename(existing_file, any_file).
 
@@ -132,6 +132,21 @@
 #ifndef SOL_TCP
 # define SOL_TCP 6 /* this should probably be done with getprotoent */
 #endif
+
+int fakestat_equal(struct fakestat *hashed, struct fakestat *key)
+{
+	if (hashed->dev != key->dev || hashed->ino != key->ino)
+		return 0;
+
+	if ((hashed->mode & S_IFMT) == (key->mode & S_IFMT))
+		return 1;
+
+	if ((S_ISCHR(hashed->mode) || S_ISBLK(key->mode))
+	    && S_ISREG(key->mode))
+		return 1;
+
+	return 0;
+}
 
 #define fakestat_equal(a, b)  ((a)->dev == (b)->dev && (a)->ino == (b)->ino)
 
@@ -390,7 +405,7 @@ static void faked_send_fakem(const struct fake_msg *buf)
  * OUT: 'path' contains the matching file if 1 is returned
  */
 static int scan_dir(const fake_dev_t dev, const fake_ino_t ino,
-                    char *const path)
+		    char *const path)
 {
   const size_t pathlen = strlen(path) + strlen("/");
   if (pathlen >= DB_PATH_LEN)
@@ -410,11 +425,11 @@ static int scan_dir(const fake_dev_t dev, const fake_ino_t ino,
       struct stat buf;
       strncpy(path + pathlen, ent->d_name, DB_PATH_LEN - pathlen);
       if (lstat(path, &buf) == 0 && buf.st_dev == dev)
-        break;
+	break;
     } else if (ent->d_type == DT_DIR) {
       strncpy(path + pathlen, ent->d_name, DB_PATH_LEN - pathlen);
       if (scan_dir(dev, ino, path))
-        break;
+	break;
     }
   }
 
@@ -431,7 +446,7 @@ static int scan_dir(const fake_dev_t dev, const fake_ino_t ino,
  * OUT: 'path' contains the matching file if 1 is returned
  */
 static int find_path(const fake_dev_t dev, const fake_ino_t ino,
-                     const char *const roots, char *const path)
+		     const char *const roots, char *const path)
 {
   unsigned int end = 0;
 
@@ -515,13 +530,13 @@ int save_database(const uint32_t remote)
 #ifdef FAKEROOT_DB_PATH
     if (find_path(i->buf.dev, i->buf.ino, roots, path))
       fprintf(f,"mode=%llo,uid=%llu,gid=%llu,nlink=%llu,rdev=%llu %s\n",
-              (uint64_t) i->buf.mode,(uint64_t) i->buf.uid,(uint64_t) i->buf.gid,
-              (uint64_t) i->buf.nlink,(uint64_t) i->buf.rdev,path);
+	      (uint64_t) i->buf.mode,(uint64_t) i->buf.uid,(uint64_t) i->buf.gid,
+	      (uint64_t) i->buf.nlink,(uint64_t) i->buf.rdev,path);
 #else
     fprintf(f,"dev=%llx,ino=%llu,mode=%llo,uid=%llu,gid=%llu,nlink=%llu,rdev=%llu\n",
-            (uint64_t) i->buf.dev,(uint64_t) i->buf.ino,(uint64_t) i->buf.mode,
-            (uint64_t) i->buf.uid,(uint64_t) i->buf.gid,(uint64_t) i->buf.nlink,
-            (uint64_t) i->buf.rdev);
+	    (uint64_t) i->buf.dev,(uint64_t) i->buf.ino,(uint64_t) i->buf.mode,
+	    (uint64_t) i->buf.uid,(uint64_t) i->buf.gid,(uint64_t) i->buf.nlink,
+	    (uint64_t) i->buf.rdev);
 #endif
   }
 
@@ -545,22 +560,22 @@ int load_database(const uint32_t remote)
   while(1){
 #ifdef FAKEROOT_DB_PATH
     r=scanf("mode=%llo,uid=%llu,gid=%llu,nlink=%llu,rdev=%llu "DB_PATH_SCAN"\n",
-            &stmode, &stuid, &stgid, &stnlink, &strdev, &path);
+	    &stmode, &stuid, &stgid, &stnlink, &strdev, &path);
     if (r != 6)
       break;
 
     if (stat(path, &path_st) < 0) {
       fprintf(stderr, "%s: %s\n", path, strerror(errno));
       if (errno == ENOENT || errno == EACCES)
-        continue;
+	continue;
       else
-        break;
+	break;
     }
     stdev = path_st.st_dev;
     stino = path_st.st_ino;
 #else
     r=scanf("dev=%llx,ino=%llu,mode=%llo,uid=%llu,gid=%llu,nlink=%llu,rdev=%llu\n",
-            &stdev, &stino, &stmode, &stuid, &stgid, &stnlink, &strdev);
+	    &stdev, &stino, &stmode, &stuid, &stgid, &stnlink, &strdev);
     if (r != 7)
       break;
 #endif
@@ -691,9 +706,9 @@ void process_chmod(struct fake_msg *buf){
     */
 
     if ((buf->st.mode&S_IFMT) != (st->mode&S_IFMT) &&
-        ((buf->st.mode&S_IFMT) != S_IFREG || (!st->mode&(S_IFBLK|S_IFCHR)))) {
+	((buf->st.mode&S_IFMT) != S_IFREG || (!st->mode&(S_IFBLK|S_IFCHR)))) {
       fprintf(stderr,"FAKEROOT: chmod mode=%lo incompatible with "
-              "existing mode=%lo\n", buf->st.mode, st->mode);
+	      "existing mode=%lo\n", buf->st.mode, st->mode);
       st->mode = buf->st.mode;
     }
     else{
@@ -1196,7 +1211,7 @@ int main(int argc, char **argv){
       break;
     case SIGUSR1:
       /* this is strictly a debugging feature, unless someone can confirm
-         that save will always get a consistent database */
+	 that save will always get a consistent database */
       sigaction(i,&sa_save,NULL);
       break;
     case SIGUSR2:
