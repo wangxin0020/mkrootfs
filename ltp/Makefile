@@ -2,8 +2,8 @@
 # compilation
 LTP_PATH=$(shell echo $$PATH | sed 's/[^:]*distcc://g')
 
-sync-$(call not,$(MKR_LTP_MAINT)) := cp --preserve=links,mode -R
-sync-$(MKR_LTP_MAINT) := rsync -rlpgoD
+sync-$(call not,$(MKR_LTP_MAINT)) := cp -a
+sync-$(MKR_LTP_MAINT) := rsync -a
 
 create-stamp := .mkr.created
 
@@ -19,22 +19,22 @@ do-sync: $(create-stamp)
 
 configure: do-sync ;
 
-configure-args-y += --enable-maintainer-mode
-else
-configure: $(create-stamp)
-	$(sync-y) $(srcdir)/* .
-	if [ -e config.status ]; then \
-		echo Something is very wrong !; \
-		exit 1; \
-	fi
-endif
-
-# Configure
+# Configure (maintainer mode)
 config.status: configure
+	./configure $(configure-args-y) --enable-maintainer-mode
+else
+# Configure
+config.status: $(create-stamp)
+	$(sync-y) $(srcdir)/* .
 	./configure $(configure-args-y)
+endif
 
 # Build
 compile: config.status
+	if ! [ -e $^ ]; then \
+		echo Something went wrong !; \
+		exit 1; \
+	fi; \
 	PATH=$(LTP_PATH) $(MAKE) CROSS_COMPILE="$(cross)" \
 	CC="$(CC) $(ARCH_CFLAGS)" CXX="$(CXX) $(ARCH_LDFLAGS)" \
 		AR="$(cross)ar" RANLIB="$(cross)ranlib"
@@ -48,8 +48,9 @@ compile: config.status
 
 # Install
 staging:
-	mkdir -p $(pkginst)/ltp
+	mkdir -p $(pkginst)/ltp $(staging)/ltp
 	cp -alf * $(pkginst)/ltp
+	cp -alf * $(staging)/ltp
 
 rootfs: default-copyall-rootfs
 

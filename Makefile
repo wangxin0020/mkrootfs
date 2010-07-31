@@ -65,7 +65,7 @@ PARALLEL=$(if $(findstring j,$(MAKEFLAGS)),, \
 
 .PHONY: all
 all:
-	@$(MAKE) $(PARALLEL) O=$(CURDIR)/build $(MAKECMDGOALS)
+	@mkdir -p build && $(MAKE) $(PARALLEL) O=$(CURDIR)/build $(MAKECMDGOALS)
 
  $(MAKECMDGOALS): all ;
 else
@@ -548,7 +548,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 		{ cd $$mkr_pkginst && find . -! -type d; } \
 			| sort > $(dir $@)/.mkr.newfilelist; \
 		{ cd $$mkr_pkginst && find . -type d; } \
-			| sort > $(dir $@)/.mkr.newdirlist; \
+			| grep -v ^\.$$ | sort -r > $(dir $@)/.mkr.newdirlist; \
 		if [ -e $(dir $@)/.mkr.filelist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.filelist \
 				$(dir $@)/.mkr.newfilelist \
