@@ -658,7 +658,7 @@ ifeq ($(MKR_OUT_NFS),y)
 		sleep 1; \
 		if [ ! -e .rsyncd.pid ]; then \
 			$(mkr-locked-echo) Launching rsync on port $$PORT... failed; \
-			if $first; then \
+			if $$first; then \
 				PORT=$(MKR_OUT_RSYNCD_PORT); \
 			else \
 				PORT=`expr $$PORT + 1`; \
