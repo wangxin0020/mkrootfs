@@ -6,6 +6,8 @@ configure-args-$(MKR_XENO_DEBUG) += --enable-debug
 configure-args-$(MKR_XENO_SMP) += --enable-smp
 configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
 
+configure-args-$(MKR_XENO_SEP_TESTDIR) += --with-testdir="$(MKR_XENO_TESTDIR)"
+
 ifneq ($(strip $(MKR_ARCH_X86_32)$(MKR_ARCH_X86_64)),)
 configure-args-$(MKR_XENO_X86_SEP) += --enable-x86-sep
 configure-args-$(call not, $(MKR_XENO_X86_SEP)) += --disable-x86-sep

@@ -70,6 +70,13 @@ endmenu
 
 menu "Advanced configuration options"
 
+config XENO_SEP_TESTDIR
+       bool "Separated tests directory"
+
+config XENO_TESTDIR
+       depends on XENO_SEP_TESTDIR
+       string "Tests directory"
+
 if ARCH_X86_32 || ARCH_X86_64
 
 config XENO_X86_SEP
