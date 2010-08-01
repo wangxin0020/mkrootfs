@@ -682,9 +682,9 @@ nfsroot: $(rootfs-y) .rsyncd.pid
 	PORT=`cat .rsync.port`; \
 	if ! $(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
 		rsync --password-file=.rsync.pass --delete -a \
-		--exclude ltp/testcases/bin/* \
-		--exclude ltp/output/* --exclude ltp/results/* \
-		--exclude ltp/.installed --exclude root/* \
+		--exclude /ltp/testcases/bin/* \
+		--exclude /ltp/output/* --exclude /ltp/results/* \
+		--exclude /ltp/.installed --exclude /root/* \
 		--exclude /etc/ld.so.cache \
 		$(rootfs-y)/* rsync://root@localhost:$$PORT/nfsroot; then \
 		echo Synchronizing NFS root failed, erasing rsync configuration; \
