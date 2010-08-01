@@ -42,13 +42,15 @@ compile: config.status
 		results; \
 	do mkdir -p $$dir || exit 1; done
 
-# Install
+# Install, we use custom install rules in order to preserve timestamps
 staging:
 	mkdir -p $(pkginst)/ltp $(staging)/ltp
 	cp -alf * $(pkginst)/ltp
 	cp -alf * $(staging)/ltp
 
-rootfs: default-copyall-rootfs
+rootfs:
+	mkdir -p $(rootfs)/ltp
+	cp -alf * $(rootfs)/ltp
 
 # Clean
 clean: default-clean
