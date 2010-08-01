@@ -17,7 +17,7 @@ syslogd -S -D -L
 klogd
 telnetd
 
-if test -e /ltp && /ltp/.installed || test ! -e /ltp/testcases/bin/hackbench; then
+if test -e /ltp && test ! -e /ltp/.installed -o ! -e /ltp/testcases/bin/hackbench; then
     echo 'Installing LTP'
     dir=`pwd`
     cd /ltp
@@ -31,4 +31,3 @@ fi
 
 chown root:0 /bin/ping
 chmod u+sx /bin/ping
-
