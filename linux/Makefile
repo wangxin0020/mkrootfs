@@ -36,7 +36,7 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 		arch/$(KARCH)/Makefile init/Kconfig; \
 	lndir -silent -ignorelinks $(srcdir) > /dev/null && \
 		$(xeno-srcdir)/scripts/prepare-kernel.sh \
-			--linux=. --arch=$(KARCH) && \
+			--default --linux=. --arch=$(KARCH) && \
 	: > .mkr.prepared
 	$(Q)echo Preparing linux sources directory...done.
 
