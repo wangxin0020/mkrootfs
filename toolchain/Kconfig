@@ -34,7 +34,7 @@ endchoice
 config ARCH
 	string
 	default "arm" if ARCH_ARM
-	default "blackfin" if ARCH_BFIN
+	default "bfin" if ARCH_BFIN
 	default "nios2" if ARCH_NIOS2
 	default "ppc" if ARCH_PPC32
 	default "ppc64" if ARCH_PPC64
