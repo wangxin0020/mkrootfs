@@ -71,23 +71,28 @@ rootfs-$(MKR_XENO_VRTX) += \
 rootfs-$(MKR_XENO_VXWORKS) += \
 	/usr/lib/libvxworks.so.* \
 	/usr/lib/libxenomai.so.*
+
+MKR_XENO_TESTDIR ?= /usr/bin
+
 rootfs-$(MKR_XENO_TESTSUITE) += \
-	/usr/bin/arith \
-	/usr/bin/check-vdso \
-	/usr/bin/clocktest \
-	/usr/bin/cyclictest \
-	/usr/bin/cond-torture-native \
-	/usr/bin/cond-torture-posix \
-	/usr/bin/irqloop \
-	/usr/bin/klatency \
-	/usr/bin/latency \
-	/usr/bin/mutex-torture-native \
-	/usr/bin/mutex-torture-posix \
-	/usr/bin/rtdm \
-	/usr/bin/sigtest \
-	/usr/bin/switchtest \
-	/usr/bin/wakeup-time \
-	/usr/bin/xeno-test
+	$(MKR_XENO_TESTDIR)/arith \
+	$(MKR_XENO_TESTDIR)/check-vdso \
+	$(MKR_XENO_TESTDIR)/clocktest \
+	$(MKR_XENO_TESTDIR)/cyclictest \
+	$(MKR_XENO_TESTDIR)/cond-torture-native \
+	$(MKR_XENO_TESTDIR)/cond-torture-posix \
+	$(MKR_XENO_TESTDIR)/irqloop \
+	$(MKR_XENO_TESTDIR)/klatency \
+	$(MKR_XENO_TESTDIR)/latency \
+	$(MKR_XENO_TESTDIR)/mutex-torture-native \
+	$(MKR_XENO_TESTDIR)/mutex-torture-posix \
+	$(MKR_XENO_TESTDIR)/rtdm \
+	$(MKR_XENO_TESTDIR)/sigtest \
+	$(MKR_XENO_TESTDIR)/switchtest \
+	$(MKR_XENO_TESTDIR)/wakeup-time \
+	/usr/bin/xeno-test \
+	/usr/bin/xeno-load \
+	/usr/share/xenomai/testsuite/*
 
 rootfs: default-rootfs
 
