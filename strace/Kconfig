@@ -2,6 +2,7 @@ menu "Strace"
 
 config STRACE
 	package "Strace tool"
+	depends on !ARCH_BFIN
 	default y
 
 if STRACE
