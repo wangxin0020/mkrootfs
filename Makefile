@@ -518,7 +518,7 @@ mkr-run-and-log = \
 mkr-run-staging-$(call not,$(MKR_SKIP_ROOTFS)) = $(mkr-run-and-log-on-failure)
 mkr-run-staging-$(MKR_SKIP_ROOTFS) = $(mkr-run-and-log)
 
-build-tools/bin/fakeroot:
+build-tools/bin/fakeroot: .mkr.builddir
 	$(Q)rm -f build-tools/fakeroot/.mkr.log
 	$(Q)$(call mkr-run-and-log, \
 		Building build system fakeroot, \

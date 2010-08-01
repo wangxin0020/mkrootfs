@@ -1228,7 +1228,7 @@ int rename(const char *oldpath, const char *newpath){
 #ifdef HAVE_FSTATAT
 #ifdef HAVE_RENAMEAT
 int renameat(int olddir_fd, const char *oldpath,
-             int newdir_fd, const char *newpath){
+	     int newdir_fd, const char *newpath){
   int r,s;
   INT_STRUCT_STAT st;
 
@@ -1494,7 +1494,10 @@ FTSENT *fts_read(FTS *ftsp) {
   r=next_fts_read(ftsp);
   if(r && r->fts_statp) {  /* Should we bother checking fts_info here? */
 # if defined(STAT64_SUPPORT) && !defined(__APPLE__)
-    SEND_GET_STAT64(r->fts_statp, _STAT_VER);
+	  if (__builtin_types_compatible_p(typeof(r->fts_statp), struct stat64 *))
+		  SEND_GET_STAT64((struct stat64 *)r->fts_statp, _STAT_VER);
+	  else
+		  SEND_GET_STAT(r->fts_statp, _STAT_VER);
 # else
     SEND_GET_STAT(r->fts_statp, _STAT_VER);
 # endif
@@ -1517,9 +1520,12 @@ FTSENT *fts_children(FTS *ftsp, int options) {
   for(r = first; r; r = r->fts_link) {
     if(r && r->fts_statp) {  /* Should we bother checking fts_info here? */
 # if defined(STAT64_SUPPORT) && !defined(__APPLE__)
-      SEND_GET_STAT64(r->fts_statp, _STAT_VER);
+	    if (__builtin_types_compatible_p(typeof(r->fts_statp), struct stat64 *))
+		    SEND_GET_STAT64(r->fts_statp, _STAT_VER);
+	    else
+		    SEND_GET_STAT(r->fts_statp, _STAT_VER);
 # else
-      SEND_GET_STAT(r->fts_statp, _STAT_VER);
+	    SEND_GET_STAT(r->fts_statp, _STAT_VER);
 # endif
     }
   }
@@ -1532,11 +1538,11 @@ FTSENT *fts_children(FTS *ftsp, int options) {
 #ifdef __LP64__
 int
 getattrlist(const char *path, void *attrList, void *attrBuf,
-            size_t attrBufSize, unsigned int options)
+	    size_t attrBufSize, unsigned int options)
 #else
 int
 getattrlist(const char *path, void *attrList, void *attrBuf,
-            size_t attrBufSize, unsigned long options)
+	    size_t attrBufSize, unsigned long options)
 #endif
 {
   int r;
@@ -1567,11 +1573,11 @@ getattrlist(const char *path, void *attrList, void *attrBuf,
 #ifdef __LP64__
 int
 fgetattrlist(int fd, void *attrList, void *attrBuf,
-             size_t attrBufSize, unsigned int options)
+	     size_t attrBufSize, unsigned int options)
 #else
 int
 fgetattrlist(int fd, void *attrList, void *attrBuf,
-             size_t attrBufSize, unsigned long options)
+	     size_t attrBufSize, unsigned long options)
 #endif
 {
   int r;
