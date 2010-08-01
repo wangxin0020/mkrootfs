@@ -53,14 +53,18 @@ static int clock_nanosleep(clockid_t clock_id, int flags, const struct timespec 
 	return syscall(__NR_clock_nanosleep, clock_id, flags, req, rem);
 }
 
-static int sched_setaffinity(pid_t pid, unsigned int cpusetsize,
-		cpu_set_t *mask)
+int __attribute__((weak)) sched_setaffinity(pid_t pid, size_t cpusetsize,
+		const cpu_set_t *mask)
 {
 	return -EINVAL;
 }
 
+#ifndef CPU_SET
 static void CPU_SET(int cpu, cpu_set_t *set) { }
+#endif
+#ifndef CPU_ZERO
 static void CPU_ZERO(cpu_set_t *set) { }
+#endif
 #else
 extern int clock_nanosleep(clockid_t __clock_id, int __flags,
 			   __const struct timespec *__req,
@@ -334,9 +338,9 @@ static int settracer(char *tracer)
 	return ret;
 }
 
-/* 
+/*
  * parse an input value as a base10 value followed by an optional
- * suffix. The input value is presumed to be in seconds, unless 
+ * suffix. The input value is presumed to be in seconds, unless
  * followed by a modifier suffix: m=minutes, h=hours, d=days
  *
  * the return value is a value in seconds
@@ -572,7 +576,7 @@ void *timerthread(void *param)
 
 		if (duration && (calcdiff(now, stop) >= 0))
 			shutdown++;
-		
+
 		if (!stopped && tracelimit && (diff > tracelimit)) {
 			stopped++;
 			tracing(0);
@@ -583,7 +587,7 @@ void *timerthread(void *param)
 
 		if (par->bufmsk)
 			stat->values[stat->cycles & par->bufmsk] = diff;
-	
+
 		if (histogram && (diff < histogram))
 			stat->hist_array[diff] += 1;
 
@@ -846,7 +850,7 @@ static void print_hist(struct thread_param *par, int nthreads)
 	int i, j;
 	unsigned long long log_entries[nthreads];
 	unsigned long max_latency = 0;
-	
+
 	bzero(log_entries, sizeof(log_entries));
 
 	printf("# Histogram\n");
@@ -862,7 +866,7 @@ static void print_hist(struct thread_param *par, int nthreads)
 				max_latency = i;
 		}
 		printf("\n");
-		
+
 	}
 	printf("# Total:");
 	for (j = 0; j < nthreads; j++)
@@ -927,7 +931,7 @@ int main(int argc, char **argv)
 			perror("mlockall");
 			goto out;
 		}
-		
+
 	kernelversion = check_kernel();
 
 	if (kernelversion == KV_NOT_26)
@@ -1027,7 +1031,7 @@ int main(int argc, char **argv)
 				allstopped++;
 		}
 		if (duration) {
-			
+
 		}
 		usleep(10000);
 		if (shutdown || allstopped)
@@ -1056,7 +1060,7 @@ int main(int argc, char **argv)
 
 	if (histogram) {
 		print_hist(par, num_threads);
-		for (i = 0; i < num_threads; i++) 
+		for (i = 0; i < num_threads; i++)
 			free (stat[i].hist_array);
 	}
 
