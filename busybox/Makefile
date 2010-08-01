@@ -4,7 +4,7 @@ endif
 
 board-config = $(srctree)/boards/$(MKR_BOARD)/$(MKR_BUSYBOX_CONFIG)
 defconfig-$(defconfig) = $(MAKE) $(args) defconfig && mv .config $@
-defconfig-$(call not,$(defconfig)) = cp $(board-defconfig) $@
+defconfig-$(call not,$(defconfig)) = cp $(board-config) $@
 
 # Configuring busybox
 args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
