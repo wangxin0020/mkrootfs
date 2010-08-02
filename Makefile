@@ -436,6 +436,7 @@ PHONY+=FORCE
 check-computed-variables: FORCE
 	$(Q){ \
 	echo ARCH=$(MKR_ARCH); \
+	echo CC='$(shell which $(MKR_CC))'; \
 	echo CCVERSION='$(shell $(MKR_CC) -v 2>&1 | tail -n 1)'; \
 	echo CFLAGS=$(MKR_CFLAGS); \
 	echo LDFLAGS=$(MKR_LDFLAGS); \
