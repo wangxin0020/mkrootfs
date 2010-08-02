@@ -55,11 +55,13 @@ bins:
 				*) dest=bin;; \
 				esac; \
 				cp --preserve=timestamps "$$bin" "$(pkginst)/$$dest"; \
+				case "$$b" in \
+				ldd) sed -i 's/bash/ash/g' "$(pkginst)/$$dest/$$b";; \
+				esac; \
 				break; \
 			fi; \
 		done; \
-	done; \
-	sed -i 's/bash/ash/g' $(pkginst)/bin/ldd > /dev/null 2>&1 || :
+	done
 
 libs:
 	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"; \
