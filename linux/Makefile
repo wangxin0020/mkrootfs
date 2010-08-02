@@ -29,12 +29,16 @@ endif
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO),y)
+
+lndir-$(call not $(MKR_XENO_MAINT)) := cp -sfR
+lndir-$(MKR_XENO_MAINT) := lndir -silent -ignorelinks
+
 xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 .mkr.prepared: .mkr.cleaned
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(KARCH)/Makefile init/Kconfig; \
-	lndir -silent -ignorelinks $(srcdir) > /dev/null && \
+	$(lndir-y) $(srcdir)/. . > /dev/null && \
 		$(xeno-srcdir)/scripts/prepare-kernel.sh \
 			--default --linux=. --arch=$(KARCH) && \
 	: > .mkr.prepared
@@ -130,7 +134,7 @@ $(call confcheck-exists,$(MKR_LINUX_EXTRA_INSTALL),MKR_LINUX_EXTRA_INSTALL)
 endif
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_CC)
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
-confcheck-$(MKR_XENO) += $(call confcheck-tool,lndir,MKR_XENO)
+confcheck-$(MKR_XENO_MAINT) += $(call confcheck-tool,lndir,MKR_XENO)
 
 confcheck: default-confcheck
 
