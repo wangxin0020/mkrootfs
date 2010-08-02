@@ -541,6 +541,7 @@ PHONY += $(call pkg-targets,staging)
 $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 	$(Q)$(mkr-fakeroot) sh -c '{ \
 		mkr_pkginst=$(dir $@).mkr.inst; \
+		umask 022; \
 		mkdir -p $$mkr_pkginst; \
 		$(call mkr-run-staging-y, \
 			Installing package $(dir $@) in staging directory, \
@@ -687,7 +688,7 @@ nfsroot: $(rootfs-y) .rsyncd.pid
 		--exclude /ltp/output/* --exclude /ltp/results/* \
 		--exclude /ltp/.installed --exclude /root/* \
 		--exclude /etc/ld.so.cache \
-		$(rootfs-y)/* rsync://root@localhost:$$PORT/nfsroot; then \
+		$(rootfs-y)/ rsync://root@localhost:$$PORT/nfsroot; then \
 		echo Synchronizing NFS root failed, erasing rsync configuration; \
 		echo Please try again; \
 		rm -Rf .rsync* .mkr.fakeroot */.mkr.fakeroot staging rootfs; \
