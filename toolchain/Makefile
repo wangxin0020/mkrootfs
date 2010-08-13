@@ -107,7 +107,7 @@ rootfs: default-copyall-rootfs
 clean: ;
 
 # Configuration checks
-confcheck-y += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
+confcheck-$(MKR_LIBSTDCPP) += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
 confcheck-y += $(call confcheck-ifnot, \
 	$(pkgdir)/toolchain-ok.sh \
 		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
