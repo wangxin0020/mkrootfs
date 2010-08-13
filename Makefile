@@ -701,7 +701,7 @@ ifeq ($(MKR_OUT_TAR),y)
 PHONY += rootfs.tar
 rootfs.tar: $(rootfs-y)
 	$(Q)echo Generating $@...
-	$(Q)tar -C $(rootfs-y) -cf $@ .
+	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot tar -C $(rootfs-y) -cf $@ .
 	$(Q)echo Generating $@... done
 endif
 
