@@ -40,7 +40,7 @@ for d in $LIBDIRS; do
 		*) die Unrecognized machine type "$mach";;
 	    esac
 
-	    if test "$sr_arch" == "$arch"; then
+	    if test "$sr_arch" = "$arch"; then
 		exit 0
 	    else
 		die Architecture mismatch, libc found in sysroot \($f\) is for $sr_arch whereas selected architecture is $arch
