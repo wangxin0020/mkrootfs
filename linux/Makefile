@@ -24,7 +24,7 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.cleaned: $(wildcard .mkr.srcdir) $(O)/include/config/xeno.h $(O)/include/config/karch.h
+.mkr.cleaned: $(wildcard .mkr.srcdir $(O)/include/config/xeno.h $(O)/include/config/karch.h)
 	$(Q)rm -Rf * $(filter-out .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
@@ -49,11 +49,13 @@ ifeq ($(MKR_XENO_MAINT),y)
 .PHONY: FORCE
 .mkr.prepared: FORCE
 prepared-deps += .mkr.prepared
+mkr_config-deps-y += $(if $(wildcard .mkr.prepared),,.mkr.prepared)
 else
 mkr_config-deps-y += .mkr.prepared
 endif
 
 else
+mkr_config-deps-y += .mkr.cleaned
 configargs := -C $(srcdir) O=$(CURDIR)
 endif
 
@@ -68,13 +70,13 @@ defconfig-$(defconfig) = \
 mkr_config-deps-y += $(O)/include/config/linux/config.h
 mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
-.mkr_config: $(mkr_config-deps-y) $(if $(wildcard .mkr.prepared),,.mkr.prepared)
+.mkr_config: $(mkr_config-deps-y)
 	$(Q)rm -f ../.linux_config
 	+$(defconfig-y)
 
 ../.linux_config: ;
 
-.config: .mkr_config $(wildcard ../.linux_config) $(config-deps-y)
+.config: .mkr_config $(wildcard ../.linux_config)
 	@if [ -e ../.linux_config ]; then \
 		echo Resetting Linux configuration to .linux_config; \
 		cp ../.linux_config .config; \
