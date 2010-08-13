@@ -346,9 +346,9 @@ all: $(outputs-y) clean-removed-packages
 mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
 mkr-shortlog = $(srctree)/build-tools/shortlog.awk
-mkr-lock = . $(srctree)/build-tools/display.sh lock
-mkr-unlock = . $(srctree)/build-tools/display.sh unlock
-mkr-locked-echo = . $(srctree)/build-tools/display.sh locked-echo
+mkr-lock = set -- lock; . $(srctree)/build-tools/display.sh
+mkr-unlock = set -- unlock; . $(srctree)/build-tools/display.sh
+mkr-locked-echo = $(srctree)/build-tools/display.sh locked-echo
 
 $(patsubst %, linux/%, $(allconfigs) mkr-config): %: check-computed-variables
 	$(Q)mkdir -p linux
