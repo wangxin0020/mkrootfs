@@ -49,9 +49,8 @@ mksrcdir=$(shell $(srctree)/build-tools/mksrcdir.sh \
 
 MAKE_UNI := $(MAKE) -j 1
 
-# The filename Kbuild has precedence over Makefile
 pkgdir := $(if $(filter /%,$(src)),$(src),$(srctree)/$(src))
-mkr-pkgmk := $(if $(wildcard $(pkgdir)/Kbuild),$(pkgdir)/Kbuild,$(pkgdir)/Makefile)
+mkr-pkgmk := $(pkgdir)/Makefile
 
 ifeq ($(mkr-pkgmk),)
 $(error No Makefile or Kbuild for package $(obj))
