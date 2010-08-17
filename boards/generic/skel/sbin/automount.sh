@@ -1,4 +1,4 @@
 #! /bin/sh
 
-mount /dev/$MDEV /mnt
+mount /dev/$MDEV
 
