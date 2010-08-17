@@ -17,6 +17,7 @@ config TESTS_SRCDIR
 config TESTS_XENO
        def_bool y
        build_depends on XENO
+       build_depends on LINUX
        select XENO_TESTSUITE
 
 config TESTS_LTP

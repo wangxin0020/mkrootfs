@@ -2,17 +2,20 @@ c-exes-y = calibrator cyclictest_nonxeno
 scripts-y = noltp_hell
 scripts-$(MKR_TESTS_LTP) += dohell
 
+
 all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
 
-compile: $(all)
+compile: $(all) modules
 
-staging: $(all)
+staging-all: $(all)
 	install -o 0 -d $(pkginst)/usr/bin
 	install -o 0 $^ $(pkginst)/usr/bin
 
+staging: staging-all modules_install
+
 rootfs: default-copyall-rootfs
 
-clean:
+clean: modules_clean
 	rm -f $(c-exes-y) $(cxx-exes-y) *.o *.d
 
 # Build rules
@@ -62,16 +65,37 @@ $(cxx-exes-y): %:
 	echo $(CXX) $(bin_cmd); $(CXX) $(bin_cmd)
 
 %.o: %.c
-	@$(CC) -o $@ -c $< $(CPPFLAGS) $(CFLAGS)
+	$(CC) -o $@ -c $< $(CPPFLAGS) $(CFLAGS)
 
 %.o: %.cc
-	@$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+	$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
 
 %.o: %.cxx
-	@$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+	$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
 
 %.o: %.C
-	@$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+	$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+
+# Kernel modules
+ifneq ($(wildcard $(srcdir)/Kbuild),)
+KBUILD=$(O)/linux
+
+.PHONY: modules modules_install modules_clean
+modules modules_install:
+	ln -sf $(srcdir)/Kbuild $(srcdir)/*.[chS] .
+	$(MAKE) -C $(KBUILD) M=$(CURDIR) ARCH=$(KARCH) CC="$(KCC)" \
+		CROSS_COMPILE=$(kcross) \
+		INSTALL_MOD_PATH=$(pkginst) $@
+
+modules_install: modules
+
+modules_clean:
+	$(MAKE) -C $(KBUILD) M=$(CURDIR) ARCH=$(KARCH) CC="$(KCC)" \
+		CROSS_COMPILE=$(kcross) clean
+	rm -f Module.symvers modules.order Kbuild *.[chS]
+else
+modules modules_install modules_clean:
+endif
 
 # Automatic dependencies
 DEPENDENCIES := \
