@@ -604,10 +604,14 @@ cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
 PHONY += rootfs
-rootfs: $(call only-pkg-targets,rootfs)
+rootfs: $(call only-pkg-targets,rootfs) staging
 	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
 		xargs -r $(cross)strip > /dev/null 2>&1 || :
+	$(Q)find rootfs -type f -name '*.ko' \
+		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
+		xargs -r $(kcross)strip -R .note -R .comment --strip-unneeded \
+		> /dev/null 2>&1 || :
 	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 endif
 
