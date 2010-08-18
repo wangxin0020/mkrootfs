@@ -98,6 +98,10 @@ The result of running mkrootfs is a root filesystem. This root
 filesystem may be produced in several forms, which may be chosen in
 the "Output" menu.
 
+Only the "nfsroot" output requires to use sudo to launch an rsync
+daemon, and does this only once. Other outputs do not require root
+privileges.
+
 
 Building:
 =========
@@ -108,18 +112,17 @@ targets are available, all the details may be obtained by running
 
 Note that prior to compiling anything, mkrootfs will pass your
 configuration through a few sanity checks, checking for instance
-whether all the tools you need are installed, all the sources
-directory exist, and will stop if all these checks do not pass.
+whether all the tools it needs are installed, all the sources
+directory exist, and will stop if any of these checks does not pass.
 
-Most notably, only one output such as "rootfs" or "staging" may be
-rebuilt, or even only one package by running  "make
-<package-name>". Again, the list of available packages may be obtained
-by running "make help".
+Only one output such as "rootfs" or "staging" may be rebuilt, or even
+only one package by running  "make <package-name>". Again, the list of
+available packages may be obtained by running "make help".
 
 Due to the fact that the packages are built in parallel, the
 compilation results are redirected to files. These files may later be
 consulted by running "make package/log" or "make package/shortlog" for
-an abridged version.
+an abridged version (containing only warnings and errors).
 
 
 II- Adding a new board
@@ -179,7 +182,7 @@ allows expressing dependencies between package during the build
 process. If a package A "build_depends" on package B, package A's
 compilation will not be started before the completion of the "staging"
 step of "package B". This is useful if, for instance, package B
-installs libraries and header on which package A depends.
+installs libraries and header on which package A "compile" step depends.
 
 
 Makefile contents
@@ -195,10 +198,10 @@ Rules
 
 This makefile should contain the following rules:
 - compile: should build the package
-- staging: should install the package in a temporary directory
+- staging: should install the package in the temporary directory $(pkginst)
 - clean: should remove all the generated files
 - rootfs: should copy and strip from the staging directory to the
-rootfs directory only the files needed at run-time.
+rootfs directory $(rootfs), only the files needed at run-time.
 - optionally confcheck: check the configuration for anomalies, missing installed
 tools, etc...
 
@@ -232,13 +235,13 @@ following variables:
 passed to configure --host option, such as "arm-linux"
 - $(cflags-y) are the C compiler flags, they are initialized with
 $(MKR_CFLAGS) but may be extended or overwritten by the package Makefile
-- $(ldflags-y) are the linkef flags, they are intialized with
+- $(ldflags-y) are the linker flags, they are intialized with
 $(MKR_LDFLAGS) by may be extended or overwritten by the package Makefile
 - $(cross) is the cross-compilation prefix
 
 Some rule-specific variables allow to configure the behaviour of a
 default rule:
-- $(configure-args-y) contains the flag which are passed to the
+- $(configure-args-y) contains the flags which are passed to the
 autoconf-style "configure" script by the "default-autotools-compile"
 default rule.
 - $(confcheck-y) contains a list of checks, written as shell snippets
