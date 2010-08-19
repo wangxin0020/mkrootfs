@@ -13,10 +13,12 @@ DIRS= \
 ifeq ($(MKR_MOUNT),)
 mount-dev-sed := \
 	sed -i 's,@MKR_MOUNT_DEV@,\# /dev/null,g' "$(pkginst)/etc/fstab"; \
+	sed -i 's,@MKR_MOUNT_DEV@,\# null,g'  "$(pkginst)/etc/init.d/rcS"; \
 	sed -i 's,@MKR_MOUNT_DEV@,\# -null,g' "$(pkginst)/etc/mdev.conf"
 else
 mount-dev-sed := \
 	sed -i 's,@MKR_MOUNT_DEV@,/dev/$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/fstab"; \
+	sed -i 's,@MKR_MOUNT_DEV@,$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/init.d/rcS"; \
 	sed -i 's,@MKR_MOUNT_DEV@,-$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/mdev.conf"
 endif
 

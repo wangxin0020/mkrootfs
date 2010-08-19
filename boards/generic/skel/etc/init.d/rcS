@@ -3,6 +3,7 @@
 mount /proc
 echo /sbin/mdev > /proc/sys/kernel/hotplug
 mount -a
+MDEV=@MKR_MOUNT_DEV@ /sbin/mount_storage.sh &
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
