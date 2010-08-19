@@ -580,7 +580,6 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 
 PHONY += staging
 staging: $(call only-pkg-targets,staging)
-	$(Q)cat $(wildcard $(call pkg-targets,.mkr.fakeroot)) > .mkr.fakeroot
 
 PHONY += $(call pkg-targets,log)
 $(call pkg-targets,log): %:
@@ -612,8 +611,10 @@ rootfs: $(call only-pkg-targets,rootfs) staging
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
 		xargs -r $(kcross)strip -R .note -R .comment --strip-unneeded \
 		> /dev/null 2>&1 || :
-	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 endif
+
+.mkr.fakeroot: $(rootfs-y) $(wildcard $(call pkg-targets,.mkr.fakeroot))
+	$(Q)cat $(wildcard $(call pkg-targets,.mkr.fakeroot)) > .mkr.fakeroot
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
@@ -682,7 +683,7 @@ ifeq ($(MKR_OUT_NFS),y)
 	done
 
 PHONY += nfsroot
-nfsroot: $(rootfs-y) .rsyncd.pid
+nfsroot: .mkr.fakeroot .rsyncd.pid
 	$(Q)echo Synchronizing NFS root...
 	$(Q)mkdir -p nfsroot; \
 	PORT=`cat .rsync.port`; \
@@ -703,7 +704,7 @@ endif
 
 ifeq ($(MKR_OUT_TAR),y)
 PHONY += rootfs.tar
-rootfs.tar: $(rootfs-y)
+rootfs.tar: .mkr.fakeroot
 	$(Q)echo Generating $@...
 	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot tar -C $(rootfs-y) -cf $@ .
 	$(Q)echo Generating $@... done
