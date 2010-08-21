@@ -614,7 +614,7 @@ rootfs: $(call only-pkg-targets,rootfs) staging
 endif
 
 .mkr.fakeroot: $(rootfs-y) $(wildcard $(call pkg-targets,.mkr.fakeroot))
-	$(Q)cat $(wildcard $(call pkg-targets,.mkr.fakeroot)) > .mkr.fakeroot
+	$(Q)cat $(call pkg-targets,.mkr.fakeroot) > .mkr.fakeroot
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
