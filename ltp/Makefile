@@ -32,7 +32,7 @@ endif
 # Build
 compile: config.status
 	PATH=$(LTP_PATH) $(MAKE) CROSS_COMPILE="$(cross)" \
-	CC="$(CC) $(ARCH_CFLAGS)" CXX="$(CXX) $(ARCH_LDFLAGS)" \
+	CC="$(CC) $(ARCH_FLAGS)" CXX="$(CXX) $(ARCH_FLAGS)" \
 		AR="$(cross)ar" RANLIB="$(cross)ranlib"
 	for dir in \
 		testcases/bin \
