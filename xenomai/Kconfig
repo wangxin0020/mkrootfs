@@ -30,7 +30,7 @@ config XENO_SMP
        help
 	 Choose 'y' here to build libraries for multi-processor systems.
 
-menu "Skin components selection"
+menu "Components selection"
 
 config XENO_A4L
        bool "Install analogy libraries and utilities"
