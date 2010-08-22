@@ -120,6 +120,7 @@ void cpyfakemstat(struct fake_msg *f, const struct stat *st
      to occur in practical fakeroot conditions. */
 
   f->st.nlink=st->st_nlink;
+  f->st.size=st->st_size;
 #else
   switch(ver) {
 	  case _STAT_VER_KERNEL:
@@ -218,11 +219,11 @@ void cpystatfakem(struct stat *st, const struct fake_msg *f
 #ifdef STAT64_SUPPORT
 
 void cpyfakemstat64(struct fake_msg *f,
-                 const struct stat64 *st
+		 const struct stat64 *st
 #ifdef STUPID_ALPHA_HACK
-                 , int ver
+		 , int ver
 #endif
-                 ){
+		 ){
 #ifndef STUPID_ALPHA_HACK
   f->st.mode =st->st_mode;
   f->st.ino  =st->st_ino ;
@@ -240,6 +241,7 @@ void cpyfakemstat64(struct fake_msg *f,
      to occur in practical fakeroot conditions. */
 
   f->st.nlink=st->st_nlink;
+  f->st.size=st->st_size;
 #else
   switch(ver) {
 	  case _STAT_VER_KERNEL:
@@ -282,11 +284,11 @@ void cpyfakemstat64(struct fake_msg *f,
 #endif
 }
 void cpystat64fakem(struct stat64 *st,
-                 const struct fake_msg *f
+		 const struct fake_msg *f
 #ifdef STUPID_ALPHA_HACK
-                 , int ver
+		 , int ver
 #endif
-                 ){
+		 ){
 #ifndef STUPID_ALPHA_HACK
   st->st_mode =f->st.mode;
   st->st_ino  =f->st.ino ;
@@ -297,6 +299,8 @@ void cpystat64fakem(struct stat64 *st,
   /* DON'T copy the nlink count! The system always knows
      this one better! */
   /*  st->st_nlink=f->st.nlink;*/
+  /* Do not copy the size either, it is only used as a check to
+     differentiate empty files from char and block devices. */
 #else
   switch(ver) {
 	  case _STAT_VER_KERNEL:
@@ -338,7 +342,7 @@ void cpystat64fakem(struct stat64 *st,
 #endif /* STAT64_SUPPORT */
 
 void cpyfakefake(struct fakestat *dest,
-                 const struct fakestat *source){
+		 const struct fakestat *source){
   dest->mode =source->mode;
   dest->ino  =source->ino ;
   dest->uid  =source->uid ;
@@ -348,6 +352,7 @@ void cpyfakefake(struct fakestat *dest,
   /* DON'T copy the nlink count! The system always knows
      this one better! */
   /*  dest->nlink=source->nlink;*/
+  dest->size =source->size;
 }
 
 
@@ -407,7 +412,7 @@ void semaphore_up(){
     if (semop(sem_id,&op,1)) {
       if (errno != EINTR) {
 	perror("semop(1): encountered an error");
-        exit(1);
+	exit(1);
       }
     } else {
       break;
@@ -425,8 +430,8 @@ void semaphore_down(){
   while (1) {
     if (semop(sem_id,&op,1)) {
       if (errno != EINTR) {
-        perror("semop(2): encountered an error");
-        exit(1);
+	perror("semop(2): encountered an error");
+	exit(1);
       }
     } else {
       break;
@@ -546,8 +551,8 @@ void send_get_fakem(struct fake_msg *buf)
 
     do
       l=msgrcv(msg_get,
-               (struct my_msgbuf*)buf,
-               sizeof(*buf)-sizeof(buf->mtype),0,0);
+	       (struct my_msgbuf*)buf,
+	       sizeof(*buf)-sizeof(buf->mtype),0,0);
     while((buf->serial!=serial)||buf->pid!=pid);
 
     semaphore_down();
@@ -702,11 +707,11 @@ void send_stat(const struct stat *st,
 
 #ifdef STAT64_SUPPORT
 void send_stat64(const struct stat64 *st,
-                 func_id_t f
+		 func_id_t f
 #ifdef STUPID_ALPHA_HACK
-                 , int ver
+		 , int ver
 #endif
-                 ){
+		 ){
   struct fake_msg buf;
 
 #ifndef FAKEROOT_FAKENET
@@ -740,8 +745,8 @@ void send_get_stat(struct stat *st
 #else
     cpyfakemstat(&buf,st,ver);
 #endif
-
     buf.id=stat_func;
+
     send_get_fakem(&buf);
 #ifndef STUPID_ALPHA_HACK
     cpystatfakem(st,&buf);
@@ -754,9 +759,9 @@ void send_get_stat(struct stat *st
 #ifdef STAT64_SUPPORT
 void send_get_stat64(struct stat64 *st
 #ifdef STUPID_ALPHA_HACK
-                     , int ver
+		     , int ver
 #endif
-                    )
+		    )
 {
   struct fake_msg buf;
 
@@ -828,7 +833,7 @@ int init_get_msg(){
    the fake ownership etc. of files.  That process needs to know the key
    in use by faked - faked prints this at startup. */
 int fake_get_owner(int is_lstat, const char *key, const char *path,
-                  uid_t *uid, gid_t *gid, mode_t *mode){
+		  uid_t *uid, gid_t *gid, mode_t *mode){
   struct stat st;
   int i;
 

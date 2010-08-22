@@ -133,7 +133,8 @@
 # define SOL_TCP 6 /* this should probably be done with getprotoent */
 #endif
 
-int fakestat_equal(struct fakestat *hashed, struct fakestat *key)
+static inline int
+fakestat_equal(const struct fakestat *hashed, const struct fakestat *key)
 {
 	if (hashed->dev != key->dev || hashed->ino != key->ino)
 		return 0;
@@ -141,14 +142,12 @@ int fakestat_equal(struct fakestat *hashed, struct fakestat *key)
 	if ((hashed->mode & S_IFMT) == (key->mode & S_IFMT))
 		return 1;
 
-	if ((S_ISCHR(hashed->mode) || S_ISBLK(key->mode))
-	    && S_ISREG(key->mode))
+	if ((S_ISCHR(hashed->mode) || S_ISBLK(hashed->mode))
+	    && (S_ISREG(key->mode) && key->size == 0))
 		return 1;
 
 	return 0;
 }
-
-#define fakestat_equal(a, b)  ((a)->dev == (b)->dev && (a)->ino == (b)->ino)
 
 #ifndef FAKEROOT_FAKENET
 # if HAVE_SEMUN_DEF == 0
@@ -769,6 +768,7 @@ void process_stat(struct fake_msg *buf){
     }
 
   }
+
   faked_send_fakem(buf);
 }
 //void process_fstat(struct fake_msg *buf){

@@ -47,6 +47,7 @@ typedef uint32_t fake_uid_t;
 typedef uint32_t fake_gid_t;
 typedef uint32_t fake_mode_t;
 typedef uint32_t fake_nlink_t;
+typedef uint64_t fake_off_t;
 
 #if __SUNPRO_C
 #pragma pack(4)
@@ -59,6 +60,7 @@ struct fakestat {
 	fake_dev_t   rdev;
 	fake_mode_t  mode;
 	fake_nlink_t nlink;
+	fake_off_t   size;
 } FAKEROOT_ATTR(packed);
 #if __SUNPRO_C
 #pragma pack()
