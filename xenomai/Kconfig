@@ -6,6 +6,9 @@ config XENO
 
 if XENO
 
+config XENO_USERSPACE
+       def_bool n
+
 config XENO_SRCDIR
        srcdir "Source directory"
        default "xenomai-*"
@@ -31,33 +34,42 @@ menu "Skin components selection"
 
 config XENO_A4L
        bool "Install analogy libraries and utilities"
+       select XENO_USERSPACE
 
 config XENO_NATIVE
        bool "Install native skin library"
        default y
+       select XENO_USERSPACE
 
 config XENO_POSIX
        bool "Install POSIX skin library"
        default y
+       select XENO_USERSPACE
 
 config XENO_PSOS
        bool "Install PSOS skin library"
+       select XENO_USERSPACE
 
 config XENO_RTCAN
        bool "Install RT socket CAN utilities"
+       select XENO_USERSPACE
 
 config XENO_RTDM
        bool "Install RTDM skin library"
        default y
+       select XENO_USERSPACE
 
 config XENO_UITRON
        bool "Install UITRON skin library"
+       select XENO_USERSPACE
 
 config XENO_VRTX
        bool "Install VRTX skin library"
+       select XENO_USERSPACE
 
 config XENO_VXWORKS
        bool "Install VxWorks skin library"
+       select XENO_USERSPACE
 
 config XENO_TESTSUITE
        bool "Install testsuite"
@@ -65,6 +77,19 @@ config XENO_TESTSUITE
        select XENO_POSIX
        select XENO_RTDM
        default y
+       help
+	 Install the basic testsuite.
+
+config XENO_TESTSUITE_UNFREQUENT
+       bool "Install tests used less frequently"
+       select XENO_TESTSUITE
+       help
+	 Install less frequently used tests requiring special kernel
+	 drivers:
+	 - irqbench
+       	 - klatency
+	 - rtdmtest
+	 - sigtest
 
 endmenu
 

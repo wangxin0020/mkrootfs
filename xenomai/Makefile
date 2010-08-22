@@ -81,18 +81,23 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	$(MKR_XENO_TESTDIR)/cyclictest \
 	$(MKR_XENO_TESTDIR)/cond-torture-native \
 	$(MKR_XENO_TESTDIR)/cond-torture-posix \
-	$(MKR_XENO_TESTDIR)/irqloop \
-	$(MKR_XENO_TESTDIR)/klatency \
 	$(MKR_XENO_TESTDIR)/latency \
 	$(MKR_XENO_TESTDIR)/mutex-torture-native \
 	$(MKR_XENO_TESTDIR)/mutex-torture-posix \
-	$(MKR_XENO_TESTDIR)/rtdm \
-	$(MKR_XENO_TESTDIR)/sigtest \
 	$(MKR_XENO_TESTDIR)/switchtest \
 	$(MKR_XENO_TESTDIR)/wakeup-time \
 	/usr/bin/xeno-test \
 	/usr/bin/xeno-load \
 	/usr/share/xenomai/testsuite/*
+rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
+	$(MKR_XENO_TESTDIR)/irqloop \
+	$(MKR_XENO_TESTDIR)/klatency \
+	$(MKR_XENO_TESTDIR)/rtdm \
+	$(MKR_XENO_TESTDIR)/sigtest
+ifneq ($(strip $(MKR_ARCH_X86_32)$(MKR_ARCH_X86_64)),)
+rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
+	$(MKR_XENO_TESTDIR)/irqbench
+endif
 
 rootfs: default-rootfs
 
@@ -102,5 +107,53 @@ clean: default-clean
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \
 	test "$(MKR_XENO_SMP)" != "y", \
 	SMP kernel with non-SMP Xenomai user-space)
+confcheck-$(MKR_XENO_USERSPACE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_OPT_PERVASIVE)" , \
+	Xenomai user-space support needs CONFIG_XENO_OPT_PERVASIVE in kernel configuration)
+confcheck-$(MKR_XENO_A4L) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_ANALOGY)", \
+	MKR_XENO_A4L needs CONFIG_XENO_DRIVERS_ANALOGY in kernel configuration)
+confcheck-$(MKR_XENO_NATIVE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_NATIVE)", \
+	MKR_XENO_NATIVE needs CONFIG_XENO_SKIN_NATIVE in kernel configuration)
+confcheck-$(MKR_XENO_POSIX) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_POSIX)", \
+	MKR_XENO_POSIX needs CONFIG_XENO_SKIN_POSIX in kernel configuration)
+confcheck-$(MKR_XENO_PSOS) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_PSOS)", \
+	MKR_XENO_PSOS needs CONFIG_XENO_SKIN_PSOS in kernel configuration)
+confcheck-$(MKR_XENO_RTCAN) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_CAN)", \
+	MKR_XENO_RTCAN needs CONFIG_XENO_DRIVERS_RTCAN in kernel configuration)
+confcheck-$(MKR_XENO_RTDM) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_RTDM)", \
+	MKR_XENO_RTDM needs CONFIG_XENO_SKIN_RTDM in kernel configuration)
+confcheck-$(MKR_XENO_UITRON) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_UITRON)", \
+	MKR_XENO_UITRON needs CONFIG_XENO_SKIN_UITRON in kernel configuration)
+confcheck-$(MKR_XENO_VRTX) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_VRTX)", \
+	MKR_XENO_VRTX needs CONFIG_XENO_SKIN_VRTX in kernel configuration)
+confcheck-$(MKR_XENO_VXWORKS) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_SKIN_VXWORKS)", \
+	MKR_XENO_VXWORKS needs CONFIG_XENO_SKIN_VXWORKS in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_TIMERBENCH)", \
+	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_TIMERBENCH in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_SWITCHTEST)", \
+	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_SWITCHTEST in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_SIGTEST)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_SIGTEST in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_KLATENCY)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_KLATENCY in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_IRQBENCH)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_IRQBENCH in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_RTDMTEST)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_RTDMTEST in kernel configuration)
 
 confcheck: default-confcheck
