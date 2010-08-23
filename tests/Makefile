@@ -5,17 +5,17 @@ scripts-$(MKR_TESTS_LTP) += dohell
 
 all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
 
-compile: $(all) modules
+compile: $(all)
 
 staging-all: $(all)
 	install -o 0 -d $(pkginst)/usr/bin
 	install -o 0 $^ $(pkginst)/usr/bin
 
-staging: staging-all modules_install
+staging: staging-all
 
 rootfs: default-copyall-rootfs
 
-clean: modules_clean
+clean:
 	rm -f $(c-exes-y) $(cxx-exes-y) *.o *.d
 
 # Build rules
@@ -37,6 +37,12 @@ XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
 
 XENO_POSIX_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=posix --cflags)
 XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
+
+compile: modules
+
+staging: modules_install
+
+clean: modules_clean
 endif
 
 calibrator: calibrator.o
@@ -104,10 +110,10 @@ DEPENDENCIES := \
 	$(patsubst $(srcdir)/%.cxx, %.d, $(wildcard $(srcdir)/*.cxx)) \
 	$(patsubst $(srcdir)/%.C, %.d, $(wildcard $(srcdir)/*.C))
 
-ifneq ($(strip $(DEPENDENCIES)),)
+ifneq ($(strip $(DEPENDENCIES)$(filter compile, $(MAKECMDGOALS))),)
 mkdeps_cmd= -M $(CPPFLAGS) $< 2> /dev/null | \
 	sed 's,\($*\)\.o[ :]*,\1.o $@: $$(deps) ,g' > $@; \
-	test -s $@ || $(RM) $@
+	test -s $@ || rm -f $@
 
 %.d: %.c
 	@$(CC) $(mkdeps_cmd)
