@@ -110,7 +110,8 @@ DEPENDENCIES := \
 	$(patsubst $(srcdir)/%.cxx, %.d, $(wildcard $(srcdir)/*.cxx)) \
 	$(patsubst $(srcdir)/%.C, %.d, $(wildcard $(srcdir)/*.C))
 
-ifneq ($(strip $(DEPENDENCIES)$(filter compile, $(MAKECMDGOALS))),)
+ifneq ($(filter compile, $(MAKECMDGOALS)),)
+ifneq ($(strip $(DEPENDENCIES)),)
 mkdeps_cmd= -M $(CPPFLAGS) $< 2> /dev/null | \
 	sed 's,\($*\)\.o[ :]*,\1.o $@: $$(deps) ,g' > $@; \
 	test -s $@ || rm -f $@
@@ -128,4 +129,5 @@ mkdeps_cmd= -M $(CPPFLAGS) $< 2> /dev/null | \
 	@$(CXX) $(mkdeps_cmd)
 
 -include $(DEPENDENCIES)
+endif
 endif
