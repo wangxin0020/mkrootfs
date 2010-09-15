@@ -96,9 +96,11 @@ modules modules_install:
 modules_install: modules
 
 modules_clean:
-	$(MAKE) -C $(KBUILD) M=$(CURDIR) ARCH=$(KARCH) CC="$(KCC)" \
-		CROSS_COMPILE=$(kcross) clean
-	rm -f Module.symvers modules.order Kbuild *.[chS]
+	if [ -e Kbuild ]; then \
+		$(MAKE) -C $(KBUILD) M=$(CURDIR) ARCH=$(KARCH) CC="$(KCC)" \
+			CROSS_COMPILE=$(kcross) clean; \
+		rm -f Module.symvers modules.order Kbuild *.[chS]; \
+	fi
 else
 modules modules_install modules_clean:
 endif
