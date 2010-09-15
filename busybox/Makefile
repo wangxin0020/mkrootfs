@@ -54,6 +54,8 @@ rootfs: default-copyall-rootfs
 confcheck-$(call not,$(defconfig)) += \
 	$(call confcheck-exists $(board-config),MKR_BUSYBOX_CONFIG)
 
+confcheck: default-confcheck
+
 # Catch-all target, allow to run all the targets (including the
 # *config ones and clean)
 %config: .config
