@@ -5,8 +5,8 @@ function match_any_error(l)
 {
    return \
 l ~ /(^[^ :]+:( ?line ?)?[0-9]+|[eE][rR][rR][oO][rR]:|prepare-kernel\.sh:)/ \
-   || l ~ /^[^ ]*[-/]ld:/ \
-   || l ~ /^*** Warning/ \
+   || l ~ /^[^ ]*[-\/]ld:/ \
+   || l ~ /^\*\*\* Warning/ \
    || l ~ /(referenced|discarded) in section/ \
    || l ~ /^make.*(\*\*\*|Error|:.*:)/
 }

@@ -1,11 +1,13 @@
 #! /usr/bin/awk -f
 
-match($0, /MKR_([0-9A-Z_]*)/, sym) {
+match($0, /MKR_([0-9A-Z_]*)/) {
 	rest = $0
 	do {
-		list[gensub(/_/, "/", "g", tolower(sym[1]))] = 1;
+		sym = tolower(substr(rest, RSTART, RLENGTH));
+		gsub(/_/, "/", sym);
+		list[sym] = 1;
 		rest = substr(rest, RSTART + RLENGTH + 1);
-	} while (match(rest, /MKR_([0-9A-Z_]*)/, sym));
+	} while (match(rest, /MKR_([0-9A-Z_]*)/));
 }
 
 END {
