@@ -4,6 +4,9 @@ config LTP
 	package "Linux Testing Project"
 	select MAKE
 
+	help
+	 Note that this package requires lex or flex to be installed.
+
 if LTP
 
 config LTP_SRCDIR
@@ -19,8 +22,7 @@ config LTP_MAINT
 	 be copied at every compilation. As this is a long operation,
 	 and useful only in the rare case where you would like to
        	 modify LTP sources, it is not done by default, but this
-       	 option allows to enable it. Note that this option requires
- 	 the rsync tool.
+       	 option allows to enable it.
 
 endif
 

@@ -56,6 +56,6 @@ rootfs:
 clean: default-clean
 
 # Check configuration
-confcheck-$(MKR_LTP_MAINT) := $(call confcheck-tool,rsync,MKR_LTP_MAINT)
+confcheck-y := $(call confcheck-tool,lex,MKR_LTP)
 
 confcheck: default-confcheck
