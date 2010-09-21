@@ -2,8 +2,36 @@ c-exes-y = calibrator cyclictest_nonxeno
 scripts-y = noltp_hell
 scripts-$(MKR_TESTS_LTP) += dohell
 
-
 all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
+
+# Flags
+CPPFLAGS := -D_GNU_SOURCE -D_REENTRANT -DPIC -I. -I$(srcdir)
+CXXFLAGS := $(cflags-y) -W -Wall -fPIC
+CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration
+LDFLAGS := $(ldflags-y) -rdynamic
+
+ifeq ($(MKR_TESTS_XENO),y)
+XENO_CONFIG = DESTDIR="$(staging)" $(staging)/usr/bin/xeno-config
+
+XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
+XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
+
+XENO_POSIX_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=posix --cflags)
+XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
+endif
+
+# Per-exe rules
+calibrator: calibrator.o
+calibrator: LDLIBS += -lm
+
+cyclictest_nonxeno: cyclictest.o
+cyclictest_nonxeno: LDLIBS += -lpthread -lrt
+cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
+
+# Rules
+# Can't use VPATH here, not sure why, but it may be because it is
+# unexported in Makefile.pkgbuild
+vpath % $(srcdir)
 
 compile: $(all)
 
@@ -18,39 +46,13 @@ rootfs: default-copyall-rootfs
 clean:
 	rm -f $(c-exes-y) $(cxx-exes-y) *.o *.d
 
-# Build rules
-
-# Can't use VPATH here, not sure why, but it may be because it is
-# unexported in Makefile.pkgbuild
-vpath % $(srcdir)
-
-CPPFLAGS := -D_GNU_SOURCE -D_REENTRANT -DPIC -I. -I$(srcdir)
-CXXFLAGS := $(cflags-y) -W -Wall -fPIC
-CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration
-LDFLAGS := $(ldflags-y) -rdynamic
-
-ifeq ($(MKR_TESTS_XENO),y)
-XENO_CONFIG = DESTDIR="$(staging)" $(staging)/usr/bin/xeno-config
-
-XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
-XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
-
-XENO_POSIX_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=posix --cflags)
-XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
-
+ifneq ($(wildcard Kbuild),)
 compile: modules
 
 staging: modules_install
 
 clean: modules_clean
 endif
-
-calibrator: calibrator.o
-calibrator: LDLIBS += -lm
-
-cyclictest_nonxeno: cyclictest.o
-cyclictest_nonxeno: LDLIBS += -lpthread -lrt
-cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
 
 bin_cmd=-o $@ $(LDFLAGS) $^ $(LOADLIBES) $(LDLIBS)
 
