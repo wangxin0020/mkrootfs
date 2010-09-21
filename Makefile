@@ -357,7 +357,7 @@ $(patsubst %, linux/%, $(allconfigs) mkr-config): %: check-computed-variables
 		cp -a linux/.config .linux_config; \
 	fi
 
- linux/.config:
+linux/.config:
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
 
@@ -428,6 +428,8 @@ linux/.mkr.confcheck: .mkr.basecheck linux/.config
 				$(call sub-confcheck,$(MAKE),$(t)/)) \
 	$(output-confcheck-y) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
+
+wait-confcheck = $(if $(wildcard .mkr.confcheck),,.mkr.confcheck)
 
 ARCH:=$(MKR_ARCH)
 ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
@@ -519,7 +521,7 @@ mkr-run-and-log = \
 mkr-run-staging-$(call not,$(MKR_SKIP_ROOTFS)) = $(mkr-run-and-log-on-failure)
 mkr-run-staging-$(MKR_SKIP_ROOTFS) = $(mkr-run-and-log)
 
-build-tools/bin/fakeroot: .mkr.builddir
+build-tools/bin/fakeroot: .mkr.builddir $(wait-confcheck)
 	$(Q)rm -f build-tools/fakeroot/.mkr.log
 	$(Q)$(call mkr-run-and-log, \
 		Building build system fakeroot, \
@@ -645,7 +647,7 @@ $(foreach p,$(dis_packages),$(p)/%): FORCE
 	@echo Package $@ is not enabled in the configuration.; false
 
 ifeq ($(MKR_OUT_NFS),y)
-.rsyncd.secrets: .mkr.builddir
+.rsyncd.secrets: .mkr.builddir $(wait-confcheck)
 	$(Q)PASS=`hexdump -e '"%08x"' -n 4 /dev/urandom`; \
 	umask 077; \
 	echo $$PASS > .rsync.pass; \
