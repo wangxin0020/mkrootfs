@@ -4,7 +4,8 @@
 function match_any_error(l)
 {
    return \
-l ~ /(^[^ :]+:( ?line ?)?[0-9]+|[eE][rR][rR][oO][rR]:|prepare-kernel\.sh:)/ \
+l ~ /^((In file included | +)?from )?[^ :]+:( ?line ?)?[0-9]+/ \
+   || l ~ /[eE][rR][rR][oO][rR]:|prepare-kernel\.sh:/ \
    || l ~ /^[^ ]*[-\/]ld:/ \
    || l ~ /^\*\*\* Warning/ \
    || l ~ /(referenced|discarded) in section/ \
