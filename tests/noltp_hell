@@ -7,8 +7,10 @@ a=$!
 dd if=/dev/zero of=/dev/null &
 b=$!
 
-while true; do dd if=/dev/zero of=/mnt/bigfile bs=1024000 count=100; done &
-c=$!
+if grep -q /mnt /proc/mounts; then
+    while true; do dd if=/dev/zero of=/mnt/bigfile bs=1024000 count=100; done &
+    c=$!
+fi
 
 while true; do killall hackbench; sleep 7; done &
 d=$!
