@@ -296,7 +296,7 @@ ifeq ($(dot-config),1)
 mksrcdir=$(shell $(srctree)/build-tools/mksrcdir.sh \
 		"$(srctree)" "$(MKR_SRC_BASEDIR)" "$(1)")
 checksrcdir = $(if $(call mksrcdir,$($(1))),:,\
-	echo Error: $($(1)) not found in $(MKSR_SRC_BASEDIR), see $(1); false)
+	echo Error: $($(1)) not found in $(MKR_SRC_BASEDIR), see $(1); false)
 
 # Read in config
 -include include/config/auto.conf
