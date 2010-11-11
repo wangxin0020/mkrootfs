@@ -35,7 +35,7 @@ endif
 
 dirs:
 	for d in $(DIRS); do mkdir -p "$(pkginst)/$$d"; done
-	chmod a+rwx+t "$(pkginst)/tmp"
+	chmod a+rwx+t "$(pkginst)/tmp" "$(pkginst)/root"
 
 skel:
 	cd $(skeldir) && { \
