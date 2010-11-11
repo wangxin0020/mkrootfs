@@ -1,7 +1,7 @@
 #
 # Automatically generated make config: don't edit
 # Linux kernel version: 2.6.33
-# Sun May  2 23:08:35 2010
+# Fri Oct 15 00:35:47 2010
 #
 CONFIG_ARM=y
 CONFIG_SYS_SUPPORTS_APM_EMULATION=y
@@ -387,6 +387,7 @@ CONFIG_MACH_IGEP0020=y
 # CONFIG_MACH_OMAP_3630SDP is not set
 # CONFIG_OMAP3_EMU is not set
 # CONFIG_OMAP3_SDRC_AC_TIMING is not set
+CONFIG_IPIPE_ARM_KUSER_TSC=y
 
 #
 # Processor Type
@@ -1167,7 +1168,7 @@ CONFIG_USB_ANNOUNCE_NEW_DEVICES=y
 #
 # Miscellaneous USB options
 #
-# CONFIG_USB_DEVICEFS is not set
+CONFIG_USB_DEVICEFS=y
 # CONFIG_USB_DEVICE_CLASS is not set
 # CONFIG_USB_DYNAMIC_MINORS is not set
 # CONFIG_USB_OTG is not set
@@ -1514,7 +1515,7 @@ CONFIG_SCHED_DEBUG=y
 # CONFIG_DEBUG_OBJECTS is not set
 # CONFIG_DEBUG_SLAB is not set
 # CONFIG_DEBUG_KMEMLEAK is not set
-CONFIG_DEBUG_PREEMPT=y
+# CONFIG_DEBUG_PREEMPT is not set
 # CONFIG_DEBUG_RT_MUTEXES is not set
 # CONFIG_RT_MUTEX_TESTER is not set
 # CONFIG_DEBUG_SPINLOCK is not set
