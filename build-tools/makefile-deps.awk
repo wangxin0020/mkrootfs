@@ -4,6 +4,7 @@ match($0, /MKR_([0-9A-Z_]*)/) {
 	rest = $0
 	do {
 		sym = tolower(substr(rest, RSTART, RLENGTH));
+		gsub(/^mkr_/, "", sym);
 		gsub(/_/, "/", sym);
 		list[sym] = 1;
 		rest = substr(rest, RSTART + RLENGTH + 1);
