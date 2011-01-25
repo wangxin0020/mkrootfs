@@ -419,7 +419,7 @@ output-confcheck-$(MKR_OUT_TGZ) += \
 	$(confcheck-lnxmf) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-linux/.mkr.confcheck: .mkr.basecheck linux/.config
+linux/.mkr.confcheck: .mkr.basecheck linux/.config linux/Makefile
 	$(Q)success=:; $(call sub-confcheck,$(MAKE),linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
