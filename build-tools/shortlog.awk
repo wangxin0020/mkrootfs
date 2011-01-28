@@ -9,7 +9,8 @@ l ~ /^((In file included | +)?from )?[^ :]+:( ?line ?)?[0-9]+/ \
    || l ~ /^[^ ]*[-\/]ld:/ \
    || l ~ /^\*\*\* Warning/ \
    || l ~ /(referenced|discarded) in section/ \
-   || l ~ /^make.*(\*\*\*|Error|:.*:)/
+   || l ~ /^make.*(\*\*\*|Error|:.*:)/ \
+   || l ~ /(undefined reference to|In function)/
 }
 
 /libfakeroot\.so/ {
