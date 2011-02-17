@@ -40,8 +40,6 @@ unexport mkr-config O obj
 
 # Avoid leaking variables (the one passed on command-line) to sub-makes
 MAKEOVERRIDES=
-NOPRINT_MAKEFLAGS=$(filter-out -Rr --no-print-directory, $(MAKEFLAGS))
-MAKE=MAKEFLAGS="$(NOPRINT_MAKEFLAGS)" make
 
 pkginst := $(CURDIR)/.mkr.inst
 staging := $(O)/staging
