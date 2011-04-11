@@ -267,9 +267,10 @@ static void zconf_endhelp(void)
 FILE *zconf_fopen(const char *name)
 {
 	char *env, fullname[PATH_MAX+1];
-	FILE *f;
+	FILE *f = NULL;
 
-	f = fopen(name, "r");
+	if (name && !strstr(name, "Kconfig"))
+	    f = fopen(name, "r");
 	if (!f && name != NULL && name[0] != '/') {
 		env = getenv(SRCTREE);
 		if (env) {
