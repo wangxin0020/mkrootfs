@@ -32,7 +32,7 @@ override ldflags-y := $(MKR_LDFLAGS)
 
 # Unexport variables exported by top makefile
 unexport srctree objtree VPATH mkr-build-src
-unexport quiet Q KBUILD_VERBOSE
+unexport quiet Q
 unexport HOSTCC HOSTCXX HOSTCFLAGS HOSTCXXFLAGS
 unexport AWK
 unexport RCS_TAR_IGNORE KBUILD_EXTMOD
