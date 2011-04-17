@@ -1,0 +1,17 @@
+menu "Kexec-tools"
+
+config KEXEC_TOOLS
+	package "Kexec tools"
+
+if KEXEC_TOOLS
+
+config KEXEC_TOOLS_SRCDIR
+       srcdir "Source directory"
+       default "kexec-tools-*"
+
+config KEXEC_TOOLS_KDUMP
+       bool "Install kdump tool"
+
+endif
+
+endmenu

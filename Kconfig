@@ -17,6 +17,7 @@ source "busybox/Kconfig"
 source "strace/Kconfig"
 source "xenomai/Kconfig"
 source "netcat/Kconfig"
+source "kexec-tools/Kconfig"
 source "make/Kconfig"
 source "ltp/Kconfig"
 source "tests/Kconfig"
@@ -55,6 +56,13 @@ config OUT_RSYNCD_PORT
 	 the daemon will start to try running.
 
 endif
+
+config OUT_INITRAMFS
+       bool "Generate a cpio archive suitable for an initramfs"
+
+       help
+	 Generate a cpio archive, with options suitable for use by the
+	 Linux kernel as an initramfs.
 
 config SKIP_ROOTFS
        bool "Skip reduced root filesystem generation"
