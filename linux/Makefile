@@ -54,7 +54,6 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 
 # In maintainer mode, trigger prepare-kernel for every compilation
 ifeq ($(MKR_XENO_MAINT),y)
-.PHONY: FORCE
 .mkr.prepared: FORCE
 prepared-deps += .mkr.prepared
 mkr_config-deps-y += $(if $(wildcard .mkr.prepared),,.mkr.prepared)
@@ -157,3 +156,5 @@ confcheck: default-confcheck
 
 clean: .config
 	$(MAKE) $(buildargs) $@
+
+.PHONY: FORCE
