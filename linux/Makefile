@@ -8,6 +8,14 @@ $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(srcdir)/Makefile)))
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
+.mkr.kvers: FORCE
+	$(Q)echo $(KERNELVERSION) > .tmp$@; \
+	if ! cmp -s .tmp$@ $@; then \
+		mv .tmp$@ $@; \
+	else \
+		rm -f .tmp$@; \
+	fi; \
+
 ifeq ($(defconfig),)
 # board-config is $(MKR_LINUX_CONFIG), but if it contains the
 # kernel version and can not be found, try another config file with the
@@ -76,7 +84,7 @@ mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 ../.linux_config: ;
 
-.config: .mkr_config $(wildcard ../.linux_config)
+.config: .mkr_config $(wildcard ../.linux_config) .mkr.kvers
 	@if [ -e ../.linux_config ]; then \
 		echo Resetting Linux configuration to .linux_config; \
 		cp ../.linux_config .config; \
