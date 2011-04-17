@@ -334,6 +334,7 @@ rootfs-$(call not,$(MKR_SKIP_ROOTFS)) := rootfs
 outputs-y := $(rootfs-y)
 outputs-$(MKR_OUT_TAR) += rootfs.tar
 outputs-$(MKR_OUT_NFS) += nfsroot
+outputs-$(MKR_OUT_INITRAMFS) += initramfs.cpio.gz
 
 all: $(outputs-y) clean-removed-packages
 
@@ -599,11 +600,12 @@ cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
 PHONY += rootfs
-rootfs: $(call only-pkg-targets,rootfs) staging
+rootfs: $(call only-pkg-targets,rootfs) staging FORCE
 	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
+				-! -name '*.o' -! -name '*.a' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		xargs -r $(cross)strip > /dev/null 2>&1 || :
-	$(Q)find rootfs -type f -name '*.ko' \
+		xargs -r $(cross)strip  -R .note -R .comment -s > /dev/null 2>&1 || :
+	$(Q)find rootfs -type f -name '*.ko' -o -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
 		xargs -r $(kcross)strip -R .note -R .comment --strip-unneeded \
 		> /dev/null 2>&1 || :
@@ -703,6 +705,16 @@ PHONY += rootfs.tar
 rootfs.tar: .mkr.fakeroot
 	$(Q)echo Generating $@...
 	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot tar -C $(rootfs-y) -cf $@ .
+	$(Q)echo Generating $@... done
+endif
+
+ifeq ($(MKR_OUT_INITRAMFS),y)
+PHONY += initramfs.cpio.gz
+initramfs.cpio.gz: .mkr.fakeroot
+	$(Q)echo Generating $@...
+	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot sh -c '{ \
+		(cd $(rootfs-y); find . | cpio -o -H newc | gzip) \
+		> $@; }'
 	$(Q)echo Generating $@... done
 endif
 
