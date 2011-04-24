@@ -408,13 +408,25 @@ output-confcheck-$(MKR_OUT_NFS) += \
 output-confcheck-$(MKR_OUT_TGZ) += \
 	$(call confcheck-tool-var,tar,OUT_TGZ)
 
+$(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
+	$(eval $(shell grep '^$(t) =' $(call mksrcdir,$(MKR_LINUX_SRCDIR))/Makefile)))
+KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
+
+.mkr.kvers: FORCE
+	$(Q)echo $(KERNELVERSION) > .tmp$@; \
+	if ! cmp -s .tmp$@ $@; then \
+		mv .tmp$@ $@; \
+	else \
+		rm -f .tmp$@; \
+	fi
+
 .mkr.basecheck: include/config/auto.conf
 	$(Q)$(confcheck-awk) \
 	$(confcheck-srcdirs) \
 	$(confcheck-lnxmf) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-linux/.mkr.confcheck: .mkr.basecheck linux/.config linux/Makefile
+linux/.mkr.confcheck: .mkr.basecheck linux/.config linux/Makefile .mkr.kvers
 	$(Q)success=:; $(call sub-confcheck,$(MAKE),linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 

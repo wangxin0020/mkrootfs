@@ -8,14 +8,6 @@ $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(srcdir)/Makefile)))
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
 
-.mkr.kvers: FORCE
-	$(Q)echo $(KERNELVERSION) > .tmp$@; \
-	if ! cmp -s .tmp$@ $@; then \
-		mv .tmp$@ $@; \
-	else \
-		rm -f .tmp$@; \
-	fi; \
-
 ifeq ($(defconfig),)
 # board-config is $(MKR_LINUX_CONFIG), but if it contains the
 # kernel version and can not be found, try another config file with the
@@ -32,7 +24,7 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.cleaned: $(wildcard .mkr.srcdir $(O)/include/config/xeno.h $(O)/include/config/karch.h)
+.mkr.cleaned: $(wildcard .mkr.srcdir $(O)/include/config/xeno.h $(O)/include/config/karch.h ../.mkr.kvers)
 	$(Q)rm -Rf * $(filter-out .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
@@ -83,7 +75,7 @@ mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 ../.linux_config: ;
 
-.config: .mkr_config $(wildcard ../.linux_config) .mkr.kvers
+.config: .mkr_config $(wildcard ../.linux_config) ../.mkr.kvers $(deps) .mkr.cleaned  $(prepared-deps)
 	@if [ -e ../.linux_config ]; then \
 		echo Resetting Linux configuration to .linux_config; \
 		cp ../.linux_config .config; \
@@ -97,7 +89,7 @@ mkr-config: .mkr_config
 	cp .mkr_config .config
 	rm -f ../.linux_config
 
-include/generated/autoconf.h: .config $(deps) .mkr.cleaned  $(prepared-deps)
+include/generated/autoconf.h: .config
 	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
