@@ -164,7 +164,7 @@ default-copyall-rootfs:
 .PHONY: default-rootfs
 default-rootfs:
 	$(Q)if ! ( mkdir -p $(rootfs); cd $(staging); \
-		rsync -lptgodDRr `ls -1 $(patsubst %,.%,$(rootfs-y))` $(rootfs); ); then \
+		rsync -lptgodDRr `ls -1d $(patsubst %,.%,$(rootfs-y))` $(rootfs); ); then \
 			echo Error: rsync failed, please try again; \
 			rm .mkr.fakeroot; \
 			cat .mkr.filelist | \
