@@ -562,11 +562,11 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 			| grep -v ^\.$$ | sort -r > $(dir $@)/.mkr.newdirlist; \
 		if [ -e $(dir $@)/.mkr.filelist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.filelist \
-				$(dir $@)/.mkr.newfilelist \
+				$(dir $@)/.mkr.newfilelist 2> /dev/null \
 			| { mkdir -p staging; cd staging && xargs -r rm -f; }; \
 		fi; if [ -e $(dir $@)/.mkr.dirlist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.dirlist \
-				$(dir $@)/.mkr.newdirlist \
+				$(dir $@)/.mkr.newdirlist 2> /dev/null \
 			| { mkdir -p staging; cd staging && xargs -r \
 				rmdir --ignore-fail-on-non-empty; }; \
 		fi; \
