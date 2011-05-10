@@ -75,7 +75,7 @@ mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 ../.linux_config: ;
 
-.config: .mkr_config $(wildcard ../.linux_config ../.mkr.kvers) $(deps) .mkr.cleaned  $(prepared-deps)
+.config: .mkr_config $(wildcard ../.linux_config ../.mkr.kvers $(deps)) .mkr.cleaned  $(prepared-deps)
 	@if [ -e ../.linux_config ]; then \
 		echo Resetting Linux configuration to .linux_config; \
 		cp ../.linux_config .config; \
