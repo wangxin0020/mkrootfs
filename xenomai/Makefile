@@ -29,6 +29,7 @@ ifeq ($(MKR_ARCH_ARM),y)
 
 configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)"
 configure-args-$(TOOLCHAIN_ARM_EABI) += --enable-arm-eabi
+configure-args-y += --enable-arm-arch="$(MKR_ARM_ARCH)"
 endif
 
 # Compilation
@@ -89,6 +90,7 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	/usr/bin/xeno-test* \
 	/usr/bin/xeno-load \
 	/usr/share/xenomai/testsuite/*
+
 rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
 	$(MKR_XENO_TESTDIR)/irqloop \
 	$(MKR_XENO_TESTDIR)/klatency \
@@ -143,9 +145,6 @@ confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
 confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_DRIVERS_SWITCHTEST)", \
 	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_SWITCHTEST in kernel configuration)
-confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_SIGTEST)", \
-	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_SIGTEST in kernel configuration)
 confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_DRIVERS_KLATENCY)", \
 	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_KLATENCY in kernel configuration)
