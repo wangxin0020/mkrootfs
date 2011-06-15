@@ -612,19 +612,24 @@ cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
 PHONY += rootfs
-rootfs: $(call only-pkg-targets,rootfs) staging FORCE
-	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
+rootfs: .mkr.fakeroot $(call only-pkg-targets,rootfs) staging FORCE
+	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
+	-s .mkr.fakeroot sh -c '{ \
+	find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 				-! -name '*.o' -! -name '*.a' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		xargs -r $(cross)strip  -R .note -R .comment -s > /dev/null 2>&1 || :
-	$(Q)find rootfs -type f -name '*.ko' -o -name '*.so' \
+		xargs -r $(cross)strip  -R .note -R .comment -s > /dev/null 2>&1 || :; \
+	find rootfs -type f -name '*.ko' -o -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
 		xargs -r $(kcross)strip -R .note -R .comment --strip-unneeded \
-		> /dev/null 2>&1 || :
+		> /dev/null 2>&1 || :; \
+	}'
 endif
 
-.mkr.fakeroot: $(rootfs-y) $(wildcard $(call pkg-targets,.mkr.fakeroot))
-	$(Q)cat /dev/null $(wildcard $(call pkg-targets,.mkr.fakeroot)) > .mkr.fakeroot 2> /dev/null
+$(call pkg-targets,.mkr.fakeroot): %/.mkr.fakeroot: %/$(rootfs-y)
+
+.mkr.fakeroot: $(call only-pkg-targets,.mkr.fakeroot)
+	$(Q)cat /dev/null `ls -1 $(call pkg-targets,.mkr.fakeroot)` > .mkr.fakeroot 2> /dev/null
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
@@ -693,7 +698,7 @@ ifeq ($(MKR_OUT_NFS),y)
 	done
 
 PHONY += nfsroot
-nfsroot: .mkr.fakeroot .rsyncd.pid
+nfsroot: $(rootfs-y) .mkr.fakeroot .rsyncd.pid
 	$(Q)echo Synchronizing NFS root...
 	$(Q)mkdir -p nfsroot; \
 	PORT=`cat .rsync.port`; \
