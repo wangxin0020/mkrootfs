@@ -244,6 +244,9 @@ default rule:
 - $(configure-args-y) contains the flags which are passed to the
 autoconf-style "configure" script by the "default-autotools-compile"
 default rule.
+- $(configure-env-y) contains the environment variables which are
+passed to the autoconf-style "configure" script by the
+"default-autotools-compile" default rule.
 - $(confcheck-y) contains a list of checks, written as shell snippets
 which will be run by the "default-confcheck" rule, you may use the
 "concheck-*" functions described in the next section.

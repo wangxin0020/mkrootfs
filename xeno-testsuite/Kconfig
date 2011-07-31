@@ -1,0 +1,15 @@
+menu "Xenomai testsuite"
+
+config XENO_FULL_TESTSUITE
+	package "Xenomai testsuite"
+	build_depends on XENO
+
+if XENO_FULL_TESTSUITE
+
+config XENO_TESTSUITE_SRCDIR
+       srcdir "Source directory"
+       default "xeno-testsuite"
+
+endif
+
+endmenu

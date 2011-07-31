@@ -627,6 +627,7 @@ rootfs: .mkr.fakeroot $(call only-pkg-targets,rootfs) staging FORCE
 endif
 
 $(call pkg-targets,.mkr.fakeroot): %/.mkr.fakeroot: %/$(rootfs-y)
+	@touch $@
 
 .mkr.fakeroot: $(call only-pkg-targets,.mkr.fakeroot)
 	$(Q)cat /dev/null `ls -1 $(call pkg-targets,.mkr.fakeroot)` > .mkr.fakeroot 2> /dev/null

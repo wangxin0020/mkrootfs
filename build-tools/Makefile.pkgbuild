@@ -100,6 +100,13 @@ configure-args-y = \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
 	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
+configure-env-y = \
+	PKG_CONFIG_DIR="" \
+	PKG_CONFIG_LIBDIR=$(staging)/usr/lib/pkgconfig:$(staging)/usr/share/pkgconfig \
+	PKG_CONFIG_SYSROOT_DIR=$(staging) \
+	PKG_CONFIG_ALLOW_SYSTEM_LIBS=y \
+	PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=y
+
 include $(mkr-pkgmk)
 
 ifneq ($(mkr-build-src),)
@@ -131,7 +138,7 @@ staging:
 # packages with custom rules.
 .mkr.autotools.default.configured: $(deps)
 	rm -Rf * || :
-	$(srcdir)/configure $(configure-args-y) && : > $@
+	$(configure-env-y) $(srcdir)/configure $(configure-args-y) && : > $@
 
 .PHONY: default-autotools-compile
 default-autotools-compile: .mkr.autotools.default.configured
