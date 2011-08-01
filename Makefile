@@ -612,7 +612,7 @@ cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
 PHONY += rootfs
-rootfs: .mkr.fakeroot $(call only-pkg-targets,rootfs) staging FORCE
+rootfs: .mkr.fakeroot $(call only-pkg-targets,rootfs) FORCE
 	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
 	-s .mkr.fakeroot sh -c '{ \
 	find rootfs -type f -! -name '*.ko' -! -name '*.so' \
@@ -626,10 +626,7 @@ rootfs: .mkr.fakeroot $(call only-pkg-targets,rootfs) staging FORCE
 	}'
 endif
 
-$(call pkg-targets,.mkr.fakeroot): %/.mkr.fakeroot: %/$(rootfs-y)
-	@touch $@
-
-.mkr.fakeroot: $(call only-pkg-targets,.mkr.fakeroot)
+.mkr.fakeroot: staging
 	$(Q)cat /dev/null `ls -1 $(call pkg-targets,.mkr.fakeroot)` > .mkr.fakeroot 2> /dev/null
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
