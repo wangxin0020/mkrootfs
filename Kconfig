@@ -21,7 +21,6 @@ source "kexec-tools/Kconfig"
 source "make/Kconfig"
 source "ltp/Kconfig"
 source "tests/Kconfig"
-source "xeno-testsuite/Kconfig"
 
 endmenu
 

@@ -1,5 +1,5 @@
 # Configuration
-configure-args-y += --includedir=/usr/include/xenomai
+configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install
 configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
 configure-args-$(MKR_XENO_DEBUG) += --enable-debug
 
@@ -89,7 +89,8 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	$(MKR_XENO_TESTDIR)/wakeup-time \
 	/usr/bin/xeno-test* \
 	/usr/bin/xeno-load \
-	/usr/share/xenomai/testsuite/*
+	/usr/bin/dohell \
+	/usr/share/xenomai/regression/*
 
 rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
 	$(MKR_XENO_TESTDIR)/irqloop \

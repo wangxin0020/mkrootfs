@@ -717,7 +717,7 @@ endif
 
 ifeq ($(MKR_OUT_TAR),y)
 PHONY += rootfs.tar
-rootfs.tar: .mkr.fakeroot
+rootfs.tar: $(rootfs-y) .mkr.fakeroot
 	$(Q)echo Generating $@...
 	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot tar -C $(rootfs-y) -cf $@ .
 	$(Q)echo Generating $@... done
@@ -725,7 +725,7 @@ endif
 
 ifeq ($(MKR_OUT_INITRAMFS),y)
 PHONY += initramfs.cpio.gz
-initramfs.cpio.gz: .mkr.fakeroot
+initramfs.cpio.gz: $(rootfs-y) .mkr.fakeroot
 	$(Q)echo Generating $@...
 	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot sh -c '{ \
 		(cd $(rootfs-y); find . | cpio -o -H newc | gzip) \
