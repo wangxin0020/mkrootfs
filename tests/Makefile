@@ -1,6 +1,4 @@
 c-exes-y = calibrator cyclictest_nonxeno
-scripts-y = noltp_hell
-scripts-$(MKR_TESTS_LTP) += dohell
 
 all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
 
@@ -15,6 +13,9 @@ XENO_CONFIG = DESTDIR="$(staging)" $(staging)/usr/bin/xeno-config
 
 XENO_NATIVE_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=native --cflags)
 XENO_NATIVE_LIBS = $(shell $(XENO_CONFIG) --skin=native --ldflags)
+
+XENO_RTDM_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=rtdm --cflags)
+XENO_RTDM_LIBS = $(shell $(XENO_CONFIG) --skin=rtdm --ldflags)
 
 XENO_POSIX_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=posix --cflags)
 XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
@@ -46,7 +47,7 @@ rootfs: default-copyall-rootfs
 clean:
 	rm -f $(c-exes-y) $(cxx-exes-y) *.o *.d
 
-ifneq ($(wildcard Kbuild),)
+ifneq ($(wildcard $(srcdir)/Kbuild),)
 compile: modules
 
 staging: modules_install
@@ -81,6 +82,9 @@ $(cxx-exes-y): %:
 %.o: %.cxx
 	$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
 
+%.o: %.cpp
+	$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
+
 %.o: %.C
 	$(CXX) -o $@ -c $< $(CPPFLAGS) $(CXXFLAGS)
 
@@ -90,7 +94,7 @@ KBUILD=$(O)/linux
 
 .PHONY: modules modules_install modules_clean
 modules modules_install:
-	ln -sf $(srcdir)/Kbuild $(srcdir)/*.[chS] .
+	ln -sf $(srcdir)/Kbuild $(srcdir)/*.[chS] $(srcdir)/*.[ch]pp .
 	$(MAKE) -C $(KBUILD) M=$(CURDIR) ARCH=$(KARCH) CC="$(KCC)" \
 		CROSS_COMPILE=$(kcross) \
 		INSTALL_MOD_PATH=$(pkginst) $@
@@ -112,6 +116,7 @@ DEPENDENCIES := \
 	$(patsubst $(srcdir)/%.c, %.d, $(wildcard $(srcdir)/*.c)) \
 	$(patsubst $(srcdir)/%.cc, %.d, $(wildcard $(srcdir)/*.cc)) \
 	$(patsubst $(srcdir)/%.cxx, %.d, $(wildcard $(srcdir)/*.cxx)) \
+	$(patsubst $(srcdir)/%.cpp, %.d, $(wildcard $(srcdir)/*.cpp)) \
 	$(patsubst $(srcdir)/%.C, %.d, $(wildcard $(srcdir)/*.C))
 
 ifneq ($(filter compile, $(MAKECMDGOALS)),)
@@ -127,6 +132,9 @@ mkdeps_cmd= -M $(CPPFLAGS) $< 2> /dev/null | \
 	@$(CXX) $(mkdeps_cmd)
 
 %.d: %.cxx
+	@$(CXX) $(mkdeps_cmd)
+
+%.d: %.cpp
 	@$(CXX) $(mkdeps_cmd)
 
 %.d: %.C

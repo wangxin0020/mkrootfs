@@ -88,6 +88,7 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	$(MKR_XENO_TESTDIR)/switchtest \
 	$(MKR_XENO_TESTDIR)/wakeup-time \
 	/usr/bin/xeno-test* \
+	/usr/bin/xeno-regression-test \
 	/usr/bin/xeno-load \
 	/usr/bin/dohell \
 	/usr/share/xenomai/regression/*
