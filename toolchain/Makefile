@@ -9,6 +9,7 @@ BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
 endif
 
 libs-$(MKR_ARCH_X86_64) +=  ld-linux-x86-64.so
+libs-$(MKR_ARCH_PPC32) +=  ld.so
 libs-y += \
 	ld.so \
 	ld-linux.so \
