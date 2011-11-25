@@ -2,6 +2,7 @@
 configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install
 configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
 configure-args-$(MKR_XENO_DEBUG) += --enable-debug
+configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
 
 configure-args-$(MKR_XENO_SMP) += --enable-smp
 configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
@@ -31,6 +32,16 @@ configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)"
 configure-args-$(TOOLCHAIN_ARM_EABI) += --enable-arm-eabi
 configure-args-y += --enable-arm-arch="$(MKR_ARM_ARCH)"
 endif
+
+configure-args-$(MKR_XENO_COBALT) += --with-core=cobalt
+configure-args-$(MKR_XENO_MERCURY) += --with-core=mercury
+
+configure-args-$(MKR_XENO_FORGE_MONOTONIC_RAW) += --enable-clock-monotonic-raw
+configure-args-$(MKR_XENO_FORGE_REGISTRY) += --enable-registry
+configure-args-$(MKR_XENO_MERCURY_LORES_CLOCK) += --enable-lores-clock
+configure-args-$(MKR_XENO_MERCURY_ASSERT) += --enable-assert
+configure-args-$(MKR_XENO_MERCURY_ASYNC_CANCEL) += --enable-async-cancel
+configure-args-$(MKR_XENO_MERCURY_PSHARED) += --enable-pshared
 
 # Compilation
 compile: default-autotools-compile
@@ -111,12 +122,35 @@ clean: default-clean
 confcheck-$(CONFIG_SMP) += $(call confcheck-if, \
 	test "$(MKR_XENO_SMP)" != "y", \
 	SMP kernel with non-SMP Xenomai user-space)
-confcheck-$(MKR_XENO_USERSPACE) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_OPT_PERVASIVE)" , \
-	Xenomai user-space support needs CONFIG_XENO_OPT_PERVASIVE in kernel configuration)
+
+ifeq ($(MKR_XENO_KERNEL),y)
 confcheck-$(MKR_XENO_A4L) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_DRIVERS_ANALOGY)", \
 	MKR_XENO_A4L needs CONFIG_XENO_DRIVERS_ANALOGY in kernel configuration)
+confcheck-$(MKR_XENO_RTCAN) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_CAN)", \
+	MKR_XENO_RTCAN needs CONFIG_XENO_DRIVERS_RTCAN in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_TIMERBENCH)", \
+	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_TIMERBENCH in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_SWITCHTEST)", \
+	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_SWITCHTEST in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_IRQBENCH)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_IRQBENCH in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_RTDMTEST)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_RTDMTEST in kernel configuration)
+confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_DRIVERS_KLATENCY)", \
+	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_KLATENCY in kernel configuration)
+endif
+
+ifeq ($(MKR_XENO_CLASSIC),y)
+confcheck-$(MKR_XENO_USERSPACE) += $(call confcheck-if, \
+	test -z "$(CONFIG_XENO_OPT_PERVASIVE)" , \
+	Xenomai user-space support needs CONFIG_XENO_OPT_PERVASIVE in kernel configuration)
 confcheck-$(MKR_XENO_NATIVE) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_SKIN_NATIVE)", \
 	MKR_XENO_NATIVE needs CONFIG_XENO_SKIN_NATIVE in kernel configuration)
@@ -126,9 +160,6 @@ confcheck-$(MKR_XENO_POSIX) += $(call confcheck-if, \
 confcheck-$(MKR_XENO_PSOS) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_SKIN_PSOS)", \
 	MKR_XENO_PSOS needs CONFIG_XENO_SKIN_PSOS in kernel configuration)
-confcheck-$(MKR_XENO_RTCAN) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_CAN)", \
-	MKR_XENO_RTCAN needs CONFIG_XENO_DRIVERS_RTCAN in kernel configuration)
 confcheck-$(MKR_XENO_RTDM) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_SKIN_RTDM)", \
 	MKR_XENO_RTDM needs CONFIG_XENO_SKIN_RTDM in kernel configuration)
@@ -141,20 +172,6 @@ confcheck-$(MKR_XENO_VRTX) += $(call confcheck-if, \
 confcheck-$(MKR_XENO_VXWORKS) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_SKIN_VXWORKS)", \
 	MKR_XENO_VXWORKS needs CONFIG_XENO_SKIN_VXWORKS in kernel configuration)
-confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_TIMERBENCH)", \
-	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_TIMERBENCH in kernel configuration)
-confcheck-$(MKR_XENO_TESTSUITE) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_SWITCHTEST)", \
-	MKR_XENO_TESTSUITE needs CONFIG_XENO_DRIVERS_SWITCHTEST in kernel configuration)
-confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_KLATENCY)", \
-	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_KLATENCY in kernel configuration)
-confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_IRQBENCH)", \
-	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_IRQBENCH in kernel configuration)
-confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
-	test -z "$(CONFIG_XENO_DRIVERS_RTDMTEST)", \
-	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_RTDMTEST in kernel configuration)
+endif
 
 confcheck: default-confcheck

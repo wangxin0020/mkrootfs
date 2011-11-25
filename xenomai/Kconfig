@@ -6,9 +6,6 @@ config XENO
 
 if XENO
 
-config XENO_USERSPACE
-       def_bool n
-
 config XENO_SRCDIR
        srcdir "Source directory"
        default "xenomai-*"
@@ -30,7 +27,41 @@ config XENO_SMP
        help
 	 Choose 'y' here to build libraries for multi-processor systems.
 
+config XENO_KERNEL
+       def_bool n
+
+choice
+	prompt "Xenomai version"
+
+config XENO_CLASSIC
+       bool "Xenomai v2.x"
+       select XENO_KERNEL
+
+config XENO_FORGE
+       bool "Xenomai forge (v3.x)"
+
+endchoice
+
+if XENO_FORGE
+
+choice
+       prompt "Xenomai core used"
+
+config XENO_COBALT
+       bool "Cobalt"
+       select XENO_KERNEL
+
+config XENO_MERCURY
+       bool "Mercury"
+
+endchoice
+
+endif
+
 menu "Components selection"
+
+config XENO_USERSPACE
+       def_bool n
 
 config XENO_A4L
        bool "Install analogy libraries and utilities"
@@ -102,7 +133,7 @@ config XENO_TESTDIR
        depends on XENO_SEP_TESTDIR
        string "Tests directory"
 
-if ARCH_X86_32 || ARCH_X86_64
+if XENO_KERNEL && (ARCH_X86_32 || ARCH_X86_64)
 
 config XENO_X86_SEP
        bool "Use x86 SEP instructions in Xenomai libraries"
@@ -139,6 +170,32 @@ config XENO_UITRON_MLOCKALL
        bool "Automatic mlockall for UITRON skin"
 
 endmenu
+
+if XENO_FORGE
+
+config XENO_FORGE_MONOTONIC_RAW
+       bool "Use CLOCK_MONOTONIC_RAW for timings"
+
+config XENO_FORGE_REGISTRY
+       bool "Enable export of real-time objects to a registry"
+
+if XENO_MERCURY
+
+config XENO_MERCURY_LORES_CLOCK
+       bool "Enable low resolution clock"
+
+config XENO_MERCURY_ASSERT
+       bool "Enable run-time assertions"
+
+config XENO_MERCURY_ASYNC_CANCEL
+       bool "Enable asynchronous cancellation"
+
+config XENO_MERCURY_PSHARED
+       bool "Enable shared multi-processing for capable skins"
+
+endif
+
+endif
 
 endmenu
 

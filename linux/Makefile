@@ -24,11 +24,11 @@ board-config := $(MKR_LINUX_CONFIG)
 endif
 
 # Checking whether MKR_XENO changed
-.mkr.cleaned: $(wildcard .mkr.srcdir $(O)/include/config/xeno.h $(O)/include/config/karch.h ../.mkr.kvers)
+.mkr.cleaned: $(wildcard .mkr.srcdir $(O)/include/config/xeno/kernel.h $(O)/include/config/karch.h ../.mkr.kvers)
 	$(Q)rm -Rf * $(filter-out .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
-ifeq ($(MKR_XENO),y)
+ifeq ($(MKR_XENO_KERNEL),y)
 
 lndir-$(call not $(MKR_XENO_MAINT)) := cp -sfR
 lndir-$(MKR_XENO_MAINT) := lndir -silent -ignorelinks
@@ -136,8 +136,10 @@ endif
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_CC)
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
 confcheck-$(MKR_XENO_MAINT) += $(call confcheck-tool,lndir,MKR_XENO)
+ifeq ($(MKR_XENO_KERNEL),y)
 ipipe := $(wildcard $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/ipipe.h)
 confcheck-$(MKR_XENO_MAINT) += $(if $(ipipe),,echo Maintainer mode only works with I-pipe patched kernel sources; success=false;)
+endif
 
 confcheck: default-confcheck
 
