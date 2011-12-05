@@ -1,5 +1,5 @@
 # Configuration
-configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install
+configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install --disable-async-cancel --disable-lores-clock
 configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
 configure-args-$(MKR_XENO_DEBUG) += --enable-debug
 configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
