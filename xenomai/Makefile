@@ -17,8 +17,8 @@ configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
 configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
 endif
 
-configure-args-$(MKR_XENO_THREAD) += --with-__thread
-configure-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
+configure-args-$(MKR_XENO_THREAD) += --enable-tls
+configure-args-$(call not, $(MKR_XENO_THREAD)) += --disable-tls
 
 configure-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
 configure-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
