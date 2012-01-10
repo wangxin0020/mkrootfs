@@ -29,6 +29,10 @@ config ARCH_X86_32
 
 config ARCH_X86_64
 	bool "x86 64 bits"
+
+config ARCH_SH4
+	bool "SH-4"
+
 endchoice
 
 config ARCH
@@ -40,6 +44,7 @@ config ARCH
 	default "ppc64" if ARCH_PPC64
 	default "i686" if ARCH_X86_32
 	default "x86_64" if ARCH_X86_64
+	default "sh4" if ARCH_SH4
 
 config KARCH
 	string
@@ -48,6 +53,7 @@ config KARCH
 	default "nios2" if ARCH_NIOS2
 	default "powerpc" if ARCH_PPC32 || ARCH_PPC64
 	default "x86" if ARCH_X86_32 || ARCH_X86_64
+	default "sh" if ARCH_SH4
 
 config CONFIGURE_HOST
 	string "Configure host string"

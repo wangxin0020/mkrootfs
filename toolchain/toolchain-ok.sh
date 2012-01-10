@@ -37,7 +37,8 @@ for d in $LIBDIRS; do
 		"PowerPC") sr_arch=ppc;;
 		*386) sr_arch=i686;;
 		*X86-64) sr_arch=x86_64;;
-		*) die Unrecognized machine type "$mach";;
+		*"SuperH SH") sr_arch=sh4;;
+		*) die Unrecognized machine type "$mach (expecting $arch type)";;
 	    esac
 
 	    if test "$sr_arch" = "$arch"; then
