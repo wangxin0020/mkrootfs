@@ -98,11 +98,11 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	$(MKR_XENO_TESTDIR)/mutex-torture-posix \
 	$(MKR_XENO_TESTDIR)/switchtest \
 	$(MKR_XENO_TESTDIR)/wakeup-time \
+	$(MKR_XENO_TESTDIR)/regression/* \
 	/usr/bin/xeno-test* \
 	/usr/bin/xeno-regression-test \
 	/usr/bin/xeno-load \
-	/usr/bin/dohell \
-	/usr/share/xenomai/regression/*
+	/usr/bin/dohell
 
 rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
 	$(MKR_XENO_TESTDIR)/irqloop \
