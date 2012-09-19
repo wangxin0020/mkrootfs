@@ -48,13 +48,9 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 ifeq ($(MKR_XENO_MAINT),y)
 .mkr.prepared: FORCE
 prepared-deps += .mkr.prepared
-mkr_config-deps-y += $(if $(wildcard .mkr.prepared),,.mkr.prepared)
-else
-mkr_config-deps-y += .mkr.prepared
 endif
 
 else
-mkr_config-deps-y += .mkr.cleaned
 configargs := -C $(srcdir) O=$(CURDIR)
 endif
 
@@ -70,8 +66,9 @@ mkr_config-deps-y += $(O)/include/config/linux/config.h
 mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
 
 .mkr_config: $(mkr_config-deps-y)
+	@echo Creating linux/.mkr_config
 	$(Q)rm -f ../.linux_config
-	+$(defconfig-y)
+	$(defconfig-y)
 
 ../.linux_config: ;
 

@@ -15,7 +15,7 @@ args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
 
 .mkr_config:  $(deps)
 	$(Q)rm -f ../.busybox_config
-	+$(defconfig-y)
+	$(defconfig-y)
 
 ../.busybox_config: ;
 
