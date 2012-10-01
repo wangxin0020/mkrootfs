@@ -30,7 +30,10 @@ endif
 	$(O)/include/config/linux/config.h
 	$(Q)$(RM) .config ../.linux_config && : > $@
 
-.mkr.cleaned: $(wildcard $(deps) ../.mkr.kvers) .mkr.cleanconf
+.mkr.cleaned: $(wildcard $(O)/include/config/linux/srcdir.h \
+			$(O)/include/config/xeno/kernel.h  \
+			$(O)/include/config/xeno/srcdir.h \
+			../.mkr.kvers) .mkr.cleanconf
 	$(Q)rm -Rf * $(filter-out .config .mkr.cleanconf .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
