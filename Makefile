@@ -442,7 +442,7 @@ ARCH:=$(MKR_ARCH)
 ARCH_FLAGS:=$(MKR_ARCH_FLAGS)
 
 PHONY+=FORCE
-check-computed-variables: FORCE
+check-computed-variables: .mkr.kvers FORCE
 	$(Q){ \
 	echo ARCH=$(MKR_ARCH); \
 	echo CC='$(shell which $(MKR_CC))'; \

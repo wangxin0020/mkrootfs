@@ -23,9 +23,15 @@ else
 board-config := $(MKR_LINUX_CONFIG)
 endif
 
-# Checking whether MKR_XENO changed
-.mkr.cleaned: $(wildcard .mkr.srcdir $(O)/include/config/xeno/kernel.h $(O)/include/config/karch.h ../.mkr.kvers)
-	$(Q)rm -Rf * $(filter-out .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
+# Checking whether the .config must change
+.mkr.cleanconf: \
+	$(O)/include/config/karch.h \
+	$(O)/include/config/board.h \
+	$(O)/include/config/linux/config.h
+	$(Q)$(RM) .config ../.linux_config && : > $@
+
+.mkr.cleaned: $(wildcard $(deps) ../.mkr.kvers) .mkr.cleanconf
+	$(Q)rm -Rf * $(filter-out .config .mkr.cleanconf .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO_KERNEL),y)
@@ -41,15 +47,13 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 	$(lndir-y) $(srcdir)/. . > /dev/null 2>&1 && \
 		$(xeno-srcdir)/scripts/prepare-kernel.sh \
 			--default --linux=. --arch=$(KARCH) && \
-	: > .mkr.prepared
+	: > $@
 	$(Q)echo Preparing linux sources directory...done.
 
 # In maintainer mode, trigger prepare-kernel for every compilation
 ifeq ($(MKR_XENO_MAINT),y)
 .mkr.prepared: FORCE
-prepared-deps += .mkr.prepared
 endif
-
 else
 configargs := -C $(srcdir) O=$(CURDIR)
 endif
@@ -58,35 +62,27 @@ endif
 configargs += V=$(KBUILD_VERBOSE) ARCH=$(KARCH)
 
 defconfig-$(call not,$(defconfig)) = \
-	$(Q)test -n "$(board-config)" && cp $(board-config) $@ || :
+	test -n "$(board-config)" && cp $(board-config) .config || :
 defconfig-$(defconfig) = \
-	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG) && mv .config $@
+	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG)
 
-mkr_config-deps-y += $(O)/include/config/linux/config.h
-mkr_config-deps-$(call not,$(defconfig)) += $(O)/include/config/board.h
-
-.mkr_config: $(mkr_config-deps-y)
-	@echo Creating linux/.mkr_config
-	$(Q)rm -f ../.linux_config
-	$(defconfig-y)
-
-../.linux_config: ;
-
-.config: .mkr_config $(wildcard ../.linux_config ../.mkr.kvers $(deps)) .mkr.cleaned  $(prepared-deps)
-	@if [ -e ../.linux_config ]; then \
-		echo Resetting Linux configuration to .linux_config; \
-		cp ../.linux_config .config; \
-	else \
-		echo Resetting Linux configuration to $(board-config);	\
-		cp .mkr_config .config; \
+.config: .mkr.prepared
+	$(Q)if [ ! -e $@ ]; then \
+		if [ ! -e ../.linux_config ]; then \
+			echo Resetting Linux configuration to $(board-config); \
+			$(defconfig-y); \
+		else \
+			echo Resetting Linux configuration to .linux_config; \
+			cp ../.linux_config $@; \
+		fi; \
 	fi
 
-mkr-config: .mkr_config
-	@echo Resetting Linux configuration to $(board-config)
-	cp .mkr_config .config
-	rm -f ../.linux_config
+mkr-config: .mkr.prepared
+	$(Q)echo Resetting Linux configuration to $(board-config); \
+	$(RM) ../.linux_config; \
+	$(defconfig-y)
 
-include/generated/autoconf.h: .config
+include/generated/autoconf.h: .config .mkr.prepared
 	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
@@ -142,7 +138,7 @@ confcheck: default-confcheck
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones, and clean)
-%config: .config
+%config: .config .mkr.prepared
 	$(MAKE) $(configargs) $@
 
 clean: .config
