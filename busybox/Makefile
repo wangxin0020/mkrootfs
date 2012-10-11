@@ -21,7 +21,7 @@ args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
 
 .config: .mkr.cleanconf
 	$(Q)if [ ! -e $@ ]; then \
-		if [ ! -e ../.busyox_config ]; then \
+		if [ ! -e ../.busybox_config ]; then \
 			echo Resetting busybox configuration to $(board-config); \
 			$(defconfig-y); \
 		else \
@@ -34,12 +34,12 @@ mkr-config:
 	@echo Resetting busybox configuration to $(board-config); \
 	$(Q)$(RM) ../.busybox_config; \
 	$(defconfig-y)
+	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 
 include/autoconf.h: .config ../.mkr.builddir
 	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(args) distclean || :
 	mv saved-busybox-config .config
-	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 	yes "" | $(MAKE) $(args) oldconfig
 
 # Building busybox
@@ -62,6 +62,7 @@ confcheck: default-confcheck
 # *config ones and clean)
 %config: .config
 	$(MAKE) $(args) $@
+	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 
 clean: .config
 	$(MAKE) $(args) $@
