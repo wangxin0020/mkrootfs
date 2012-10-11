@@ -30,10 +30,8 @@ endif
 	$(O)/include/config/linux/config.h
 	$(Q)$(RM) .config ../.linux_config && : > $@
 
-.mkr.cleaned: $(wildcard $(O)/include/config/linux/srcdir.h \
-			$(O)/include/config/xeno/kernel.h  \
-			$(O)/include/config/xeno/srcdir.h \
-			../.mkr.kvers) .mkr.cleanconf
+.mkr.cleaned: $(wildcard $(O)/include/config/xeno/kernel.h  \
+			$(O)/include/config/xeno.h) .mkr.cleanconf
 	$(Q)rm -Rf * $(filter-out .config .mkr.cleanconf .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
@@ -43,6 +41,10 @@ lndir-$(call not $(MKR_XENO_MAINT)) := cp -sfR
 lndir-$(MKR_XENO_MAINT) := lndir -silent -ignorelinks
 
 xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
+
+.mkr.cleaned: $(wildcard $(O)/include/config/linux/srcdir.h \
+			$(O)/include/config/xeno/srcdir.h) ../.mkr.kvers
+
 .mkr.prepared: .mkr.cleaned
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
@@ -57,7 +59,10 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 ifeq ($(MKR_XENO_MAINT),y)
 .mkr.prepared: FORCE
 endif
+ready := .mkr.prepared
 else
+ready := .mkr.cleaned
+
 configargs := -C $(srcdir) O=$(CURDIR)
 endif
 
@@ -69,7 +74,7 @@ defconfig-$(call not,$(defconfig)) = \
 defconfig-$(defconfig) = \
 	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG)
 
-.config: .mkr.prepared
+.config: $(ready)
 	$(Q)if [ ! -e $@ ]; then \
 		if [ ! -e ../.linux_config ]; then \
 			echo Resetting Linux configuration to $(board-config); \
@@ -80,12 +85,13 @@ defconfig-$(defconfig) = \
 		fi; \
 	fi
 
-mkr-config: .mkr.prepared
+mkr-config: $(ready)
 	$(Q)echo Resetting Linux configuration to $(board-config); \
 	$(RM) ../.linux_config; \
 	$(defconfig-y)
 
-include/generated/autoconf.h: .config .mkr.prepared
+include/generated/autoconf.h: .config ../.mkr.kvers \
+	$(wildcard $(O)/include/config/xeno/kernel.h)
 	yes "" | $(MAKE) $(configargs) oldconfig
 
 # Building the kernel
@@ -141,7 +147,7 @@ confcheck: default-confcheck
 
 # Catch-all target, allow to run all the targets (including the
 # *config ones, and clean)
-%config: .config .mkr.prepared
+%config: .config
 	$(MAKE) $(configargs) $@
 
 clean: .config
