@@ -14,7 +14,7 @@ args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
 	CROSS_COMPILE="$(cross)"
 
 .mkr.cleanconf: \
-	$(O)/include/config/karch.h \
+	$(O)/include/config/arch.h \
 	$(O)/include/config/board.h \
 	$(O)/include/config/busybox/config.h
 	$(Q)$(RM) .config ../.busybox_config && : > $@
@@ -36,7 +36,7 @@ mkr-config:
 	$(defconfig-y)
 	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 
-include/autoconf.h: .config ../.mkr.builddir
+include/autoconf.h: .config ../.mkr.builddir .mkr.srcdir
 	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(args) distclean || :
 	mv saved-busybox-config .config
