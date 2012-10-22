@@ -9,8 +9,8 @@ defconfig-$(call not,$(defconfig)) = cp $(board-config) .config
 # Configuring busybox
 args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
 	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(cross)ar" \
-	EXTRA_CFLAGS="$(ARCH_FLAGS)" \
-	EXTRA_LDFLAGS="$(ARCH_FLAGS)" \
+	EXTRA_CFLAGS="$(MKR_CFLAGS)" \
+	EXTRA_LDFLAGS="$(MKR_LDFLAGS)" \
 	CROSS_COMPILE="$(cross)"
 
 .mkr.cleanconf: \
