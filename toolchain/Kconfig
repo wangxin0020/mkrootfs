@@ -66,12 +66,15 @@ config CXX
 config ARCH_FLAGS
 	string
 	default "-march=armv4t -msoft-float" if ARM_ARCH = 4
-	default "-march=armv5te -msoft-float" if ARM_ARCH = 5 && !ARM_VFP
-	default "-march=armv5te -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 5 && ARM_VFP
-	default "-march=armv6 -msoft-float" if ARM_ARCH = 6 && !ARM_VFP
-	default "-march=armv6 -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 6 && ARM_VFP
-	default "-march=armv7-a -msoft-float" if ARM_ARCH = 7 && !ARM_VFP
-	default "-march=armv7-a -mfpu=vfp3 -mfloat-abi=softfp" if ARM_ARCH = 7 && ARM_VFP
+	default "-march=armv5te -msoft-float" if ARM_ARCH = 5 && ARM_FLOAT_SOFT
+	default "-march=armv5te -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 5 && ARM_FLOAT_VFP_SOFT_ABI
+	default "-march=armv5te -mfpu=vfp -mfloat-abi=hard" if ARM_ARCH = 5 && ARM_FLOAT_VFP_HARD_ABI
+	default "-march=armv6 -msoft-float" if ARM_ARCH = 6 && ARM_FLOAT_SOFT
+	default "-march=armv6 -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 6 && ARM_FLOAT_VFP_SOFT_ABI
+	default "-march=armv6 -mfpu=vfp -mfloat-abi=hard" if ARM_ARCH = 6 && ARM_FLOAT_VFP_HARD_ABI
+	default "-march=armv7-a -msoft-float" if ARM_ARCH = 7 && ARM_FLOAT_SOFT
+	default "-march=armv7-a -mfpu=vfp3 -mfloat-abi=softfp" if ARM_ARCH = 7 && ARM_FLOAT_VFP_SOFT_ABI
+	default "-march=armv7-a -mfpu=vfp3 -mfloat-abi=hard" if ARM_ARCH = 7 && ARM_FLOAT_VFP_HARD_ABI
 	default "-m32" if ARCH_X86_32
 
 if ARCH_ARM
@@ -81,9 +84,20 @@ config ARM_ARCH
 	range 4 7
 	default 5
 
-config ARM_VFP
-	bool "VFP floating points"
-	default y if ARM_ARCH = 6 || ARM_ARCH = 7
+choice
+	prompt "Floating points support"
+
+config ARM_FLOAT_SOFT
+	bool "Soft-float"
+
+config ARM_FLOAT_VFP_SOFT_ABI
+	bool "VFP with soft-float ABI"
+       	default y if ARM_ARCH = 6 || ARM_ARCH = 7
+
+config ARM_FLOAT_VFP_HARD_ABI
+	bool "VFP with hard-float ABI"
+
+endchoice
 
 config CFLAGS
 	string "Compilation flags"

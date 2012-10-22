@@ -12,6 +12,7 @@ libs-$(MKR_ARCH_X86_64) +=  ld-linux-x86-64.so
 libs-y += \
 	ld.so \
 	ld-linux.so \
+	ld-linux-armhf.so \
 	libc.so \
 	libnss_files.so \
 	ld-uClibc.so \
