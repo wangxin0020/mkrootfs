@@ -14,7 +14,7 @@ if $compiler --print-sysroot > /dev/null 2>&1; then
 	    BINDIRS="$BINDIRS `cd $sysroot/$subd && pwd`"
 	fi
     done
-    for subd in lib usr/lib; do
+    for subd in lib lib/arm-linux-gnueabihf usr/lib usr/lib/arm-linux-gnueabihf ../lib; do
 	if [ -e "$sysroot/$subd" ]; then
 	    LIBDIRS="$LIBDIRS `cd $sysroot/$subd && pwd`"
 	fi
