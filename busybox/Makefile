@@ -41,6 +41,7 @@ include/autoconf.h: .config ../.mkr.builddir .mkr.srcdir
 	test -f Makefile && $(MAKE) $(args) distclean || :
 	mv saved-busybox-config .config
 	yes "" | $(MAKE) $(args) oldconfig
+	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 
 # Building busybox
 compile: include/autoconf.h
