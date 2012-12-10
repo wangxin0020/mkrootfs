@@ -25,6 +25,9 @@ configure-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
 configure-args-$(MKR_PSOS_MLOCKALL) += --enable-psos-auto-mlockall
 configure-args-$(MKR_UITRON_MLOCKALL) += --enable-uitron-auto-mlockall
 
+configure-args-$(MKR_XENO_ATOMIC_BUILTINS) += --with-atomic-ops=builtins
+configure-args-$(MKR_XENO_ATOMIC_ADHOC) += --with-atomic-ops=adhoc
+
 ifeq ($(MKR_ARCH_ARM),y)
 -include ../toolchain/arm-eabi
 
