@@ -171,6 +171,17 @@ config XENO_UITRON_MLOCKALL
 
 endmenu
 
+choice
+	prompt "Atomic instructions type"
+
+config XENO_ATOMIC_BUILTINS
+       bool "Use GCC builtins for atomic instructions"
+
+config XENO_ATOMIC_ADHOC
+       bool "Use ad-hoc inlines for atomic isntructions"
+
+endchoice
+
 if XENO_FORGE
 
 config XENO_FORGE_MONOTONIC_RAW

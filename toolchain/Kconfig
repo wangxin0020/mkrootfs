@@ -86,13 +86,14 @@ config ARM_ARCH
 
 choice
 	prompt "Floating points support"
+       	default ARM_FLOAT_VFP_SOFT_ABI if ARM_ARCH = 6 || ARM_ARCH = 7
+	default ARM_FLOAT_SOFT if ARM_ARCH = 4 || ARM_ARCH = 5
 
 config ARM_FLOAT_SOFT
 	bool "Soft-float"
 
 config ARM_FLOAT_VFP_SOFT_ABI
 	bool "VFP with soft-float ABI"
-       	default y if ARM_ARCH = 6 || ARM_ARCH = 7
 
 config ARM_FLOAT_VFP_HARD_ABI
 	bool "VFP with hard-float ABI"
