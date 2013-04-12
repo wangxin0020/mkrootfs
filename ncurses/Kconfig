@@ -1,0 +1,15 @@
+menu "ncurses"
+
+config NCURSES
+	package "NCURSES support"
+	default n
+
+if NCURSES
+
+config NCURSES_SRCDIR
+       srcdir "Source directory"
+       default "ncurses-*"
+
+endif
+
+endmenu

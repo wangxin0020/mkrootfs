@@ -1,0 +1,16 @@
+menu "GDB"
+
+config GDB
+	package "GDB debugger"
+	default n
+        select NCURSES
+
+if GDB
+
+config GDB_SRCDIR
+       srcdir "Source directory"
+       default "gdb-*"
+
+endif
+
+endmenu
