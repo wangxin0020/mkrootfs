@@ -50,9 +50,11 @@ choice
 config XENO_COBALT
        bool "Cobalt"
        select XENO_KERNEL
+       select FUSE
 
 config XENO_MERCURY
        bool "Mercury"
+       select FUSE
 
 endchoice
 

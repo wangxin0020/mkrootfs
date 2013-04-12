@@ -1,0 +1,15 @@
+menu "fuse"
+
+config FUSE
+	package "FUSE support"
+	default n
+
+if NCURSES
+
+config FUSE_SRCDIR
+       srcdir "FUSE directory"
+       default "fuse-*"
+
+endif
+
+endmenu
