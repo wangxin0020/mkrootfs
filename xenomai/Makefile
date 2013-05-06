@@ -41,6 +41,7 @@ configure-args-$(MKR_XENO_MERCURY) += --with-core=mercury
 
 configure-args-$(MKR_XENO_FORGE_MONOTONIC_RAW) += --enable-clock-monotonic-raw
 configure-args-$(MKR_XENO_FORGE_REGISTRY) += --enable-registry
+configure-args-$(MKR_XENO_FORGE_PSHARED) += --enable-pshared
 configure-args-$(MKR_XENO_MERCURY_LORES_CLOCK) += --enable-lores-clock
 configure-args-$(MKR_XENO_MERCURY_ASSERT) += --enable-assert
 configure-args-$(MKR_XENO_MERCURY_ASYNC_CANCEL) += --enable-async-cancel

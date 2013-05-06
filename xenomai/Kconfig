@@ -180,7 +180,7 @@ config XENO_ATOMIC_BUILTINS
        bool "Use GCC builtins for atomic instructions"
 
 config XENO_ATOMIC_ADHOC
-       bool "Use ad-hoc inlines for atomic isntructions"
+       bool "Use ad-hoc inlines for atomic instructions"
 
 endchoice
 
@@ -191,6 +191,9 @@ config XENO_FORGE_MONOTONIC_RAW
 
 config XENO_FORGE_REGISTRY
        bool "Enable export of real-time objects to a registry"
+
+config XENO_FORGE_PSHARED
+       bool "Enable shared multi-processing"
 
 if XENO_MERCURY
 
