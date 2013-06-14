@@ -1,5 +1,5 @@
 # Configuration
-configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install --disable-async-cancel --disable-lores-clock
+configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install
 configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
 configure-args-$(MKR_XENO_DEBUG) += --enable-debug
 configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
@@ -10,8 +10,8 @@ configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
 configure-args-$(MKR_XENO_SEP_TESTDIR) += --with-testdir="$(MKR_XENO_TESTDIR)"
 
 ifneq ($(strip $(MKR_ARCH_X86_32)$(MKR_ARCH_X86_64)),)
-configure-args-$(MKR_XENO_X86_SEP) += --enable-x86-sep
-configure-args-$(call not, $(MKR_XENO_X86_SEP)) += --disable-x86-sep
+configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-vsyscall
+configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-vsyscall
 
 configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
 configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
@@ -41,11 +41,10 @@ configure-args-$(MKR_XENO_MERCURY) += --with-core=mercury
 
 configure-args-$(MKR_XENO_FORGE_MONOTONIC_RAW) += --enable-clock-monotonic-raw
 configure-args-$(MKR_XENO_FORGE_REGISTRY) += --enable-registry
+configure-args-$(MKR_XENO_FORGE_LORES_CLOCK) += --enable-lores-clock
+configure-args-$(MKR_XENO_FORGE_ASSERT) += --enable-assert
+configure-args-$(MKR_XENO_FORGE_ASYNC_CANCEL) += --enable-async-cancel
 configure-args-$(MKR_XENO_FORGE_PSHARED) += --enable-pshared
-configure-args-$(MKR_XENO_MERCURY_LORES_CLOCK) += --enable-lores-clock
-configure-args-$(MKR_XENO_MERCURY_ASSERT) += --enable-assert
-configure-args-$(MKR_XENO_MERCURY_ASYNC_CANCEL) += --enable-async-cancel
-configure-args-$(MKR_XENO_MERCURY_PSHARED) += --enable-pshared
 
 # Compilation
 compile: default-autotools-compile
