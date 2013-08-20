@@ -31,7 +31,7 @@ configure-args-$(MKR_XENO_ATOMIC_ADHOC) += --with-atomic-ops=adhoc
 ifeq ($(MKR_ARCH_ARM),y)
 -include ../toolchain/arm-eabi
 
-configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)"
+configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)" --enable-arm-tsc="$(MKR_XENO_ARM_MACH)"
 configure-args-$(TOOLCHAIN_ARM_EABI) += --enable-arm-eabi
 configure-args-y += --enable-arm-arch="$(MKR_ARM_ARCH)"
 endif
