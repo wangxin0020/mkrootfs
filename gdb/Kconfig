@@ -3,7 +3,7 @@ menu "GDB"
 config GDB
 	package "GDB debugger"
 	default n
-        select NCURSES
+        build_select NCURSES
 
 if GDB
 
