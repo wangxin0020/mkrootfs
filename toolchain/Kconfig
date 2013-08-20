@@ -24,6 +24,9 @@ config ARCH_PPC32
 config ARCH_PPC64
 	bool "powerpc 64 bits"
 
+config ARCH_I386
+        bool "i386"
+
 config ARCH_X86_32
 	bool "x86 32 bits"
 
@@ -42,18 +45,20 @@ config ARCH
 	default "nios2" if ARCH_NIOS2
 	default "ppc" if ARCH_PPC32
 	default "ppc64" if ARCH_PPC64
-	default "i686" if ARCH_X86_32
-	default "x86_64" if ARCH_X86_64
 	default "sh4" if ARCH_SH4
+	default "i686" if ARCH_X86_32
+	default "i686" if ARCH_I386
+	default "x86_64" if ARCH_X86_64
 
 config KARCH
 	string
 	default "arm" if ARCH_ARM
 	default "blackfin" if ARCH_BFIN
+	default "i386" if ARCH_I386
 	default "nios2" if ARCH_NIOS2
 	default "powerpc" if ARCH_PPC32 || ARCH_PPC64
-	default "x86" if ARCH_X86_32 || ARCH_X86_64
 	default "sh" if ARCH_SH4
+	default "x86" if ARCH_X86_32 || ARCH_X86_64
 
 config CONFIGURE_HOST
 	string "Configure host string"
