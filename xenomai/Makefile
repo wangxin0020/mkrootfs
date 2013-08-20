@@ -10,15 +10,28 @@ configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
 configure-args-$(MKR_XENO_SEP_TESTDIR) += --with-testdir="$(MKR_XENO_TESTDIR)"
 
 ifneq ($(strip $(MKR_ARCH_X86_32)$(MKR_ARCH_X86_64)),)
+ifeq ($(strip $(MKR_XENO_FORGE)),y)
+# Xenomai forge
 configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-vsyscall
 configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-vsyscall
-
+else
+# Xenomai classic
+configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-sep
+configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-sep
+endif
 configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
 configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
 endif
 
+ifeq ($(strip $(MKR_XENO_FORGE)),y)
+# Xenomai forge
 configure-args-$(MKR_XENO_THREAD) += --enable-tls
 configure-args-$(call not, $(MKR_XENO_THREAD)) += --disable-tls
+else
+# Xenomai classic
+configure-args-$(MKR_XENO_THREAD) += --with-__thread
+configure-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
+endif
 
 configure-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
 configure-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
