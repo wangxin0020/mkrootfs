@@ -3,6 +3,7 @@ menu "Real-time tests & benches"
 config TESTS
 	package "Real-time tests"
 	select NETCAT
+	build_depends on LINUX
 	help
 	  This packages contains a few binaries  which is necessary to
 	  run tests and benches on a real-time system. You should enable
@@ -17,7 +18,6 @@ config TESTS_SRCDIR
 config TESTS_XENO
        def_bool y
        build_depends on XENO
-       build_depends on LINUX
        select XENO_TESTSUITE
 
 config TESTS_LTP
