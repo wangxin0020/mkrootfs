@@ -43,11 +43,9 @@ for d in $LIBDIRS; do
 
 	    if test "$sr_arch" = "$arch"; then
 		exit 0
-	    else
-		die Architecture mismatch, libc found in sysroot \($f\) is for $sr_arch whereas selected architecture is $arch
 	    fi
 	fi
     done
 done
 
-die No libc found in the following directories: $LIBDIRS
+die No libc/$arch found in the following directories: $LIBDIRS
