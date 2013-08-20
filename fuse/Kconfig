@@ -4,7 +4,7 @@ config FUSE
 	package "FUSE support"
 	default n
 
-if NCURSES
+if FUSE
 
 config FUSE_SRCDIR
        srcdir "FUSE directory"
