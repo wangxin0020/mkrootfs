@@ -27,8 +27,9 @@ override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
 override CC := $(MKR_CC)
 override CXX := $(MKR_CXX)
 override KCC := $(MKR_KCC)
-override cflags-y := $(MKR_CFLAGS)
-override ldflags-y := $(MKR_LDFLAGS)
+cppflags-y += -I$(staging)/usr/include
+cflags-y += $(MKR_CFLAGS) $(cppflags-y)
+ldflags-y += -L$(staging)/usr/lib -L$(staging)/lib $(MKR_LDFLAGS)
 
 # Unexport variables exported by top makefile
 unexport srctree objtree VPATH mkr-build-src
@@ -98,7 +99,7 @@ configure-args-y = \
 	--prefix=/usr \
 	CC="$(CC)" CXX="$(CXX)" LD="$(cross)ld" AR="$(cross)ar" \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
-	CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
+	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
 configure-env-y = \
 	PKG_CONFIG_DIR="" \
