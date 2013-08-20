@@ -568,7 +568,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 			comm -2 -3 $(dir $@)/.mkr.dirlist \
 				$(dir $@)/.mkr.newdirlist 2> /dev/null \
 			| { mkdir -p staging; cd staging && xargs -r \
-				rmdir --ignore-fail-on-non-empty; }; \
+				rmdir --ignore-fail-on-non-empty || :; }; \
 		fi; \
 		mv $(dir $@)/.mkr.newfilelist $(dir $@)/.mkr.filelist; \
 		mv $(dir $@)/.mkr.newdirlist $(dir $@)/.mkr.dirlist; \
@@ -777,10 +777,12 @@ $(call pkg-targets,clean): %:
 		{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
 		cat $(dir $@).mkr.filelist 2> /dev/null | \
 		{ cd rootfs; xargs -r rm -f; } > /dev/null 2>&1; \
+		rm -f $(dir $@).mkr.filelist; \
 		cat $(dir $@).mkr.dirlist 2> /dev/null | \
 		{ cd staging; xargs -r rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
 		cat $(dir $@).mkr.dirlist 2> /dev/null | { \
 		cd rootfs; xargs -r rmdir --ignore-fail-on-non-empty; } > /dev/null 2>&1; \
+		rm -f $(dir $@).mkr.dirlist; \
 		echo Cleaning $(dir $@)... done; \
 	fi
 
