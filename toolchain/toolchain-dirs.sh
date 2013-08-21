@@ -8,7 +8,7 @@ set -e
 
 # Get the directories
 sysroot=`$compiler --print-sysroot 2>/dev/null`
-if test -n "$sysroot"; then
+if test -n "$sysroot" -a \! "$sysroot" = /; then
     for subd in sbin usr/sbin bin usr/bin usr/lib/bin usr/lib/sbin ../debug-root/usr/bin; do
 	if [ -e "$sysroot/$subd" ]; then
 	    BINDIRS="$BINDIRS `cd $sysroot/$subd && pwd`"
