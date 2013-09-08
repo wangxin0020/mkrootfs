@@ -99,6 +99,9 @@ include/generated/autoconf.h: .config ../.mkr.kvers \
 $(eval $(shell grep '^CONFIG_MODULES=y' .config 2> /dev/null))
 
 buildargs := $(configargs) CROSS_COMPILE=$(kcross) CC=$(KCC)
+ifneq ($(MKR_LINUX_LOADADDR),)
+buildargs += LOADADDR="$(MKR_LINUX_LOADADDR)"
+endif
 
 cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a

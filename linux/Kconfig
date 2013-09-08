@@ -41,6 +41,18 @@ config LINUX_IMAGE_DEST
 	  Directory where the kernel image file will be copied. The copy uses
 	  scp if this destination has the form host:path or user@host:path.
 
+if ARCH_ARM
+
+config LINUX_LOADADDR
+       string "Load address"
+       default ""
+       help
+         On the ARM platform, with newer multiarch kernels, the load 
+	 address needs to be passed to the build process to generate
+         an uImage for the target board.
+
+endif
+
 config LINUX_EXTRA_FILES
 	string "Extra output files"
 	help
