@@ -50,7 +50,6 @@ choice
 config XENO_COBALT
        bool "Cobalt"
        select XENO_KERNEL
-       select FUSE
 
 config XENO_MERCURY
        bool "Mercury"
@@ -191,6 +190,7 @@ config XENO_FORGE_MONOTONIC_RAW
 
 config XENO_FORGE_REGISTRY
        bool "Enable export of real-time objects to a registry"
+       build_select FUSE
 
 config XENO_FORGE_LORES_CLOCK
        bool "Enable low resolution clock"
