@@ -665,7 +665,7 @@ ifeq ($(MKR_OUT_NFS),y)
 	echo root:$$PASS > .rsyncd.secrets
 
 .rsync.port:
-	echo $(MKR_OUT_RSYNCD_PORT) > .rsync.port
+	echo $$(($(MKR_OUT_RSYNCD_PORT) + $$RANDOM / 66)) > .rsync.port
 
 .rsyncd.pid: .rsyncd.secrets .rsync.port
 	$(Q)first=:; LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; \
