@@ -1,0 +1,17 @@
+menu "Valgrind"
+
+config VALGRIND
+	package "Valgrind"
+	default n
+	depends on (ARCH_ARM && ARM_ARCH = 7) || ARCH_PPC32 \
+		|| ARCH_PPC64 || ARCH_I386 || ARCH_X86_32 || ARCH_X86_64
+
+if VALGRIND
+
+config VALGRIND_SRCDIR
+       srcdir "Source directory"
+       default "valgrind-*"
+
+endif
+
+endmenu
