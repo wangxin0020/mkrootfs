@@ -668,7 +668,7 @@ ifeq ($(MKR_OUT_NFS),y)
 	echo $$(($(MKR_OUT_RSYNCD_PORT) + $$RANDOM / 66)) > .rsync.port
 
 .rsyncd.pid: .rsyncd.secrets .rsync.port
-	$(Q)first=:; LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 100`; \
+	$(Q)first=:; LIMIT=`expr $(MKR_OUT_RSYNCD_PORT) + 1000`; \
 	rm -f .rsyncd.pid; \
 	while [ ! -e .rsyncd.pid ]; do \
 		PORT=`cat .rsync.port`; \
@@ -679,7 +679,7 @@ ifeq ($(MKR_OUT_NFS),y)
 		if [ ! -e .rsyncd.pid ]; then \
 			$(mkr-locked-echo) Launching rsync on port $$PORT... failed; \
 			if $$first; then \
-				PORT=$(MKR_OUT_RSYNCD_PORT); \
+				PORT=$(($(MKR_OUT_RSYNCD_PORT) + $$RANDOM / 66)); \
 			else \
 				PORT=`expr $$PORT + 1`; \
 			fi; \
