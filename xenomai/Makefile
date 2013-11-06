@@ -1,8 +1,6 @@
 # Configuration
 configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install
 configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
-configure-args-$(MKR_XENO_DEBUG) += --enable-debug
-configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
 
 configure-args-$(MKR_XENO_SMP) += --enable-smp
 configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
@@ -14,10 +12,16 @@ ifeq ($(strip $(MKR_XENO_FORGE)),y)
 # Xenomai forge
 configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-vsyscall
 configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-vsyscall
+configure-args-$(MKR_XENO_DEBUG_NONE) += --disable-debug
+configure-args-$(MKR_XENO_DEBUG_SYMBOLS) += --enable-debug=symbols
+configure-args-$(MKR_XENO_DEBUG_PARTIAL) += --enable-debug=partial
+configure-args-$(MKR_XENO_DEBUG_FULL) += --enable-debug=full
 else
 # Xenomai classic
 configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-sep
 configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-sep
+configure-args-$(MKR_XENO_DEBUG) += --enable-debug
+configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
 endif
 configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
 configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc

@@ -17,10 +17,6 @@ config XENO_MAINT
 	 for file additions in the Xenomai sources tree, at the
 	 expense of a larger compilation time (especially the kernel).
 
-config XENO_DEBUG
-       bool "Enable debug symbols"
-       default y
-
 config XENO_SMP
        bool "SMP libraries"
        default y if ARCH_X86_64
@@ -54,8 +50,29 @@ config XENO_COBALT
 config XENO_MERCURY
        bool "Mercury"
        select FUSE
-
 endchoice
+
+choice
+	prompt "Debug level"
+
+config XENO_DEBUG_NONE
+       bool "Compile without any debugging"
+
+config XENO_DEBUG_SYMBOLS
+       bool "Compile with debug symbols"
+       
+config XENO_DEBUG_PARTIAL
+       bool "Compile with partial debugging enabled"
+
+config XENO_DEBUG_FULL
+       bool "Compile with full debugging enabled"
+endchoice
+endif
+
+if XENO_CLASSIC
+config XENO_DEBUG
+       bool "Enable debug symbols"
+       default y
 
 endif
 
