@@ -613,22 +613,26 @@ cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
 PHONY += rootfs
-rootfs: .mkr.fakeroot $(call only-pkg-targets,rootfs) FORCE
-	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
+.mkr.fakeroot rootfs: .mkr.fakeroot.staging $(call only-pkg-targets,rootfs) FORCE
+	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot.staging \
 	-s .mkr.fakeroot sh -c '{ \
 	find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 				-! -name '*.o' -! -name '*.a' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		xargs -r $(cross)strip  -R .note -R .comment -s > /dev/null 2>&1 || :; \
+		while read f; do $(cross)strip  -R .note -R .comment -s $f \
+		> /dev/null 2>&1 || :; done; \
 	find rootfs -type f -name '*.ko' -o -name '*.so' \
 		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		xargs -r $(kcross)strip -R .note -R .comment --strip-unneeded \
-		> /dev/null 2>&1 || :; \
+		while read f; do $(kcross)strip -R .note -R .comment \
+		--strip-unneeded $f > /dev/null 2>&1 || :; done; \
 	}'
+else
+.mkr.fakeroot: .mkr.fakeroot.staging
+	$(Q)cp $< $@
 endif
 
-.mkr.fakeroot: staging
-	$(Q)cat /dev/null `ls -1 $(call pkg-targets,.mkr.fakeroot)` > .mkr.fakeroot 2> /dev/null
+.mkr.fakeroot.staging: staging
+	$(Q)cat /dev/null `ls -1 $(call pkg-targets,.mkr.fakeroot)` > $@ 2> /dev/null
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
