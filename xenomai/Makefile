@@ -12,16 +12,10 @@ ifeq ($(strip $(MKR_XENO_FORGE)),y)
 # Xenomai forge
 configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-vsyscall
 configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-vsyscall
-configure-args-$(MKR_XENO_DEBUG_NONE) += --disable-debug
-configure-args-$(MKR_XENO_DEBUG_SYMBOLS) += --enable-debug=symbols
-configure-args-$(MKR_XENO_DEBUG_PARTIAL) += --enable-debug=partial
-configure-args-$(MKR_XENO_DEBUG_FULL) += --enable-debug=full
 else
 # Xenomai classic
 configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-sep
 configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-sep
-configure-args-$(MKR_XENO_DEBUG) += --enable-debug
-configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
 endif
 configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
 configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
@@ -31,10 +25,20 @@ ifeq ($(strip $(MKR_XENO_FORGE)),y)
 # Xenomai forge
 configure-args-$(MKR_XENO_THREAD) += --enable-tls
 configure-args-$(call not, $(MKR_XENO_THREAD)) += --disable-tls
+configure-args-$(MKR_XENO_DEBUG_NONE) += --disable-debug
+configure-args-$(MKR_XENO_DEBUG_SYMBOLS) += --enable-debug=symbols
+configure-args-$(MKR_XENO_DEBUG_PARTIAL) += --enable-debug=partial
+configure-args-$(MKR_XENO_DEBUG_FULL) += --enable-debug=full
+common-libs-y += /usr/lib/libcopperplate.so.*
+common-libs-$(MKR_XENO_COBALT) += /usr/lib/libcobalt.so.*
+
 else
 # Xenomai classic
 configure-args-$(MKR_XENO_THREAD) += --with-__thread
 configure-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
+configure-args-$(MKR_XENO_DEBUG) += --enable-debug
+configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
+common-libs-y := /usr/lib/libxenomai.so.*
 endif
 
 configure-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
@@ -72,6 +76,8 @@ staging: default-autotools-staging
 rootfs-y := \
 	/dev/rtheap \
 	/dev/rtp*
+rootfs-$(MKR_XENO_FORGE_REGISTRY) += \
+	/usr/bin/sysregd
 rootfs-$(MKR_XENO_A4L) += \
 	/usr/lib/libanalogy.so.* \
 	/usr/bin/insn_read \
@@ -80,29 +86,30 @@ rootfs-$(MKR_XENO_A4L) += \
 	/usr/bin/cmd_read \
 	/usr/bin/cmd_write
 rootfs-$(MKR_XENO_NATIVE) += \
+	/usr/lib/libalchemy.so.* \
 	/usr/lib/libnative.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 rootfs-$(MKR_XENO_POSIX) += \
 	/usr/lib/libpthread_rt.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 rootfs-$(MKR_XENO_PSOS) += \
 	/usr/lib/libpsos.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 rootfs-$(MKR_XENO_RTCAN) += \
 	/usr/bin/rtcanrecv \
 	/usr/bin/rtcansend
 rootfs-$(MKR_XENO_RTDM) += \
 	/usr/lib/librtdm.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 rootfs-$(MKR_XENO_UITRON) += \
 	/usr/lib/libuitron.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 rootfs-$(MKR_XENO_VRTX) += \
 	/usr/lib/libvrtx.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 rootfs-$(MKR_XENO_VXWORKS) += \
 	/usr/lib/libvxworks.so.* \
-	/usr/lib/libxenomai.so.*
+	$(common-libs-y)
 
 MKR_XENO_TESTDIR ?= /usr/bin
 
