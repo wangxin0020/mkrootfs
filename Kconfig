@@ -68,6 +68,29 @@ config OUT_INITRAMFS
 	 Generate a cpio archive, with options suitable for use by the
 	 Linux kernel as an initramfs.
 
+if OUT_INITRAMFS
+
+config	OUT_INITRAMFS_TFTP
+	bool "Install the initramfs in a tftp directory"
+	
+	help
+	  Install the initramfs image in a tftp directory, allowing a 
+	  network boot with initramfs.
+
+if OUT_INITRAMFS_TFTP
+
+config OUT_INITRAMFS_DEST
+	string "Initramfs destination"
+	default "/var/lib/tftpboot/$(MKR_BOARD)/initrd-$(KERNELVERSION)"
+
+	help
+	  Directory where the initramfs will be copied. The copy uses
+	  scp if this destination has the form host:path or user@host:path.
+
+endif	
+
+endif
+
 config SKIP_ROOTFS
        bool "Skip reduced root filesystem generation"
        default y

@@ -335,6 +335,7 @@ outputs-y := $(rootfs-y)
 outputs-$(MKR_OUT_TAR) += rootfs.tar
 outputs-$(MKR_OUT_NFS) += nfsroot
 outputs-$(MKR_OUT_INITRAMFS) += initramfs.cpio.gz
+outputs-$(MKR_OUT_INITRAMFS_TFTP) += initramfs-tftp
 
 all: $(outputs-y) clean-removed-packages
 
@@ -731,6 +732,14 @@ initramfs.cpio.gz: $(rootfs-y) .mkr.fakeroot
 		(cd $(rootfs-y); find . | cpio -o -H newc | gzip) \
 		> $@; }'
 	$(Q)echo Generating $@... done
+
+PHONY += initramfs-tftp
+initramfs-tftp: initramfs.cpio.gz
+ifneq (,$(findstring :, $(MKR_OUT_INITRAMFS_DEST)))
+	scp $< $(MKR_OUT_INITRAMFS_DEST)
+else
+	cp $< $(MKR_OUT_INITRAMFS_DEST)
+endif
 endif
 
 # Things we need to do before we recursively start building the kernel
