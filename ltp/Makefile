@@ -1,61 +1,35 @@
-# Do not use distcc when compiling LTP as it actually slows down the
-# compilation
-LTP_PATH=$(shell echo $$PATH | sed 's/[^:]*distcc://g')
+configure-args-y += --prefix=/ltp
 
-sync-$(call not,$(MKR_LTP_MAINT)) := cp -a
-sync-$(MKR_LTP_MAINT) := rsync -a
+compile-make-args-y += \
+	-f $(srcdir)/Makefile \
+	top_srcdir="$(srcdir)" \
+	top_builddir=`pwd`
 
-create-stamp := .mkr.created
+staging-make-args-y += \
+	-f $(srcdir)/Makefile \
+	top_srcdir="$(srcdir)" \
+	top_builddir=`pwd` \
+	SKIP_IDCHECK=1
 
-$(create-stamp): $(deps)
-	rm -Rf *
-	: > $@
+rootfs-y := \
+	/ltp/.installed \
+	/ltp/bin \
+	/ltp/IDcheck.sh \
+	/ltp/runalltests.sh \
+	/ltp/runltp \
+	/ltp/runltplite.sh \
+	/ltp/runtest \
+	/ltp/scenario_groups \
+	/ltp/testcases \
+	/ltp/testscripts \
+	/ltp/ver_linux \
+	/ltp/Version
 
-# Sync the sources between the source tree and the build directory
-# In maintainer mode, trigger a sync for every compilation
-ifeq ($(MKR_LTP_MAINT),y)
-do-sync: $(create-stamp)
-	$(sync-y) $(srcdir)/* .
+compile: default-autotools-compile
 
-configure: do-sync ;
+staging: default-autotools-staging
+	: > $(pkginst)/ltp/.installed
 
-# Configure (maintainer mode)
-config.status: configure
-	./configure $(configure-args-y) --enable-maintainer-mode
-else
-# Configure
-config.status: $(create-stamp)
-	$(sync-y) $(srcdir)/* .
-	./configure $(configure-args-y)
-endif
+rootfs: default-rootfs
 
-# Build
-compile: config.status
-	PATH=$(LTP_PATH) $(MAKE) CROSS_COMPILE="$(cross)" \
-	CC="$(CC) $(ARCH_FLAGS)" CXX="$(CXX) $(ARCH_FLAGS)" \
-		AR="$(cross)ar" RANLIB="$(cross)ranlib"
-	for dir in \
-		testcases/bin \
-		testcases/kernel/io/stress_floppy/dumpdir \
-		testcases/bin/dumpdir \
-		output \
-		results; \
-	do mkdir -p $$dir || exit 1; done
-
-# Install, we use custom install rules in order to preserve timestamps
-staging:
-	mkdir -p $(pkginst)/ltp $(staging)/ltp
-	cp -alf * $(pkginst)/ltp
-	cp -alf * $(staging)/ltp
-
-rootfs:
-	mkdir -p $(rootfs)/ltp
-	cp -alf * $(rootfs)/ltp
-
-# Clean
 clean: default-clean
-
-# Check configuration
-confcheck-y := $(call confcheck-tool,lex,MKR_LTP)
-
-confcheck: default-confcheck

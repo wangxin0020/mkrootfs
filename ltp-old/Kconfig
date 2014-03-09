@@ -1,0 +1,29 @@
+menu "LTP (old versions)"
+
+config LTP_OLD
+	package "Linux Testing Project (old versions)"
+	select MAKE
+
+	help
+	 Note that this package requires lex or flex to be installed.
+
+if LTP_OLD
+
+config LTP_OLD_SRCDIR
+       srcdir "Source directory"
+       default "ltp-full-*"
+
+config LTP_OLD_MAINT
+       bool "Maintainer mode"
+       help
+	 LTP is copied into the target staging directory before being
+	 compiled, so, in order to take into account any modification
+	 which would have been made on the sources files, they need to
+	 be copied at every compilation. As this is a long operation,
+	 and useful only in the rare case where you would like to
+       	 modify LTP sources, it is not done by default, but this
+       	 option allows to enable it.
+
+endif
+
+endmenu

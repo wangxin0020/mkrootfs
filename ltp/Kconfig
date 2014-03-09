@@ -1,28 +1,21 @@
-menu "LTP"
+menu "LTP (newer versions)"
 
-config LTP
-	package "Linux Testing Project"
-	select MAKE
+config LTP_NEW
+	package "Linux Testing Project (newer versions)"
 
 	help
-	 Note that this package requires lex or flex to be installed.
+	  Older versions of LTP required running "make install" on the
+	  board to have the installation working when cross-compiling,
+	  which is what LTP_OLD does. Newer versions of LTP do not
+	  require this, LTP_NEW is made for these. Note that LTP_OLD
+	  will work with any version, whereas LTP_NEW will not work
+	  correctly with old versions.
 
-if LTP
+if LTP_NEW
 
-config LTP_SRCDIR
+config LTP_NEW_SRCDIR
        srcdir "Source directory"
        default "ltp-full-*"
-
-config LTP_MAINT
-       bool "Maintainer mode"
-       help
-	 LTP is copied into the target staging directory before being
-	 compiled, so, in order to take into account any modification
-	 which would have been made on the sources files, they need to
-	 be copied at every compilation. As this is a long operation,
-	 and useful only in the rare case where you would like to
-       	 modify LTP sources, it is not done by default, but this
-       	 option allows to enable it.
 
 endif
 

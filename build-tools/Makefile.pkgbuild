@@ -143,11 +143,11 @@ staging:
 
 .PHONY: default-autotools-compile
 default-autotools-compile: .mkr.autotools.default.configured
-	$(MAKE)
+	$(MAKE) $(compile-make-args-y)
 
 .PHONY: default-autotools-staging
 default-autotools-staging:
-	$(MAKE) DESTDIR=$(pkginst) install
+	$(MAKE) $(staging-make-args-y) DESTDIR=$(pkginst) install
 
 .PHONY: rootfs
 rootfs:

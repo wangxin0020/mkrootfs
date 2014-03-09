@@ -23,6 +23,7 @@ source "netcat/Kconfig"
 source "kexec-tools/Kconfig"
 source "valgrind/Kconfig"
 source "make/Kconfig"
+source "ltp-old/Kconfig"
 source "ltp/Kconfig"
 source "tests/Kconfig"
 
