@@ -334,7 +334,8 @@ rootfs-$(call not,$(MKR_SKIP_ROOTFS)) := rootfs
 outputs-y := $(rootfs-y)
 outputs-$(MKR_OUT_TAR) += rootfs.tar
 outputs-$(MKR_OUT_NFS) += nfsroot
-outputs-$(MKR_OUT_INITRAMFS) += initramfs.cpio.gz
+outputs-$(MKR_OUT_INITRAMFS_GZ) += initramfs.cpio.gz
+outputs-$(MKR_OUT_INITRAMFS_XZ) += initramfs.cpio.xz
 outputs-$(MKR_OUT_INITRAMFS_TFTP) += initramfs-tftp
 
 all: $(outputs-y) clean-removed-packages
@@ -729,16 +730,32 @@ rootfs.tar: $(rootfs-y) .mkr.fakeroot
 endif
 
 ifeq ($(MKR_OUT_INITRAMFS),y)
-PHONY += initramfs.cpio.gz
-initramfs.cpio.gz: $(rootfs-y) .mkr.fakeroot
+PHONY += initramfs.cpio
+initramfs.cpio: $(rootfs-y) .mkr.fakeroot
 	$(Q)echo Generating $@...
 	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot sh -c '{ \
-		(cd $(rootfs-y); find . | cpio -o -H newc | gzip) \
+		(cd $(rootfs-y); find . | cpio -o -H newc) \
 		> $@; }'
 	$(Q)echo Generating $@... done
 
+ifeq ($(MKR_OUT_INITRAMFS_GZ),y)
+INITRAMFS_OUT := initramfs.cpio.gz
+initramfs.cpio.gz: initramfs.cpio
+	$(Q)echo Generating $@...
+	$(Q)gzip -c $<  > $@
+	$(Q)echo Generating $@... done
+endif
+
+ifeq ($(MKR_OUT_INITRAMFS_XZ),y)
+INITRAMFS_OUT := initramfs.cpio.xz
+initramfs.cpio.xz: initramfs.cpio
+	$(Q)echo Generating $@...
+	$(Q)xz --check=crc32 --lzma2 -kf1 $<
+	$(Q)echo Generating $@... done
+endif
+
 PHONY += initramfs-tftp
-initramfs-tftp: initramfs.cpio.gz
+initramfs-tftp: $(INITRAMFS_OUT)
 ifneq (,$(findstring :, $(MKR_OUT_INITRAMFS_DEST)))
 	scp $< $(MKR_OUT_INITRAMFS_DEST)
 else

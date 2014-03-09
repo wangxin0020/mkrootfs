@@ -71,7 +71,18 @@ config OUT_INITRAMFS
 
 if OUT_INITRAMFS
 
-config	OUT_INITRAMFS_TFTP
+choice
+	prompt "Compression"
+
+config OUT_INITRAMFS_GZ
+	bool "Gzip"
+
+config OUT_INITRAMFS_XZ
+	bool "Xz"
+
+endchoice
+
+config OUT_INITRAMFS_TFTP
 	bool "Install the initramfs in a tftp directory"
 	
 	help
