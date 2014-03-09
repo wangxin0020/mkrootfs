@@ -11,6 +11,7 @@ if test ! -e /etc/ld.so.cache; then
     echo done
 fi
 
+# Update clock
 if grep -q "root=/dev/nfs" /proc/cmdline; then
     rootserver=`dmesg | sed 's/^.*rootserver=\([^,]*\).*$/\1/;t;d'`
     if test -n "$rootserver"; then
@@ -18,22 +19,43 @@ if grep -q "root=/dev/nfs" /proc/cmdline; then
     fi
 fi
 
+# Start log daemons
 mkdir -p /var/log
 syslogd -S -D -L
 klogd
 
+# Load modules
 modprobe xhci_hcd > /dev/null 2>&1
 modprobe ehci_hcd > /dev/null 2>&1
 find /sys -name modalias | while read f; do 
     modprobe `cat $f` > /dev/null 2>&1
 done
 
+# Start network
 if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
     ifconfig lo 127.0.0.1 up
     udhcpc -anRS
 fi
+
+# Start telnet
 telnetd
 
+# Start ssh
+if test -e /usr/sbin/dropbear; then
+    ECDSA_KEY=/etc/dropbeardropbear_ecdsa_host_key
+
+    if test ! -e $ECDSA_KEY; then
+	mkdir -p /etc/dropbear
+	/usr/bin/dropbearkey -t ecdsa -f $ECDSA_KEY.tmp
+	mv $ECDSA_KEY.tmp $ECDSA_KEY
+	sync
+    else
+	/usr/bin/dropbearkey -y -f $ECDSA_KEY
+    fi
+    dropbear -B -R
+fi
+
+# Install ltp (old versions)
 if test -e /ltp && test ! -e /ltp/.installed -o ! -e /ltp/testcases/bin/hackbench; then
     echo 'Installing LTP'
     dir=`pwd`

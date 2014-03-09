@@ -1,0 +1,15 @@
+menu "Dropbear"
+
+config DROPBEAR
+	package "Dropbear embedded ssh client/server"
+	select LIBUTIL
+
+if DROPBEAR
+
+config DROPBEAR_SRCDIR
+       srcdir "Source directory"
+       default "dropbear-*"
+
+endif
+
+endmenu

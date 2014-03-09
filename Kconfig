@@ -19,6 +19,7 @@ source "xenomai/Kconfig"
 source "ltp-old/Kconfig"
 source "ltp/Kconfig"
 source "tests/Kconfig"
+source "dropbear/Kconfig"
 
 endmenu
 

@@ -33,6 +33,8 @@ libs-$(MKR_LIBPTHREAD) += \
 	libthread_db.so
 libs-$(MKR_LIBSTDCPP) += \
 	libstdc++.so
+libs-$(MKR_LIBUTIL) += \
+	libutil.so
 
 bins-y := \
 	gdbserver \

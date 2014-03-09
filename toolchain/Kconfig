@@ -158,24 +158,28 @@ endif
 
 menu "Toolchain libraries selection"
 
-config LIBM
-       bool "Install libm"
-       default y
-
-config LIBRESOLV
-       bool "Install name resolution libraries"
-       default y
-
 config LIBDL
        bool "Install libdl"
+       default y
+
+config LIBM
+       bool "Install libm"
        default y
 
 config LIBPTHREAD
        bool "Install libpthread"
        default y
 
+config LIBRESOLV
+       bool "Install name resolution libraries"
+       default y
+
 config LIBSTDCPP
        bool "Install libstdc++"
+       default n
+
+config LIBUTIL
+       bool "Install libutil"
        default n
 
 endmenu
