@@ -11,11 +11,27 @@ if test ! -e /etc/ld.so.cache; then
     echo done
 fi
 
-/usr/sbin/rdate -s `dmesg | sed 's/^.*rootserver=\([^,]*\).*$/\1/;t;d'`
+if grep -q "root=/dev/nfs" /proc/cmdline; then
+    rootserver=`dmesg | sed 's/^.*rootserver=\([^,]*\).*$/\1/;t;d'`
+    if test -n "$rootserver"; then
+	/usr/sbin/rdate -s "$rootserver"
+    fi
+fi
 
 mkdir -p /var/log
 syslogd -S -D -L
 klogd
+
+modprobe xhci_hcd > /dev/null 2>&1
+modprobe ehci_hcd > /dev/null 2>&1
+find /sys -name modalias | while read f; do 
+    modprobe `cat $f` > /dev/null 2>&1
+done
+
+if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
+    ifconfig lo 127.0.0.1 up
+    udhcpc -b
+fi
 telnetd
 
 if test -e /ltp && test ! -e /ltp/.installed -o ! -e /ltp/testcases/bin/hackbench; then

@@ -38,6 +38,20 @@ update_dns()
   done
 }
 
+clock()
+{
+    if test -n "$siaddr"; then
+	rdate -s "$siaddr"
+    fi
+}
+
+name()
+{
+    if test -n "$hostname"; then
+	hostname "$hostname"
+    fi
+}
+
 deconfig()
 {
   /sbin/ifconfig $interface 0.0.0.0
@@ -48,6 +62,8 @@ case "$1" in
     update_interface;
     update_routes;
     update_dns;
+    clock;
+    name;
   ;;
 
   renew)
