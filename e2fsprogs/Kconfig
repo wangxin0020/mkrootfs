@@ -1,0 +1,14 @@
+menu "E2fsprogs"
+
+config E2FSPROGS
+	package "E2fsprogs filesystem utilities"
+
+if E2FSPROGS
+
+config E2FSPROGS_SRCDIR
+       srcdir "Source directory"
+       default "e2fsprogs-*"
+
+endif
+
+endmenu
