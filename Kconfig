@@ -24,6 +24,7 @@ endmenu
 
 menu "Tools"
 
+source "dosfstools/Kconfig"
 source "e2fsprogs/Kconfig"
 source "gdb/Kconfig"
 source "kexec-tools/Kconfig"

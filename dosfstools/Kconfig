@@ -1,0 +1,14 @@
+menu "Dosfstools"
+
+config DOSFSTOOLS
+	package "Dosfstools filesystem utilities"
+
+if DOSFSTOOLS
+
+config DOSFSTOOLS_SRCDIR
+       srcdir "Source directory"
+       default "dosfstools-*"
+
+endif
+
+endmenu
