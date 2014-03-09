@@ -50,10 +50,6 @@ config SERIAL_MINOR
 
 endif
 
-config SERIAL_BAUDRATE
-	int "Serial console baud rate"
-	default 115200
-
 config MOUNT
 	bool "Mount storage device"
 	help

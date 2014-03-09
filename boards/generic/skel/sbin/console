@@ -1,0 +1,5 @@
+#! /bin/sh
+
+dev=`sed 's/^.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
+
+exec /sbin/getty 0 "$dev"

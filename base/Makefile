@@ -45,9 +45,6 @@ skel:
 		}; \
 		done; \
 		cp -dR --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
-		sed -i \
-			's/@MKR_SERIAL_DEV@/$(MKR_SERIAL_DEV)/g;s/@MKR_SERIAL_BAUDRATE@/$(MKR_SERIAL_BAUDRATE)/g' \
-			"$(pkginst)/etc/inittab"; \
 		$(mount-dev-sed); \
 	}
 

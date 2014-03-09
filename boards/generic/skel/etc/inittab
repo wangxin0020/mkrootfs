@@ -5,5 +5,4 @@
 ::shutdown:/bin/umount -a -r
 ::restart:/sbin/init
 
-@MKR_SERIAL_DEV@::respawn:/sbin/getty @MKR_SERIAL_BAUDRATE@ @MKR_SERIAL_DEV@
-
+::respawn:/sbin/console
