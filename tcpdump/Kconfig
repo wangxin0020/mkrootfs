@@ -1,0 +1,15 @@
+menu "Tcpdump"
+
+config TCPDUMP
+	build_select LIBPCAP
+	package "Tcpdump network capture tool"
+
+if TCPDUMP
+
+config TCPDUMP_SRCDIR
+       srcdir "Source directory"
+       default "tcpdump-*"
+
+endif
+
+endmenu

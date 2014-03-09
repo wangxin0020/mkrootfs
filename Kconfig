@@ -1,6 +1,6 @@
 source "toolchain/Kconfig"
 
-menu "Packages"
+menu "Base packages"
 
 config SRC_BASEDIR
 	string "Package source trees search path"
@@ -14,20 +14,28 @@ config SRC_BASEDIR
 source "base/Kconfig"
 source "linux/Kconfig"
 source "busybox/Kconfig"
-source "strace/Kconfig"
-source "ncurses/Kconfig"
-source "gdb/Kconfig"
 source "fuse/Kconfig"
 source "xenomai/Kconfig"
-source "netcat/Kconfig"
-source "kexec-tools/Kconfig"
-source "valgrind/Kconfig"
-source "make/Kconfig"
 source "ltp-old/Kconfig"
 source "ltp/Kconfig"
 source "tests/Kconfig"
 
 endmenu
+
+menu "Tools"
+
+source "gdb/Kconfig"
+source "kexec-tools/Kconfig"
+source "libpcap/Kconfig"
+source "make/Kconfig"
+source "ncurses/Kconfig"
+source "netcat/Kconfig"
+source "strace/Kconfig"
+source "tcpdump/Kconfig"
+source "valgrind/Kconfig"
+
+endmenu
+
 
 menu "Output"
 

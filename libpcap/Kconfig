@@ -1,0 +1,14 @@
+menu "Libpcap"
+
+config LIBPCAP
+	package "Libpcap network capture library"
+
+if LIBPCAP
+
+config LIBPCAP_SRCDIR
+       srcdir "Source directory"
+       default "libpcap-*"
+
+endif
+
+endmenu
