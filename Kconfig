@@ -1,5 +1,13 @@
 source "toolchain/Kconfig"
 
+menu "Libraries"
+
+source "fuse/Kconfig"
+source "libpcap/Kconfig"
+source "ncurses/Kconfig"
+
+endmenu
+
 menu "Base packages"
 
 config SRC_BASEDIR
@@ -14,7 +22,6 @@ config SRC_BASEDIR
 source "base/Kconfig"
 source "linux/Kconfig"
 source "busybox/Kconfig"
-source "fuse/Kconfig"
 source "xenomai/Kconfig"
 source "ltp-old/Kconfig"
 source "ltp/Kconfig"
@@ -30,9 +37,7 @@ source "e2fsprogs/Kconfig"
 source "file/Kconfig"
 source "gdb/Kconfig"
 source "kexec-tools/Kconfig"
-source "libpcap/Kconfig"
 source "make/Kconfig"
-source "ncurses/Kconfig"
 source "netcat/Kconfig"
 source "strace/Kconfig"
 source "tcpdump/Kconfig"
