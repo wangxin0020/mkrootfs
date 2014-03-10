@@ -763,7 +763,7 @@ ifeq ($(MKR_OUT_INITRAMFS_XZ),y)
 INITRAMFS_OUT := initramfs.cpio.xz
 initramfs.cpio.xz: initramfs.cpio
 	$(Q)echo Generating $@...
-	$(Q)xz --check=crc32 --lzma2 -kf1 $<
+	$(Q)xz --check=crc32 --lzma2 -kf3 $<
 	$(Q)echo Generating $@... done
 endif
 
