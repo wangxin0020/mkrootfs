@@ -1,0 +1,15 @@
+menu "Ntfs-3g"
+
+config NTFS
+	package "Ntfs-3g tools"
+	build_select FUSE
+
+if NTFS
+
+config NTFS_SRCDIR
+       srcdir "Source directory"
+       default "ntfs-3g_*"
+
+endif
+
+endmenu
