@@ -152,10 +152,12 @@ default-autotools-staging:
 .PHONY: rootfs
 rootfs:
 
+RSOPTS=-lptgodDRru
+
 .PHONY: default-copyall-rootfs
 default-copyall-rootfs:
 	$(Q)if ! ( mkdir -p $(rootfs); cd $(staging); \
-		    rsync -lptgodDR `cat $(CURDIR)/.mkr.dirlist $(CURDIR)/.mkr.filelist` $(rootfs); ); then \
+		    rsync $(RSOPTS) `cat $(CURDIR)/.mkr.dirlist $(CURDIR)/.mkr.filelist` $(rootfs); ); then \
 		echo Error: rsync failed, please try again; \
 		rm .mkr.fakeroot; \
 		cat .mkr.filelist | \
@@ -172,7 +174,7 @@ default-copyall-rootfs:
 .PHONY: default-rootfs
 default-rootfs:
 	$(Q)if ! ( mkdir -p $(rootfs); cd $(staging); \
-		rsync -lptgodDRr `ls -1d $(patsubst %,.%,$(rootfs-y))` $(rootfs); ); then \
+		rsync $(RSOPTS) `ls -1d $(patsubst %,.%,$(rootfs-y))` $(rootfs); ); then \
 			echo Error: rsync failed, please try again; \
 			rm .mkr.fakeroot; \
 			cat .mkr.filelist | \

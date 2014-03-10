@@ -614,19 +614,29 @@ cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
 PHONY += rootfs
-.mkr.fakeroot rootfs: .mkr.fakeroot.staging $(call only-pkg-targets,rootfs) FORCE
-	$(Q)$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot.staging \
-	-s .mkr.fakeroot sh -c '{ \
-	find rootfs -type f -! -name '*.ko' -! -name '*.so' \
+
+rfs-fakeroot1 := \
+	$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
+rfs-fakeroot2 := \
+	$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
+
+rootfs: .mkr.fakeroot.staging $(call only-pkg-targets,rootfs) FORCE
+	$(Q)echo Stripping binaries...
+	$(Q)test -e .mkr.fakeroot || cp $< .mkr.fakeroot
+	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
 				-! -name '*.o' -! -name '*.a' \
-		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		while read f; do $(cross)strip  -R .note -R .comment -s $f \
-		> /dev/null 2>&1 || :; done; \
-	find rootfs -type f -name '*.ko' -o -name '*.so' \
-		$(if $(wildcard .mkr.fakeroot),-newer .mkr.fakeroot) | \
-		while read f; do $(kcross)strip -R .note -R .comment \
-		--strip-unneeded $f > /dev/null 2>&1 || :; done; \
-	}'
+		$(if $(wildcard .mkr.stripped),-newer .mkr.stripped) | \
+		xargs $(rfs-fakeroot1) $(cross)strip  -R .note -R .comment \
+		-s > /dev/null 2>&1 || :
+	$(Q)find rootfs -type f -name '*.ko' -o -name '*.so' \
+		$(if $(wildcard .mkr.stripped),-newer .mkr.stripped) | \
+		xargs $(rfs-fakeroot2) $(kcross)strip -R .note -R .comment \
+		--strip-unneeded $$f > /dev/null 2>&1 || :
+	$(Q) : > .mkr.stripped
+	$(Q)echo Stripping binaries...done
+
+.mkr.fakeroot: rootfs
+
 else
 .mkr.fakeroot: .mkr.fakeroot.staging
 	$(Q)cp $< $@
