@@ -1,3 +1,10 @@
+configure-args-y += \
+	--with-shared \
+	--without-manpages
+
+rootfs-y := \
+	/usr/lib/libncurses.so.*
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging
@@ -5,10 +12,6 @@ staging: default-autotools-staging
 	for lib in libncurses.so*; do \
 		ln -s $$lib `echo $$lib | sed -e 's,ncurses,tinfo,'`; \
 	done
-
-rootfs-y := /usr/lib/libncurses.so.*
-
-configure-args-y += --with-shared --without-manpages
 
 rootfs: default-rootfs
 
