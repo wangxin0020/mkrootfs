@@ -1,0 +1,14 @@
+menu "File"
+
+config FILE
+	package "The file utility"
+
+if FILE
+
+config FILE_SRCDIR
+       srcdir "Source directory"
+       default "file-*"
+
+endif
+
+endmenu
