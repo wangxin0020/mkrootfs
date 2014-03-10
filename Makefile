@@ -718,10 +718,13 @@ nfsroot: $(rootfs-y) .mkr.fakeroot .rsyncd.pid
 	PORT=`cat .rsync.port`; \
 	if ! $(O)/build-tools/bin/fakeroot -i .mkr.fakeroot \
 		rsync --password-file=.rsync.pass --delete -a \
-		--exclude '/ltp/testcases/bin/*' \
-		--exclude '/ltp/output/*' --exclude '/ltp/results/*' \
-		--exclude /ltp/.installed --exclude '/root/*' \
-		--exclude /etc/ld.so.cache --exclude '/tmp/*' --exclude '/var/*' \
+		--filter 'protect /ltp/.installed' \
+		--filter 'protect /ltp/testcases/bin/*' \
+		--filter 'protect /ltp/output/*' \
+		--filter 'protect /ltp/results/*' \
+		--filter 'protect /etc/dropbear' \
+		--filter 'protect /root/*' --filter 'protect /etc/ld.so.cache'\
+		--filter 'protect /tmp/*' --filter 'protect /var/*' \
 		$(rootfs-y)/ rsync://root@localhost:$$PORT/nfsroot; then \
 		echo Synchronizing NFS root failed, erasing rsync configuration; \
 		echo Please try again; \

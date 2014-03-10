@@ -43,7 +43,7 @@ telnetd
 
 # Start ssh
 if test -e /usr/sbin/dropbear; then
-    ECDSA_KEY=/etc/dropbeardropbear_ecdsa_host_key
+    ECDSA_KEY=/etc/dropbear/dropbear_ecdsa_host_key
 
     if test ! -e $ECDSA_KEY; then
 	mkdir -p /etc/dropbear
