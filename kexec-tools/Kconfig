@@ -13,6 +13,10 @@ config KEXEC_ZLIB
        bool "Enable zlib compression"
        build_select ZLIB
 
+config KEXEC_LZMA
+       bool "Enable lzma compression"
+       build_select XZ
+
 config KEXEC_TOOLS_KDUMP
        bool "Install kdump tool"
 

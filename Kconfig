@@ -5,6 +5,7 @@ menu "Libraries"
 source "fuse/Kconfig"
 source "libpcap/Kconfig"
 source "ncurses/Kconfig"
+source "xz/Kconfig"
 source "zlib/Kconfig"
 
 endmenu

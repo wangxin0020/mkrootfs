@@ -1,0 +1,22 @@
+menu "Xz"
+
+config XZ
+	package "Xz compression library and tool"
+
+if XZ
+
+config XZ_SRCDIR
+       srcdir "Source directory"
+       default "xz-*"
+
+config XZ_XZ
+       bool "Install xz"
+       help
+	This installs the xz tools in addition to the liblzma library.
+	Note that some xz tools conflict with busybox, so, you have to
+        disable these tools in busybox if you want the versions from
+	the xz package.
+
+endif
+
+endmenu
