@@ -10,6 +10,10 @@ config DROPBEAR_SRCDIR
        srcdir "Source directory"
        default "dropbear-*"
 
+config DROPBEAR_ZLIB
+       bool "Enable zlib compression"
+       build_select ZLIB
+
 endif
 
 endmenu

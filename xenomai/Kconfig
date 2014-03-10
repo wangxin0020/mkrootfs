@@ -49,7 +49,7 @@ config XENO_COBALT
 
 config XENO_MERCURY
        bool "Mercury"
-       select FUSE
+       build_select FUSE
 endchoice
 
 choice

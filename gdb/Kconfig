@@ -11,6 +11,10 @@ config GDB_SRCDIR
        srcdir "Source directory"
        default "gdb-*"
 
+config GDB_ZLIB
+       bool "Enable zlib compression"
+       build_select ZLIB
+
 endif
 
 endmenu

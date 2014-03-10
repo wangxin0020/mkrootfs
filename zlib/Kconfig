@@ -1,0 +1,14 @@
+menu "Zlib"
+
+config ZLIB
+	package "Zlib compression library"
+
+if ZLIB
+
+config ZLIB_SRCDIR
+       srcdir "Source directory"
+       default "zlib-*"
+
+endif
+
+endmenu

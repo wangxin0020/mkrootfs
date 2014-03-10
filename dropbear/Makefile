@@ -1,6 +1,5 @@
-configure-args-y += \
-	--prefix=/usr \
-	--disable-zlib
+configure-args-$(MKR_DROPBEAR_ZLIB) += --enable-zlib
+configure-args-$(call not, $(MKR_DROPBEAR_ZLIB)) += --disable-zlib
 
 compile-make-args-y += \
 	PROGRAMS="dropbear dbclient dropbearkey scp" MULTI=1 SCPPROGRESS=1

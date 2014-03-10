@@ -1,4 +1,9 @@
-configure-args-y += --without-zlib --without-expat --with-curses
+configure-args-y += \
+	--without-expat \
+	--with-curses
+
+configure-args-$(MKR_GDB_ZLIB) += --with-zlib
+configure-args-$(call not, $(MKR_GDB_ZLIB)) += --without-zlib
 
 compile: default-autotools-compile
 
