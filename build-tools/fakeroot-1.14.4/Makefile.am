@@ -17,9 +17,11 @@ else !MACOSX
 libfakeroot_la_LIBADD = libcommunicate.la $(LTLIBOBJS)
 endif !MACOSX
 
-bin_PROGRAMS=faked
+bin_PROGRAMS=faked fakeroot-filter
 faked_SOURCES = faked.c
 faked_LDADD = libcommunicate.la
+
+fakeroot_filter_SOURCES = fakeroot-filter.c
 
 simple_SOURCES=simple.c
 noinst_PROGRAMS=simple
