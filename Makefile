@@ -515,7 +515,7 @@ mkr-run-and-log = \
 		$(mkr-shortlog) $(2).mkr.log > $(2).mkr.shortlog; \
 		if [ -s $(2).mkr.shortlog ]; then \
 			$(mkr-lock); \
-			echo '+++' $(1)... done, with warnings; \
+			echo '+++' Package $(2) finished, with warnings; \
 			if [ ! -e .mkr.displayed ]; then \
 				cat $(2).mkr.shortlog; \
 				echo '+++' Use make $(2)log for more details; \
@@ -523,21 +523,21 @@ mkr-run-and-log = \
 				echo '+++' Use make $(2)shortlog or $(2)log for more details; \
 			fi; : > .mkr.displayed; $(mkr-unlock); \
 		else \
-			$(mkr-locked-echo) $(1)... done; \
+			$(mkr-locked-echo) Package $(2) finished; \
 		fi; \
 	fi
 
 mkr-run-staging-$(call not,$(MKR_SKIP_ROOTFS)) = $(mkr-run-and-log-on-failure)
 mkr-run-staging-$(MKR_SKIP_ROOTFS) = $(mkr-run-and-log)
 
-build-tools/bin/fakeroot: .mkr.builddir $(wait-confcheck)
+build-tools/bin/fakeroot-filter: .mkr.builddir $(wait-confcheck) $(srctree)/build-tools/fakeroot-1.14.4/fakeroot-filter.c
 	$(Q)rm -f build-tools/fakeroot/.mkr.log
 	$(Q)$(call mkr-run-and-log, \
 		Building build system fakeroot, \
 		build-tools/fakeroot/, \
 		$(MAKE) -C build-tools/fakeroot \
 			-f $(srctree)/build-tools/fakeroot-1.14.4/Makefile \
-			$(O)/build-tools/bin/fakeroot)
+			$(O)/build-tools/bin/fakeroot-filter)
 
 PHONY += $(call pkg-targets,compile)
 $(call pkg-targets,compile): \
@@ -549,7 +549,7 @@ $(call pkg-targets,compile): \
 		$(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
 PHONY += $(call pkg-targets,staging)
-$(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
+$(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot-filter
 	$(Q)$(mkr-fakeroot) sh -c '{ \
 		mkr_pkginst=$(dir $@).mkr.inst; \
 		umask 022; \
@@ -592,6 +592,12 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot
 PHONY += staging
 staging: $(call only-pkg-targets,staging)
 
+.mkr.fakeroot.staging: staging
+	$(Q)for p in $(packages); do \
+		$(O)/build-tools/bin/fakeroot-filter \
+			staging $$p/.mkr.filelist $$p/.mkr.fakeroot; \
+	done > $@
+
 PHONY += $(call pkg-targets,log)
 $(call pkg-targets,log): %:
 	$(Q)cat $(dir $@).mkr.log 2> /dev/null || :
@@ -604,8 +610,15 @@ $(call pkg-targets,shortlog): %:
 ifneq ($(MKR_SKIP_ROOTFS),y)
 PHONY += $(call pkg-targets,rootfs)
 $(call pkg-targets,rootfs): %/rootfs: %/staging
-	$(Q)$(call mkr-run-and-log, \
+	$(Q)$(call mkr-run-and-log-on-failure, \
 		Installing package $(dir $@) in rootfs directory, \
+		$(dir $@), \
+		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
+
+PHONY += $(call pkg-targets,strip)
+$(call pkg-targets,strip): %/strip: %/rootfs
+	$(Q)$(call mkr-run-and-log, \
+		Stripping package $(dir $@) files in rootfs directory, \
 		$(dir $@), \
 		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
@@ -615,35 +628,16 @@ endif
 
 PHONY += rootfs
 
-rfs-fakeroot1 := \
-	$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
-rfs-fakeroot2 := \
-	$(O)/build-tools/bin/fakeroot -i .mkr.fakeroot -s .mkr.fakeroot
-
-rootfs: .mkr.fakeroot.staging $(call only-pkg-targets,rootfs) FORCE
-	$(Q)echo Stripping binaries...
-	$(Q)test -e .mkr.fakeroot || cp $< .mkr.fakeroot
-	$(Q)find rootfs -type f -! -name '*.ko' -! -name '*.so' \
-				-! -name '*.o' -! -name '*.a' \
-		$(if $(wildcard .mkr.stripped),-newer .mkr.stripped) | \
-		xargs $(rfs-fakeroot1) $(cross)strip  -R .note -R .comment \
-		-s > /dev/null 2>&1 || :
-	$(Q)find rootfs -type f -name '*.ko' -o -name '*.so' \
-		$(if $(wildcard .mkr.stripped),-newer .mkr.stripped) | \
-		xargs $(rfs-fakeroot2) $(kcross)strip -R .note -R .comment \
-		--strip-unneeded $$f > /dev/null 2>&1 || :
-	$(Q) : > .mkr.stripped
-	$(Q)echo Stripping binaries...done
-
-.mkr.fakeroot: rootfs
-
+.mkr.fakeroot: $(call only-pkg-targets,strip) FORCE
+	$(Q): > .mkr.stripped
+	$(Q)for p in $(packages); do \
+		$(O)/build-tools/bin/fakeroot-filter \
+			rootfs $$p/.mkr.filelist $$p/.mkr.fakeroot; \
+	done > $@
 else
 .mkr.fakeroot: .mkr.fakeroot.staging
 	$(Q)cp $< $@
 endif
-
-.mkr.fakeroot.staging: staging
-	$(Q)cat /dev/null `ls -1 $(call pkg-targets,.mkr.fakeroot)` > $@ 2> /dev/null
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
 
@@ -830,7 +824,7 @@ $(call pkg-targets,clean): %:
 	fi
 
 clean: $(call pkg-targets,clean)
-	$(Q)rm -Rf staging/* rootfs/* .mkr.fakeroot */.mkr.fakeroot
+	$(Q)rm -Rf staging/* rootfs/* .mkr.fakeroot* .mkr.stripped */.mkr.fakeroot
 
 # mrproper - Delete all generated files, including .config
 #
