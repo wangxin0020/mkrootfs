@@ -143,7 +143,7 @@ staging:
 
 .PHONY: default-autotools-compile
 default-autotools-compile: .mkr.autotools.default.configured
-	$(MAKE) $(compile-make-args-y)
+	$(configure-env-y) $(MAKE) $(compile-make-args-y)
 
 .PHONY: default-autotools-staging
 default-autotools-staging:
