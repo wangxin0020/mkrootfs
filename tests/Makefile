@@ -1,11 +1,9 @@
 c-exes-y = calibrator cyclictest_nonxeno
 
-all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
-
 # Flags
 CPPFLAGS := -D_GNU_SOURCE -D_REENTRANT -DPIC -I. -I$(srcdir)
-CXXFLAGS := $(cflags-y) -W -Wall -fPIC
-CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration
+CXXFLAGS := $(cflags-y) -W -Wall -fPIC -Wno-error
+CFLAGS := $(CXXFLAGS) -Wstrict-prototypes -Werror-implicit-function-declaration -Wno-missing-prototypes
 LDFLAGS := $(ldflags-y) -rdynamic
 
 ifeq ($(MKR_TESTS_XENO),y)
@@ -19,7 +17,12 @@ XENO_RTDM_LIBS = $(shell $(XENO_CONFIG) --skin=rtdm --ldflags)
 
 XENO_POSIX_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=posix --cflags)
 XENO_POSIX_LIBS = $(shell $(XENO_CONFIG) --skin=posix --ldflags)
+
+XENO_PSOS_CPPFLAGS = $(shell $(XENO_CONFIG) --skin=psos --cflags)
+XENO_PSOS_LIBS = $(shell $(XENO_CONFIG) --skin=psos --ldflags)
 endif
+
+all := $(c-exes-y) $(cxx-exes-y) $(scripts-y)
 
 # Per-exe rules
 calibrator: calibrator.o
