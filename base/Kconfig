@@ -34,13 +34,13 @@ config SERIAL_CUSTOM
 
 endchoice
 
+if SERIAL_CUSTOM
+
 config SERIAL_DEV
 	string "Serial console device"
 	default "ttyS0"
 	help
 	  Name of the serial console device node in the /dev directory.
-
-if SERIAL_CUSTOM
 
 config SERIAL_MAJOR
        int "Serial console device node major number"
