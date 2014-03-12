@@ -2,10 +2,18 @@
 
 set -e
 
-test -n "$MDEV"
+if test -z "$MDEV"; then
+    MDEV=@MKR_SWAP_DEV@
+fi
 
-mount /dev/$MDEV /mnt
-test -e /mnt/swap || dd if=/dev/zero of=/mnt/swap bs=1M count=500
-mkswap /mnt/swap
-swapon /mnt/swap
-mount -o remount,size=500M /tmp
+mntpt=/mnt/$MDEV
+mkdir -p $mntpt
+fsopt=`blkid "/dev/$MDEV" | sed 's,.*TYPE="\(.*\)",-t \1,;t;d'`
+mount $fsopt /dev/$MDEV $mntpt
+
+if test "$MDEV" = @MKR_SWAP_DEV@; then
+    test -e $mntpt/swap || dd if=/dev/zero of=/mnt/swap bs=1M count=500
+    mkswap $mntpt/swap
+    swapon $mntpt/swap
+    mount -o remount,size=500M /tmp
+fi

@@ -10,17 +10,8 @@ DIRS= \
 	/var \
 	/mnt
 
-ifeq ($(MKR_MOUNT),)
 mount-dev-sed := \
-	sed -i 's,@MKR_MOUNT_DEV@,\# /dev/null,g' "$(pkginst)/etc/fstab"; \
-	sed -i 's,@MKR_MOUNT_DEV@,null \#,g'  "$(pkginst)/etc/init.d/rcS"; \
-	sed -i 's,@MKR_MOUNT_DEV@,\# -null,g' "$(pkginst)/etc/mdev.conf"
-else
-mount-dev-sed := \
-	sed -i 's,@MKR_MOUNT_DEV@,/dev/$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/fstab"; \
-	sed -i 's,@MKR_MOUNT_DEV@,$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/init.d/rcS"; \
-	sed -i 's,@MKR_MOUNT_DEV@,-$(MKR_MOUNT_DEV),g' "$(pkginst)/etc/mdev.conf"
-endif
+	sed -i 's,@MKR_SWAP_DEV@,$(MKR_SWAP_DEV),g'
 
 # Compiling: nothing to do
 compile: ;
@@ -45,7 +36,7 @@ skel:
 		}; \
 		done; \
 		cp -dR --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
-		$(mount-dev-sed); \
+		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
 	}
 
 staging: devices dirs skel

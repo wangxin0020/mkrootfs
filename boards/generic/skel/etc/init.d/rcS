@@ -3,7 +3,7 @@
 mount /proc
 echo /sbin/hotplug > /proc/sys/kernel/hotplug
 mount -a
-MDEV=@MKR_MOUNT_DEV@ /sbin/mount_storage.sh &
+/sbin/mount_storage.sh &
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
@@ -27,7 +27,7 @@ klogd
 # Load modules
 modprobe xhci_hcd > /dev/null 2>&1
 modprobe ehci_hcd > /dev/null 2>&1
-find /sys -name modalias | while read f; do 
+find /sys -name modalias | while read f; do
     modprobe `cat $f` > /dev/null 2>&1
 done
 
@@ -35,7 +35,7 @@ done
 if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
     ifconfig lo 127.0.0.1 up
     ifconfig eth0 up 0.0.0.0
-    udhcpc -anRS
+    udhcpc -abRS
 fi
 
 # Start telnet

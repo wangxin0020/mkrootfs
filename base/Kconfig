@@ -50,20 +50,28 @@ config SERIAL_MINOR
 
 endif
 
-config MOUNT
-	bool "Mount storage device"
+config SWAP
+	bool "Enable swap file on storage device"
 	help
-	  Add a storage device to be mounted automatically on
-	  target. This may useful for adding some storage devices
-	  pressure when running tests.
+	  Add a swap file on a storage device on target. 
+	  This may be useful for enlarging virtual memory
+	  when running tests. This does not destroy the contents
+	  of the storage device.
 
-if MOUNT
+if SWAP
 
-config MOUNT_DEV
+config SWAP_DEV
 	string "Storage device name"
 	default "sda1"
 	help
 	  Enter the device name here, without /dev.
+endif
+
+if !SWAP
+
+config SWAP_DEV
+	default "null"
+
 endif
 
 endif
