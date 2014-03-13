@@ -28,7 +28,7 @@ klogd
 modprobe xhci_hcd > /dev/null 2>&1
 modprobe ehci_hcd > /dev/null 2>&1
 find /sys -name modalias | while read f; do
-    modprobe `cat $f` > /dev/null 2>&1
+    modprobe `cat $f` > /dev/null 2>&1 || :
 done
 
 # Start network
@@ -71,3 +71,9 @@ fi
 
 chown root:0 /bin/ping
 chmod u+sx /bin/ping
+
+# Install default keymap if available
+if test -e /etc/defkeymap.bin.xz; then
+    echo Loading default keymap
+    loadkeys defkeymap
+fi

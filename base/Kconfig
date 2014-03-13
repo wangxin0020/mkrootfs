@@ -50,6 +50,44 @@ config SERIAL_MINOR
 
 endif
 
+config KEYBOARD_MAPS
+       bool "Keyboard maps"
+       help
+         Choose this option if you intend to use the console on
+       	 virtual terminal instead of serial port and the default
+      	 qwerty keyboard map does not suit the heyboard.
+
+if KEYBOARD_MAPS
+
+choice
+	prompt "Keyboard maps to install"
+
+config KEYBOARD_ONE_MAP
+       bool "Install only one keyboard map"
+       help
+	 Choose this option if you know in advance what map you will
+       	 need on the device.
+
+config KEYBOARD_ALL_MAPS
+       bool "Install all keyboard maps"
+       help
+	 Choose this option to copy all the keyboard maps in the
+       	 resulting rootfs, allowing the user to choose the map to use.
+
+endchoice
+
+if KEYBOARD_ONE_MAP
+
+config KEYBOARD_MAP_NAME
+	string "Keyboard map name"
+	default "fr-latin9"
+	help
+	  Name of the default keymap to install.
+
+endif
+
+endif
+
 config SWAP
 	bool "Enable swap file on storage device"
 	help

@@ -1,0 +1,16 @@
+#! /bin/sh
+
+if [ ! -e /usr/share/keymaps ]; then
+   echo No keymap installed
+fi
+
+case "$1" in
+defkeymap) name=/etc/defkeymap.bin.xz;;
+*)name="/usr/share/keymaps/$1.kmap.bin.xz";;
+esac
+
+if [ ! -e "$name" ]; then
+   echo Keymap $name not found
+fi
+
+xzcat "$name" | loadkmap

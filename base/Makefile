@@ -39,7 +39,20 @@ skel:
 		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
 	}
 
-staging: devices dirs skel
+one-map:
+	mkdir -p $(pkginst)/usr/share/keymaps $(pkginst)/etc
+	cp -d --preserve=mode,timestamps $(pkgdir)/kmaps/$(MKR_KEYBOARD_MAP_NAME).kmap.bin.xz $(pkginst)/usr/share/keymaps
+	ln -s /usr/share/keymaps/$(MKR_KEYBOARD_MAP_NAME).kmap.bin.xz $(pkginst)/etc/defkeymap.bin.xz
+
+all-maps:
+	mkdir -p $(pkginst)/usr/share/keymaps
+	cp -d --preserve=mode,timestamps $(pkgdir)/kmaps/* $(pkginst)/usr/share/keymaps
+
+staging-y := devices dirs skel
+staging-$(MKR_KEYBOARD_ONE_MAP) += one-map
+staging-$(MKR_KEYBOARD_ALL_MAPS) += all-maps
+
+staging: $(staging-y)
 
 rootfs: default-copyall-rootfs
 
