@@ -1,0 +1,15 @@
+menu "Dialog"
+
+config DIALOG
+	package "Dialog tool"
+	build_select ncurses
+
+if DIALOG
+
+config DIALOG_SRCDIR
+       srcdir "Source directory"
+       default "dialog-*"
+
+endif
+
+endmenu
