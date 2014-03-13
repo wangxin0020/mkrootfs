@@ -1,5 +1,10 @@
 #! /bin/sh
 
-test -n "$MODALIAS" && modprobe "$MODALIAS";
+if test -n "$MODALIAS"; then
+    modprobe "$MODALIAS"
+fi
+if test -n "$IFINDEX" -a "$INTERFACE" != "eth0"; then
+    ifconfig "$INTERFACE" up 0.0.0.0
+    udhcpc -abRS -i "$INTERFACE"
+fi
 exec /sbin/mdev
-
