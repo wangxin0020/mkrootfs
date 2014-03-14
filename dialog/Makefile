@@ -1,4 +1,4 @@
-configure-args-y := \
+configure-args-y += \
 	--with-ncurses
 
 rootfs-y := /usr/bin/dialog

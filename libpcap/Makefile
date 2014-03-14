@@ -1,3 +1,6 @@
+configure-args-y += \
+	--with-pcap=linux
+
 rootfs-y += /usr/lib/libpcap.so.*
 
 compile: default-autotools-compile

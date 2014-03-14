@@ -2,7 +2,7 @@ menu "Dialog"
 
 config DIALOG
 	package "Dialog tool"
-	build_select ncurses
+	build_select NCURSES
 
 if DIALOG
 

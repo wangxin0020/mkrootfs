@@ -1,4 +1,6 @@
-configure-args-y += --without-crypto
+configure-args-y += \
+	ac_cv_linux_vers=2 \
+	--without-crypto
 
 rootfs-y += /usr/sbin/tcpdump
 
