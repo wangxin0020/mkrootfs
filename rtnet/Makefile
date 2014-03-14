@@ -34,8 +34,16 @@ configure-args-y += \
 	--with-module-dir=/lib/modules/rtnet
 
 rootfs-y := \
-	/usr/etc/ \
-	/usr/sbin/ \
+	/usr/etc/rtnet.conf \
+	/usr/etc/tdma.conf \
+	/usr/sbin/nomaccfg \
+	/usr/sbin/rtcfg \
+	/usr/sbin/rtifconfig \
+	/usr/sbin/rtiwconfig \
+	/usr/sbin/rtnet \
+	/usr/sbin/rtping \
+	/usr/sbin/rtroute \
+	/usr/sbin/tdmacfg \
 	/lib/modules/rtnet
 
 compile: default-autotools-compile

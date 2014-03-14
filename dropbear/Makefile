@@ -8,8 +8,11 @@ staging-make-args-y += \
 	PROGRAMS="dropbear dbclient dropbearkey scp" MULTI=1 SCPPROGRESS=1
 
 rootfs-y += \
-	/usr/bin \
-	/usr/sbin
+	/usr/bin/dbclient \
+	/usr/bin/dropbearkey \
+	/usr/bin/dropbearmulti \
+	/usr/bin/scp \
+	/usr/sbin/dropbear
 
 compile: default-autotools-compile
 

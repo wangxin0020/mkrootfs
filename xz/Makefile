@@ -11,7 +11,16 @@ configure-args-$(call not, $(MKR_XZ_XZ)) += \
 rootfs-y := \
 	/usr/lib/liblzma.so.*
 rootfs-$(MKR_XZ_XZ) += \
-	/usr/bin
+	/usr/bin/xz \
+	/usr/bin/xzcat \
+	/usr/bin/xzcmp \
+	/usr/bin/xzdec \
+	/usr/bin/xzdiff \
+	/usr/bin/xzegrep \
+	/usr/bin/xzfgrep \
+	/usr/bin/xzgrep \
+	/usr/bin/xzless \
+	/usr/bin/xzmore
 
 compile: default-autotools-compile
 

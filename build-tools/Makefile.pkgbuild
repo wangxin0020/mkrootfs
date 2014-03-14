@@ -152,7 +152,7 @@ default-autotools-staging:
 .PHONY: rootfs
 rootfs:
 
-RSOPTS=-lptgodDRru
+RSOPTS=-lptgodDRu
 
 .PHONY: default-copyall-rootfs
 default-copyall-rootfs:
