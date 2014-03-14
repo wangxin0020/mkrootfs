@@ -152,10 +152,11 @@ default-autotools-staging:
 .PHONY: rootfs
 rootfs:
 
-RSOPTS=-lptgodDRu
+RSOPTS=-lptgodDRuv --out-format "%n%L %i"
 
 .PHONY: default-copyall-rootfs
 default-copyall-rootfs:
+	$(Q)echo rootfs: copying all files
 	$(Q)if ! ( mkdir -p $(rootfs); cd $(staging); \
 		    rsync $(RSOPTS) `cat $(CURDIR)/.mkr.dirlist $(CURDIR)/.mkr.filelist` $(rootfs); ); then \
 		echo Error: rsync failed, please try again; \
@@ -173,6 +174,7 @@ default-copyall-rootfs:
 
 .PHONY: default-rootfs
 default-rootfs:
+	$(Q)echo rootfs: not copying all installed files
 	$(Q)if ! ( mkdir -p $(rootfs); cd $(staging); \
 		rsync $(RSOPTS) `ls -1d $(patsubst %,.%,$(rootfs-y))` $(rootfs); ); then \
 			echo Error: rsync failed, please try again; \
@@ -203,12 +205,14 @@ strip:
 			continue; \
 		  fi;; \
 		esac; \
+		echo Stripping "$$f"; \
 		case "$$f" in \
 		*.ko) $(strip-mod) $$g > /dev/null 2>&1 || :;; \
 		*.so.*) $(strip-lib) $$g > /dev/null 2>&1 || :;; \
 		*) $(strip-bin) $$g > /dev/null 2>&1 || :;; \
 		esac; \
 	done
+	$(Q) : > .mkr.stripped
 
 .PHONY: default-clean
 default-clean:

@@ -629,7 +629,6 @@ endif
 PHONY += rootfs
 
 .mkr.fakeroot: $(call only-pkg-targets,strip) FORCE
-	$(Q): > .mkr.stripped
 	$(Q)for p in $(packages); do \
 		$(O)/build-tools/bin/fakeroot-filter \
 			rootfs $$p/.mkr.filelist $$p/.mkr.fakeroot; \
