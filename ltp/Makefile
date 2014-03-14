@@ -13,14 +13,27 @@ staging-make-args-y += \
 
 rootfs-y := \
 	/ltp/.installed \
-	/ltp/bin \
+	/ltp/bin/* \
 	/ltp/IDcheck.sh \
 	/ltp/runalltests.sh \
 	/ltp/runltp \
 	/ltp/runltplite.sh \
-	/ltp/runtest \
-	/ltp/scenario_groups \
-	/ltp/testcases \
+	/ltp/runtest/* \
+	/ltp/scenario_groups/* \
+	/ltp/testcases/bin/* \
+	/ltp/testcases/bin/cpu_hotplug/* \
+	/ltp/testcases/bin/cpu_hotplug/functional/* \
+	/ltp/testcases/bin/cpu_hotplug/include/* \
+	/ltp/testcases/bin/cpu_hotplug/tools/* \
+	/ltp/testcases/bin/fs_bind/bin/* \
+	/ltp/testcases/bin/fs_bind/bind/* \
+	/ltp/testcases/bin/fs_bind/cloneNS/* \
+	/ltp/testcases/bin/fs_bind/move/* \
+	/ltp/testcases/bin/fs_bind/rbind/* \
+	/ltp/testcases/bin/fs_bind/regression/* \
+	/ltp/testcases/bin/ftrace_stress/* \
+	/ltp/testcases/data/* \
+	/ltp/testcases/testscripts/* \
 	/ltp/testscripts \
 	/ltp/ver_linux \
 	/ltp/Version

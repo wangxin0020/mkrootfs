@@ -44,7 +44,7 @@ rootfs-y := \
 	/usr/sbin/rtping \
 	/usr/sbin/rtroute \
 	/usr/sbin/tdmacfg \
-	/lib/modules/rtnet
+	/lib/modules/rtnet/*
 
 compile: default-autotools-compile
 
