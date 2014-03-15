@@ -3,6 +3,7 @@ configure-args-y += \
 	--without-manpages
 
 rootfs-y := \
+	/usr/share/terminfo/*/* \
 	/usr/lib/libncurses.so.*
 
 compile: default-autotools-compile
