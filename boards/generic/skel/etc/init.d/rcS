@@ -3,7 +3,7 @@
 mount /proc
 echo /sbin/hotplug > /proc/sys/kernel/hotplug
 mount -a
-/sbin/mount_storage.sh &
+ACTION=add /sbin/mount_storage.sh &
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
