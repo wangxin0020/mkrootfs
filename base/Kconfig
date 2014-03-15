@@ -86,6 +86,17 @@ config KEYBOARD_MAP_NAME
 
 endif
 
+if KEYBOARD_ALL_MAPS
+
+config KEYBOARD_CHOOSER
+       bool "Install keymap chooser"
+       select DIALOG
+       help
+         Install a dialog application allowing to choose the keyboard
+         map.
+
+endif
+
 endif
 
 config SWAP

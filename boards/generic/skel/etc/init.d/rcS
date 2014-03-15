@@ -25,11 +25,13 @@ syslogd -S -D -L
 klogd
 
 # Load modules
-modprobe xhci_hcd > /dev/null 2>&1
-modprobe ehci_hcd > /dev/null 2>&1
-find /sys -name modalias | while read f; do
-    modprobe `cat $f` > /dev/null 2>&1 || :
-done
+if test -e /usr/bin/keymap-chooser.sh; then
+    modprobe xhci_hcd > /dev/null 2>&1
+    modprobe ehci_hcd > /dev/null 2>&1
+    find /sys -name modalias | while read f; do
+	modprobe `cat $f` > /dev/null 2>&1 || :
+    done
+fi
 
 # Start network
 if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
@@ -76,4 +78,8 @@ chmod u+sx /bin/ping
 if test -e /etc/defkeymap.bin.xz; then
     echo Loading default keymap
     loadkeys defkeymap
+elif test -e /usr/bin/keymap-chooser.sh; then
+    dev=`sed 's/^.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
+
+    /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
 fi

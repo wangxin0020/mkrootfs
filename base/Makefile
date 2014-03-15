@@ -48,9 +48,14 @@ all-maps:
 	mkdir -p $(pkginst)/usr/share/keymaps
 	cp -d --preserve=mode,timestamps $(pkgdir)/kmaps/* $(pkginst)/usr/share/keymaps
 
+chooser:
+	mkdir -p $(pkginst)/usr/bin
+	cp -d --preserve=mode,timestamps $(pkgdir)/keymap-chooser.sh $(pkginst)/usr/bin/keymap-chooser.sh
+
 staging-y := devices dirs skel
 staging-$(MKR_KEYBOARD_ONE_MAP) += one-map
 staging-$(MKR_KEYBOARD_ALL_MAPS) += all-maps
+staging-$(MKR_KEYBOARD_CHOOSER) += chooser
 
 staging: $(staging-y)
 
