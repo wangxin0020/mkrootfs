@@ -2,5 +2,8 @@
 
 dev=`sed 's/^.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
 
-exec /sbin/getty -n -l /sbin/autologin.sh 0 "$dev"
+if [ -e /usr/bin/xeno-test-frontend.sh ]; then
+    exec /usr/bin/xeno-test-frontend.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
+fi
 
+exec /sbin/getty -n -l /sbin/autologin.sh 0 "$dev"

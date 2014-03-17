@@ -20,6 +20,14 @@ config TESTS_XENO
        build_depends on XENO
        select XENO_TESTSUITE
 
+if TESTS_XENO
+
+config XENO_TEST_FRONTEND
+       bool "Install interactive xeno-test frontend"
+       select DIALOG
+
+endif
+
 config TESTS_LTP
        def_bool y
        depends on LTP

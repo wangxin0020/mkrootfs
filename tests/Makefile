@@ -1,5 +1,8 @@
 c-exes-y = calibrator cyclictest_nonxeno
 
+scripts-$(MKR_XENO_TEST_FRONTEND) += xeno-test-frontend.sh
+c-exes-$(MKR_XENO_TEST_FRONTEND) += sdinfo
+
 # Flags
 CPPFLAGS := -D_GNU_SOURCE -D_REENTRANT -DPIC -I. -I$(srcdir)
 CXXFLAGS := $(cflags-y) -W -Wall -fPIC -Wno-error
@@ -31,6 +34,8 @@ calibrator: LDLIBS += -lm
 cyclictest_nonxeno: cyclictest.o
 cyclictest_nonxeno: LDLIBS += -lpthread -lrt
 cyclictest.o: CPPFLAGS+=-DVERSION_STRING=\"0.28\"
+
+sdinfo: sdinfo.o
 
 # Rules
 # Can't use VPATH here, not sure why, but it may be because it is
