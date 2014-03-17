@@ -716,6 +716,7 @@ nfsroot: $(rootfs-y) .mkr.fakeroot .rsyncd.pid
 		--filter 'protect /ltp/output/*' \
 		--filter 'protect /ltp/results/*' \
 		--filter 'protect /etc/dropbear' \
+		--filter 'protect /mnt/*' \
 		--filter 'protect /root/*' --filter 'protect /etc/ld.so.cache'\
 		--filter 'protect /tmp/*' --filter 'protect /var/*' \
 		$(rootfs-y)/ rsync://root@localhost:$$PORT/nfsroot; then \
