@@ -2,4 +2,5 @@
 
 dev=`sed 's/^.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
 
-exec /sbin/getty 0 "$dev"
+exec /sbin/getty -n -l /sbin/autologin.sh 0 "$dev"
+
