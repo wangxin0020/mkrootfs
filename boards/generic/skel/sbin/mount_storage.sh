@@ -23,11 +23,11 @@ add)
     mkdir -p $mntpt
     fstype=`blkid "/dev/$MDEV" | sed 's,.*TYPE="\(.*\)",\1,;t;d'`
     if test "$fstype" = "ntfs" -a -e /sbin/mount.ntfs-3g; then
-	mount.ntfs-3g /dev/$MDEV $mntpt
+	mount.ntfs-3g /dev/$MDEV $mntpt || { rmdir $mntpt; exit 1; }
     elif test -n "$fstype"; then
-	mount -t "$fstype" /dev/$MDEV $mntpt
+	mount -t "$fstype" /dev/$MDEV $mntpt || { rmdir $mntpt; exit 1; }
     else
-	mount /dev/$MDEV $mntpt
+	mount /dev/$MDEV $mntpt || { rmdir $mntpt; exit 1; }
     fi
 
     if test "$MDEV" = @MKR_SWAP_DEV@; then
