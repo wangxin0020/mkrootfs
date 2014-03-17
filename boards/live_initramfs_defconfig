@@ -1,0 +1,280 @@
+#
+# Automatically generated make config: don't edit
+# Mon Mar 17 23:48:43 2014
+#
+
+#
+# Toolchain and flags selection
+#
+MKR_TOOLCHAIN=y
+# MKR_ARCH_ARM is not set
+# MKR_ARCH_BFIN is not set
+# MKR_ARCH_NIOS2 is not set
+# MKR_ARCH_PPC32 is not set
+# MKR_ARCH_PPC64 is not set
+# MKR_ARCH_I386 is not set
+# MKR_ARCH_X86_32 is not set
+MKR_ARCH_X86_64=y
+# MKR_ARCH_SH4 is not set
+MKR_ARCH=x86_64
+MKR_KARCH=x86
+MKR_CONFIGURE_HOST=$(ARCH)-linux
+MKR_CC=gcc
+MKR_CXX=g++
+MKR_CFLAGS=$(ARCH_FLAGS) -g -Os -fomit-frame-pointer -march=atom
+MKR_LDFLAGS=$(ARCH_FLAGS) -g -Os -march=atom -fomit-frame-pointer
+MKR_SYSROOT_AUTO=y
+# MKR_SYSROOT_MANUAL is not set
+
+#
+# Toolchain libraries selection
+#
+MKR_LIBDL=y
+MKR_LIBM=y
+MKR_LIBPTHREAD=y
+MKR_LIBRESOLV=y
+# MKR_LIBSTDCPP is not set
+MKR_LIBUTIL=y
+
+#
+# Libraries
+#
+
+#
+# fuse
+#
+MKR_FUSE=y
+MKR_FUSE_SRCDIR=fuse-*
+
+#
+# Libpcap
+#
+MKR_LIBPCAP=y
+MKR_LIBPCAP_SRCDIR=libpcap-*
+
+#
+# ncurses
+#
+MKR_NCURSES=y
+MKR_NCURSES_SRCDIR=ncurses-*
+
+#
+# Xz
+#
+MKR_XZ=y
+MKR_XZ_SRCDIR=xz-*
+# MKR_XZ_XZ is not set
+
+#
+# Zlib
+#
+MKR_ZLIB=y
+MKR_ZLIB_SRCDIR=zlib-*
+
+#
+# Base packages
+#
+MKR_SRC_BASEDIR=$(HOME)/src:/usr/src
+
+#
+# Base skeleton
+#
+MKR_BASE=y
+MKR_BASE_SRCDIR=$(srctree)/boards/$(MKR_BOARD)
+MKR_BOARD=generic
+MKR_SERIAL_STD=y
+# MKR_SERIAL_CUSTOM is not set
+MKR_KEYBOARD_MAPS=y
+# MKR_KEYBOARD_ONE_MAP is not set
+MKR_KEYBOARD_ALL_MAPS=y
+MKR_KEYBOARD_CHOOSER=y
+MKR_SWAP=y
+MKR_SWAP_DEV=sda1
+
+#
+# Linux kernel
+#
+MKR_LINUX=y
+MKR_KCC=$(CC)
+MKR_LINUX_SRCDIR=ipipe
+MKR_LINUX_CONFIG=live-initramfs/config-$(KERNELVERSION)
+MKR_LINUX_TARGETS=bzImage
+MKR_LINUX_IMAGE=arch/x86/boot/bzImage
+MKR_LINUX_IMAGE_DEST=/var/lib/tftpboot/bzImage-modular
+MKR_LINUX_EXTRA_FILES=
+MKR_LINUX_EXTRA_INSTALL=
+
+#
+# BusyBox
+#
+MKR_BUSYBOX=y
+MKR_BUSYBOX_SRCDIR=busybox-*
+MKR_BUSYBOX_CONFIG=defconfig
+
+#
+# Xenomai
+#
+MKR_XENO=y
+MKR_XENO_SRCDIR=xenomai-2.6
+# MKR_XENO_MAINT is not set
+MKR_XENO_SMP=y
+MKR_XENO_KERNEL=y
+MKR_XENO_CLASSIC=y
+# MKR_XENO_FORGE is not set
+MKR_XENO_DEBUG=y
+
+#
+# Components selection
+#
+MKR_XENO_USERSPACE=y
+MKR_XENO_A4L=y
+MKR_XENO_NATIVE=y
+MKR_XENO_POSIX=y
+MKR_XENO_PSOS=y
+MKR_XENO_RTCAN=y
+MKR_XENO_RTDM=y
+MKR_XENO_UITRON=y
+MKR_XENO_VRTX=y
+MKR_XENO_VXWORKS=y
+MKR_XENO_TESTSUITE=y
+MKR_XENO_TESTSUITE_UNFREQUENT=y
+
+#
+# Advanced configuration options
+#
+# MKR_XENO_SEP_TESTDIR is not set
+MKR_XENO_X86_VSYSCALL=y
+MKR_XENO_X86_TSC=y
+# MKR_XENO_THREAD is not set
+# MKR_XENO_DLOPEN is not set
+
+#
+# Automatic mlockall
+#
+# MKR_XENO_POSIX_MLOCKALL is not set
+# MKR_XENO_PSOS_MLOCKALL is not set
+# MKR_XENO_UITRON_MLOCKALL is not set
+MKR_XENO_ATOMIC_BUILTINS=y
+# MKR_XENO_ATOMIC_ADHOC is not set
+
+#
+# LTP (old versions)
+#
+# MKR_LTP_OLD is not set
+
+#
+# LTP (newer versions)
+#
+MKR_LTP_NEW=y
+MKR_LTP_NEW_SRCDIR=ltp-full-*
+
+#
+# Real-time tests & benches
+#
+MKR_TESTS=y
+MKR_TESTS_SRCDIR=$(srctree)/tests
+MKR_TESTS_XENO=y
+MKR_XENO_TEST_FRONTEND=y
+
+#
+# Dropbear
+#
+MKR_DROPBEAR=y
+MKR_DROPBEAR_SRCDIR=dropbear-*
+MKR_DROPBEAR_ZLIB=y
+
+#
+# Tools
+#
+
+#
+# Dialog
+#
+MKR_DIALOG=y
+MKR_DIALOG_SRCDIR=dialog-*
+
+#
+# Dosfstools
+#
+MKR_DOSFSTOOLS=y
+MKR_DOSFSTOOLS_SRCDIR=dosfstools-*
+
+#
+# E2fsprogs
+#
+MKR_E2FSPROGS=y
+MKR_E2FSPROGS_SRCDIR=e2fsprogs-*
+
+#
+# File
+#
+MKR_FILE=y
+MKR_FILE_SRCDIR=file-*
+MKR_FILE_ZLIB=y
+
+#
+# GDB
+#
+MKR_GDB=y
+MKR_GDB_SRCDIR=gdb-*
+MKR_GDB_ZLIB=y
+
+#
+# Kexec-tools
+#
+MKR_KEXEC_TOOLS=y
+MKR_KEXEC_TOOLS_SRCDIR=kexec-tools-*
+MKR_KEXEC_ZLIB=y
+MKR_KEXEC_LZMA=y
+MKR_KEXEC_TOOLS_KDUMP=y
+
+#
+# Make
+#
+# MKR_MAKE is not set
+
+#
+# Netcat
+#
+MKR_NETCAT=y
+MKR_NETCAT_SRCDIR=netcat-*
+
+#
+# Ntfs-3g
+#
+# MKR_NTFS is not set
+
+#
+# RTnet
+#
+MKR_RTNET=y
+MKR_RTNET_SRCDIR=rtnet-*
+
+#
+# Strace
+#
+MKR_STRACE=y
+MKR_STRACE_SRCDIR=strace-*
+
+#
+# Tcpdump
+#
+MKR_TCPDUMP=y
+MKR_TCPDUMP_SRCDIR=tcpdump-*
+
+#
+# Valgrind
+#
+# MKR_VALGRIND is not set
+
+#
+# Output
+#
+# MKR_OUT_TAR is not set
+# MKR_OUT_NFS is not set
+MKR_OUT_INITRAMFS=y
+# MKR_OUT_INITRAMFS_GZ is not set
+MKR_OUT_INITRAMFS_XZ=y
+MKR_OUT_INITRAMFS_TFTP=y
+MKR_OUT_INITRAMFS_DEST=/var/lib/tftpboot/initrd-modular
+# MKR_SKIP_ROOTFS is not set
