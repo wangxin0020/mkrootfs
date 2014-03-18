@@ -1,4 +1,4 @@
-compile-make-args-y += PREFIX=/usr
+compile-make-args-y += PREFIX=/usr CC="$(CC)"
 
 staging-make-args-y += PREFIX=/usr
 
