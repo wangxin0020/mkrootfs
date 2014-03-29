@@ -75,7 +75,11 @@ libs:
 	ln -s lib "$(pkginst)/lib64"; \
 	ln -s lib "$(pkginst)/lib32"; \
 	ln -s lib "$(pkginst)/usr/lib64"; \
-	ln -s lib "$(pkginst)/usr/lib32"; \
+	ln -s lib "$(pkginst)/usr/lib32"
+ifeq ($(MKR_ARM_FLOAT_VFP_HARD_ABI),y)
+	ln -s . "$(pkginst)/lib/arm-linux-gnueabihf"; \
+	ln -s . "$(pkginst)/usr/lib/arm-linux-gnueabihf"
+endif
 	for l in $(libs-y); do \
 		case "$$l" in \
 		*.so) \
