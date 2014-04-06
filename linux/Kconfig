@@ -53,6 +53,43 @@ config LINUX_LOADADDR
 
 endif
 
+choice
+	prompt "Device tree support"
+
+config LINUX_NO_DT
+        bool "No device tree support"
+	default y
+
+config LINUX_DT_MERGED
+	bool "Merged device tree support for legacy bootloaders"
+
+config LINUX_DT
+	bool "Separated Device tree support for recent bootloaders"
+
+endchoice
+
+if LINUX_DT || LINUX_DT_MERGED
+
+config LINUX_DT_NAME
+       string "Board specific device tree file name"
+       default ""
+       help
+         The name of the dtb file
+
+endif
+
+if LINUX_DT
+
+config LINUX_DT_DEST
+       string "Device tree file destination"
+       default ""
+	help
+	  Destination to which the device tree file will be
+          copied. The copy uses scp if this destination has the form 
+	  host:path or user@host:path.
+
+endif
+
 config LINUX_EXTRA_FILES
 	string "Extra output files"
 	help

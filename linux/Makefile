@@ -1,6 +1,6 @@
 defconfig := $(if $(findstring defconfig,$(MKR_LINUX_CONFIG)),y)
 netdest := $(if $(findstring :, \
-	$(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)),y)
+	$(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)$(MKR_LINUX_DT_DEST)),y)
 
 # Getting the kernel version
 # Upper Makefile checked that Makefile existed in Linux sources directory
@@ -106,14 +106,33 @@ endif
 cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a
 
+FULL_DT_NAME = arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME)
+ZIMAGE_PATH = arch/$(KARCH)/boot/zImage
+
+targets-$(MKR_LINUX_DT_MERGED) := zImage
+targets-$(call not,$(MKR_LINUX_DT_MERGED)) := $(MKR_LINUX_TARGETS)
+
 compile: include/generated/autoconf.h
 ifeq ($(CONFIG_MODULES),y)
-	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS) modules
+	$(MAKE) $(buildargs) $(targets-y) $(MKR_LINUX_DT_NAME) modules
 else
-	$(MAKE) $(buildargs) $(MKR_LINUX_TARGETS)
+	$(MAKE) $(buildargs) $(targets-y) $(MKR_LINUX_DT_NAME)
 endif
+ifeq ($(MKR_LINUX_DT_MERGED),y)
+	cat $(ZIMAGE_PATH) $(FULL_DT_NAME) > zImage-dt
+	mkimage -A $(KARCH) -O linux -T kernel -C none \
+		-a $(MKR_LINUX_LOADADDR) \
+		-e $(MKR_LINUX_LOADADDR) -n Linux -d zImage-dt uImage
+	chmod a+r uImage
+	$(cp-y) uImage $(MKR_LINUX_IMAGE_DEST)
+else
 	chmod a+r $(MKR_LINUX_IMAGE)
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
+ifneq ($(strip $(MKR_LINUX_DT_NAME)),)
+	chmod a+r $(FULL_DT_NAME)
+	$(cp-y) $(MFULL_DT_NAME) $(MKR_LINUX_DT_DEST)
+endif
+endif
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	chmod a+r $(MKR_LINUX_EXTRA_FILES)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
@@ -145,6 +164,12 @@ ifeq ($(MKR_XENO_KERNEL),y)
 ipipe := $(wildcard $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/ipipe.h)
 confcheck-$(MKR_XENO_MAINT) += $(if $(ipipe),,echo Maintainer mode only works with I-pipe patched kernel sources; success=false;)
 endif
+confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-if, \
+	test -z "$(CONFIG_ARM_APPENDED_DTB)", \
+	MKR_LINUX_DT_MERGED needs CONFIG_ARM_APPENDED_DTB in kernel configuration)
+confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-if, \
+	test -z "$(CONFIG_ARM_ATAG_DTB_COMPAT)", \
+	MKR_LINUX_DT_MERGED needs CONFIG_ARM_ATAG_DTB_COMPAT in kernel configuration)
 
 confcheck: default-confcheck
 
