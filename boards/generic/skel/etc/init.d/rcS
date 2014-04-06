@@ -2,6 +2,9 @@
 
 mount /proc
 echo /sbin/hotplug > /proc/sys/kernel/hotplug
+
+# Create /dev/shm and /dev/pts for devtmpfs
+mkdir -p /dev/shm /dev/pts
 mount -a
 ACTION=add /sbin/mount_storage.sh &
 
