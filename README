@@ -241,15 +241,19 @@ $(MKR_LDFLAGS) by may be extended or overwritten by the package Makefile
 
 Some rule-specific variables allow to configure the behaviour of a
 default rule:
+- $(confcheck-y) contains a list of checks, written as shell snippets
+which will be run by the "default-confcheck" rule, you may use the
+"concheck-*" functions described in the next section.
 - $(configure-args-y) contains the flags which are passed to the
 autoconf-style "configure" script by the "default-autotools-compile"
 default rule.
 - $(configure-env-y) contains the environment variables which are
 passed to the autoconf-style "configure" script by the
 "default-autotools-compile" default rule.
-- $(confcheck-y) contains a list of checks, written as shell snippets
-which will be run by the "default-confcheck" rule, you may use the
-"concheck-*" functions described in the next section.
+- $(compile-make-args-y) contains the arguments passed to make by the
+"default-autotools-compile" default rule.
+- $(staging-make-args-y) contains the arguments passed to make by the
+"default-autotools-staging" default rule.
 - $(rootfs-y) contains the list of file, given as relative pathes to
 the staging tree, which need be copied to the rootfs directory and
 stripped by the "default-rootfs" rule.
