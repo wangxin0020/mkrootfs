@@ -109,15 +109,13 @@ cp-$(call not,$(netdest)) := cp -a
 FULL_DT_NAME = arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME)
 ZIMAGE_PATH = arch/$(KARCH)/boot/zImage
 
-targets-$(MKR_LINUX_DT_MERGED) := zImage
-targets-$(call not,$(MKR_LINUX_DT_MERGED)) := $(MKR_LINUX_TARGETS)
+targets-y := $(MKR_LINUX_TARGETS)
+targets-$(CONFIG_MODULES) += modules
+targets-$(MKR_LINUX_DT_MERGED) += $(MKR_LINUX_DT_NAME)
+targets-$(MKR_LINUX_DT) += $(MKR_LINUX_DT_NAME)
 
 compile: include/generated/autoconf.h
-ifeq ($(CONFIG_MODULES),y)
-	$(MAKE) $(buildargs) $(targets-y) $(MKR_LINUX_DT_NAME) modules
-else
-	$(MAKE) $(buildargs) $(targets-y) $(MKR_LINUX_DT_NAME)
-endif
+	$(MAKE) $(buildargs) $(targets-y)
 ifeq ($(MKR_LINUX_DT_MERGED),y)
 	cat $(ZIMAGE_PATH) $(FULL_DT_NAME) > zImage-dt
 	mkimage -A $(KARCH) -O linux -T kernel -C none \
@@ -164,12 +162,17 @@ ifeq ($(MKR_XENO_KERNEL),y)
 ipipe := $(wildcard $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/ipipe.h)
 confcheck-$(MKR_XENO_MAINT) += $(if $(ipipe),,echo Maintainer mode only works with I-pipe patched kernel sources; success=false;)
 endif
+confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-tool,mkimage,MKR_LINUX_DT_MERGED)
 confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-if, \
 	test -z "$(CONFIG_ARM_APPENDED_DTB)", \
-	MKR_LINUX_DT_MERGED needs CONFIG_ARM_APPENDED_DTB in kernel configuration)
+	MKR_LINUX_DT_MERGED requires CONFIG_ARM_APPENDED_DTB in kernel configuration)
 confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-if, \
 	test -z "$(CONFIG_ARM_ATAG_DTB_COMPAT)", \
-	MKR_LINUX_DT_MERGED needs CONFIG_ARM_ATAG_DTB_COMPAT in kernel configuration)
+	MKR_LINUX_DT_MERGED requires CONFIG_ARM_ATAG_DTB_COMPAT in kernel configuration)
+confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-not-empty, \
+	MKR_LINUX_DT_NAME)
+confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-not-empty, \
+	MKR_LINUX_LOADADDR)
 
 confcheck: default-confcheck
 
