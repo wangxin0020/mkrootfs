@@ -29,6 +29,8 @@ configure-args-$(MKR_XENO_DEBUG_NONE) += --disable-debug
 configure-args-$(MKR_XENO_DEBUG_SYMBOLS) += --enable-debug=symbols
 configure-args-$(MKR_XENO_DEBUG_PARTIAL) += --enable-debug=partial
 configure-args-$(MKR_XENO_DEBUG_FULL) += --enable-debug=full
+configure-args-$(MKR_XENO_VALGRIND) += --enable-valgrind-client
+configure-args-$(call not, $(MKR_XENO_VALGRIND)) += --disable-valgrind-client
 common-libs-y += /usr/lib/libcopperplate.so.*
 common-libs-$(MKR_XENO_COBALT) += /usr/lib/libcobalt.so.*
 

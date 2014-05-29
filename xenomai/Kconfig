@@ -52,6 +52,10 @@ config XENO_MERCURY
        build_select FUSE
 endchoice
 
+config XENO_VALGRIND
+       bool "Enable valgrind client API"
+       build_select VALGRIND
+
 choice
 	prompt "Debug level"
 
@@ -60,7 +64,7 @@ config XENO_DEBUG_NONE
 
 config XENO_DEBUG_SYMBOLS
        bool "Compile with debug symbols"
-       
+
 config XENO_DEBUG_PARTIAL
        bool "Compile with partial debugging enabled"
 

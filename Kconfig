@@ -5,6 +5,7 @@ menu "Libraries"
 source "fuse/Kconfig"
 source "libpcap/Kconfig"
 source "ncurses/Kconfig"
+source "valgrind/Kconfig"
 source "xz/Kconfig"
 source "zlib/Kconfig"
 
@@ -46,7 +47,6 @@ source "ntfs-3g/Kconfig"
 source "rtnet/Kconfig"
 source "strace/Kconfig"
 source "tcpdump/Kconfig"
-source "valgrind/Kconfig"
 
 endmenu
 
@@ -106,9 +106,9 @@ endchoice
 
 config OUT_INITRAMFS_TFTP
 	bool "Install the initramfs in a tftp directory"
-	
+
 	help
-	  Install the initramfs image in a tftp directory, allowing a 
+	  Install the initramfs image in a tftp directory, allowing a
 	  network boot with initramfs.
 
 if OUT_INITRAMFS_TFTP
@@ -121,7 +121,7 @@ config OUT_INITRAMFS_DEST
 	  Directory where the initramfs will be copied. The copy uses
 	  scp if this destination has the form host:path or user@host:path.
 
-endif	
+endif
 
 endif
 
