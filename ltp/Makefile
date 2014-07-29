@@ -1,4 +1,5 @@
-configure-args-y += --prefix=/ltp
+configure-args-y += --prefix=/ltp \
+	ac_cv_header_openssl_sha_h=no
 
 compile-make-args-y += \
 	-f $(srcdir)/Makefile \
