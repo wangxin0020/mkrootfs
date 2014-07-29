@@ -2,7 +2,9 @@ configure-args-y :=
 
 configure-env-y := \
 	prefix=/usr \
-	CC="$(CC)"
+	CC="$(CC)" \
+	CFLAGS="$(cflags-y)" \
+	LDFLAGS="$(ldflags-y)"
 
 rootfs-y := \
 	/usr/lib/libz.so.*
