@@ -29,6 +29,7 @@ override CXX := $(MKR_CXX)
 override KCC := $(MKR_KCC)
 cppflags-y += -I$(staging)/usr/include
 cflags-y += $(MKR_CFLAGS) $(cppflags-y)
+cxxflags-y += $(MKR_CXXFLAGS) $(cppflags-y)
 ldflags-y += -L$(staging)/usr/lib -L$(staging)/lib $(MKR_LDFLAGS)
 
 # Unexport variables exported by top makefile
@@ -99,7 +100,8 @@ configure-args-y = \
 	--prefix=/usr \
 	CC="$(CC)" CXX="$(CXX)" LD="$(cross)ld" AR="$(cross)ar" \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
-	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
+	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" CXXFLAGS="$(cxxflags-y)" \
+	LDFLAGS="$(ldflags-y)"
 
 configure-env-y = \
 	PKG_CONFIG_DIR="" \

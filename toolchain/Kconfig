@@ -25,7 +25,7 @@ config ARCH_PPC64
 	bool "powerpc 64 bits"
 
 config ARCH_I386
-        bool "i386"
+	bool "i386"
 
 config ARCH_X86_32
 	bool "x86 32 bits"
@@ -115,6 +115,10 @@ config CFLAGS
 	string "Compilation flags"
 	default "$(ARCH_FLAGS) -g -Os"
 
+config CXXFLAGS
+	string "Compilation flags"
+	default "$(ARCH_FLAGS) -g -Os"
+
 config LDFLAGS
 	string "Link flags"
 	default "$(ARCH_FLAGS) -g -Os"
@@ -124,6 +128,10 @@ endif
 if !ARCH_ARM
 
 config CFLAGS
+	string "Compilation flags"
+	default "$(ARCH_FLAGS) -g -O2"
+
+config CXXFLAGS
 	string "Compilation flags"
 	default "$(ARCH_FLAGS) -g -O2"
 
