@@ -1,5 +1,6 @@
 configure-args-y += \
 	--with-shared \
+	--without-progs \
 	--without-manpages
 
 rootfs-y := \
