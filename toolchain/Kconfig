@@ -112,11 +112,11 @@ config ARM_FLOAT_VFP_HARD_ABI
 endchoice
 
 config CFLAGS
-	string "Compilation flags"
+	string "C Compilation flags"
 	default "$(ARCH_FLAGS) -g -Os"
 
 config CXXFLAGS
-	string "Compilation flags"
+	string "C++ Compilation flags"
 	default "$(ARCH_FLAGS) -g -Os"
 
 config LDFLAGS
@@ -128,11 +128,11 @@ endif
 if !ARCH_ARM
 
 config CFLAGS
-	string "Compilation flags"
+	string "C Compilation flags"
 	default "$(ARCH_FLAGS) -g -O2"
 
 config CXXFLAGS
-	string "Compilation flags"
+	string "C++ Compilation flags"
 	default "$(ARCH_FLAGS) -g -O2"
 
 config LDFLAGS
