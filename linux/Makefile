@@ -128,7 +128,7 @@ else
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
 ifneq ($(strip $(MKR_LINUX_DT_NAME)),)
 	chmod a+r $(FULL_DT_NAME)
-	$(cp-y) $(MFULL_DT_NAME) $(MKR_LINUX_DT_DEST)
+	$(cp-y) $(FULL_DT_NAME) $(MKR_LINUX_DT_DEST)
 endif
 endif
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
