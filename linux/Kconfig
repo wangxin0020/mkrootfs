@@ -47,9 +47,9 @@ config LINUX_LOADADDR
        string "Load address"
        default ""
        help
-         On the ARM platform, with newer multiarch kernels, the load 
+	 On the ARM platform, with newer multiarch kernels, the load
 	 address needs to be passed to the build process to generate
-         an uImage for the target board.
+	 an uImage for the target board.
 
 endif
 
@@ -57,8 +57,7 @@ choice
 	prompt "Device tree support"
 
 config LINUX_NO_DT
-        bool "No device tree support"
-	default y
+	bool "No device tree support"
 
 config LINUX_DT_MERGED
 	bool "Merged device tree support for legacy bootloaders"
@@ -74,7 +73,7 @@ config LINUX_DT_NAME
        string "Board specific device tree file name"
        default ""
        help
-         The name of the dtb file
+	 The name of the dtb file
 
 endif
 
@@ -85,7 +84,7 @@ config LINUX_DT_DEST
        default ""
 	help
 	  Destination to which the device tree file will be
-          copied. The copy uses scp if this destination has the form 
+	  copied. The copy uses scp if this destination has the form
 	  host:path or user@host:path.
 
 endif
