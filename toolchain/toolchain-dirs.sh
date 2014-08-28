@@ -1,10 +1,15 @@
 #! /bin/sh
 
 compiler=${1+"$@"}
+cross=`expr "$compiler" : '\(.*\)gcc'`
 BINDIRS=
 LIBDIRS=
 
 set -e
+
+# Find out to which ELF class belong the executables this compiler produces
+echo "int foo(void) { return 0; }"|$compiler -xc -o .elfclass.o -c -
+elfclass=`${cross}readelf -h .elfclass.o | grep Class: | cut -d: -f2`
 
 # Get the directories
 sysroot=`$compiler --print-sysroot 2>/dev/null`
@@ -24,7 +29,9 @@ else
 	| sed 's/^libraries: =\(.*\)$/\1/;t next;d;:next y/:/ /'`
     LIBDIRS=`for d in $tmp_libdirs; do \
 	if [ -e "$d" ]; then \
-	    cd "$d" && pwd; \
+            testfile="\`ls "$d"/lib*.so.[0-9]|head -1\`" ; \
+	    _elfclass=\`${cross}readelf -h "$testfile" | grep Class: | cut -d: -f2\` ;
+	    test "$_elfclass" = "$elfclass" && cd "$d" && pwd; \
 	fi; \
     done | sort -u`
     BINDIRS=`for d in $LIBDIRS; do \
