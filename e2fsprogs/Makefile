@@ -5,6 +5,9 @@ configure-args-y += \
 	--enable-fsck \
 	--disable-nls
 
+configure-args-$(MKR_UTIL_LINUX_LIBUUID) += --disable-libuuid --disable-uuidd
+configure-args-$(MKR_UTIL_LINUX_LIBBLKID) += --disable-libblkid
+
 rootfs-y += \
 	/usr/bin/chattr \
 	/usr/bin/lsattr \

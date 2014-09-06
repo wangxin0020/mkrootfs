@@ -1,0 +1,31 @@
+menu "util-linux"
+
+config UTIL_LINUX
+	package "util-linux libraries and tools"
+
+if UTIL_LINUX
+
+config UTIL_LINUX_SRCDIR
+       srcdir "Source directory"
+       default "util-linux-*"
+
+config UTIL_LINUX_LIBUUID
+       bool "Build libuuid"
+       help
+	 Build the libuuid library. This library is used by several
+       	 utilities such as e2fsprogs and gptfdisk.
+
+config UTIL_LINUX_LIBBLKID
+       bool "Build libblkid"
+       help
+	 Build the libblkid librarry. This library is used by
+	 utilities such as e2fsprogs.
+
+config UTIL_LINUX_CRAMFS
+       bool "Build cramfs tools"
+       help
+	 Build the tools (mkfs, fsck) for the CRAMFS filesystem.
+
+endif
+
+endmenu

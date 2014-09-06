@@ -9,6 +9,14 @@ config E2FSPROGS_SRCDIR
        srcdir "Source directory"
        default "e2fsprogs-*"
 
+config E2FSPROGS_LIBUUID
+       def_bool UTIL_LINUX_LIBUUID
+       build_depends on UTIL_LINUX
+
+config E2FSPROGS_LIBBLKID
+       def_bool UTIL_LINUX_LIBBLKID
+       build_depends on UTIL_LINUX
+
 endif
 
 endmenu
