@@ -1,0 +1,14 @@
+menu "Mdadm"
+
+config MDADM
+	package "Mdadm tool"
+
+if MDADM
+
+config MDADM_SRCDIR
+       srcdir "Source directory"
+       default "mdadm-*"
+
+endif
+
+endmenu

@@ -36,6 +36,11 @@ if test -e /usr/bin/keymap-chooser.sh; then
     done
 fi
 
+# Start RAID
+if test -e /sbin/mdadm; then
+    /sbin/mdadm --assemble --scan
+fi
+
 # Start network
 if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
     ifconfig lo 127.0.0.1 up
