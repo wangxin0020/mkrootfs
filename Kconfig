@@ -37,6 +37,7 @@ endmenu
 
 menu "Tools"
 
+source "debootstrap/Kconfig"
 source "dialog/Kconfig"
 source "dosfstools/Kconfig"
 source "e2fsprogs/Kconfig"

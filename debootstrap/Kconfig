@@ -1,0 +1,14 @@
+menu "Debootstrap"
+
+config DEBOOTSTRAP
+	package "Debootstrap tool"
+
+if DEBOOTSTRAP
+
+config DEBOOTSTRAP_SRCDIR
+       srcdir "Source directory"
+       default "debootstrap-*"
+
+endif
+
+endmenu
