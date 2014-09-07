@@ -1,0 +1,20 @@
+menu "Parted"
+
+config PARTED
+	package "Parted tool"
+	build_select UTIL_LINUX
+	build_select DEVICE_MAPPER
+
+if PARTED
+
+config PARTED_SRCDIR
+       srcdir "Source directory"
+       default "parted-*"
+
+config PARTED_LIBUUID
+       def_bool y
+       select UTIL_LINUX_LIBUUID
+
+endif
+
+endmenu
