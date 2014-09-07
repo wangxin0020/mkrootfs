@@ -221,3 +221,9 @@ default-clean:
 	$(Q)if test -e Makefile; then \
 		$(MAKE) clean; \
 	fi
+
+default-autotools-clean:
+	$(Q)if test -e .mkr.autotools.default.configured; then \
+		$(MAKE) clean; \
+		rm .mkr.autotools.default.configured; \
+	fi

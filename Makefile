@@ -283,7 +283,7 @@ else
 # in parallel
 # PHONY += build-tools
 # build-tools: build-tools_basic include/config/auto.conf include/config/tristate.conf
-# 	$(MAKE) $(build)=$(@)
+#	$(MAKE) $(build)=$(@)
 
 ifeq ($(dot-config),1)
 
