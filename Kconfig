@@ -24,6 +24,7 @@ config SRC_BASEDIR
 	  it is relative to Mkrootfs directory.
 
 source "base/Kconfig"
+source "device-mapper/Kconfig"
 source "linux/Kconfig"
 source "busybox/Kconfig"
 source "xenomai/Kconfig"

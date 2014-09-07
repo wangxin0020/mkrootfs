@@ -1,0 +1,14 @@
+menu "Device Mapper"
+
+config DEVICE_MAPPER
+	package "Device Mapper tool"
+
+if DEVICE_MAPPER
+
+config DEVICE_MAPPER_SRCDIR
+       srcdir "Source directory"
+       default "LVM*"
+
+endif
+
+endmenu
