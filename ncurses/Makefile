@@ -12,7 +12,7 @@ compile: default-autotools-compile
 staging: default-autotools-staging
 	@cd $(pkginst)/usr/lib; \
 	for lib in libncurses.so*; do \
-		ln -s $$lib `echo $$lib | sed -e 's,ncurses,tinfo,'`; \
+		ln -sf $$lib `echo $$lib | sed -e 's,ncurses,tinfo,'`; \
 	done
 
 rootfs: default-rootfs
