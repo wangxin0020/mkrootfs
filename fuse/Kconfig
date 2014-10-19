@@ -9,6 +9,7 @@ if FUSE
 config FUSE32
        bool "build FUSE using 32 bits toolchain"
        depends on HAVE_TOOLCHAIN32
+       select TOOLCHAIN32
 
 config FUSE_SRCDIR
        srcdir "FUSE directory"
