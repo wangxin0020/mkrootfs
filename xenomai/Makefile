@@ -210,6 +210,9 @@ confcheck-$(call not, $(MKR_XENO32)) += $(call confcheck-if, \
 	test -n "$(MKR_FUSE32)", \
 	MKR_FUSE32 must be disabled if MKR_XENO32 is disabled)
 endif
+confcheck-$(MKR_XENO_FORGE) += $(call confcheck-if, \
+	test -n "$(CONFIG_IPIPE_LEGACY)", \
+	CONFIG_IPIPE_LEGACY must be disabled with Xenomai Cobalt)
 endif
 
 ifeq ($(MKR_XENO_CLASSIC),y)
