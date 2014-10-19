@@ -7,6 +7,7 @@ echo /sbin/hotplug > /proc/sys/kernel/hotplug
 mkdir -p /dev/shm /dev/pts
 mount -a
 ACTION=add /sbin/mount_storage.sh &
+mdev -s
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
