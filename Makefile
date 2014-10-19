@@ -456,8 +456,9 @@ check-computed-variables: .mkr.kvers FORCE
 		mv .tmp.mkr.toolchain .mkr.toolchain; \
 	else \
 		rm -f .tmp.mkr.toolchain; \
-	fi; \
-	{ \
+	fi
+ifeq ($(MKR_HAVE_TOOLCHAIN32),y)
+	$(Q){ \
 	echo ARCH32=$(MKR_ARCH32); \
 	echo CC32='$(shell set -- $(MKR_CC32) && which $$1)'; \
 	echo CC32VERSION='$(shell $(MKR_CC32) -v 2>&1 | tail -n 1)'; \
@@ -468,8 +469,9 @@ check-computed-variables: .mkr.kvers FORCE
 		mv .tmp.mkr.toolchain32 .mkr.toolchain32; \
 	else \
 		rm -f .tmp.mkr.toolchain32; \
-	fi; \
-	/bin/echo -n -e $(foreach p,$(packages), \
+	fi
+endif
+	$(Q)/bin/echo -n -e $(foreach p,$(packages), \
 		$(p) $(call mksrcdir,$($($(p)/srcdir-var)))\\n) | \
 	while read p srcdir; do \
 		echo "srcdir=$$srcdir" > .tmp.mkr.srcdir; \

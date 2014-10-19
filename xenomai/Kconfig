@@ -42,6 +42,7 @@ if XENO_FORGE
 
 config XENO32
        bool "Compile Xenomai with 32 bits toolchain"
+       depends on HAVE_TOOLCHAIN32
        select TOOLCHAIN32
        select FUSE32
 

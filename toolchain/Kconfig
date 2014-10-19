@@ -68,6 +68,9 @@ config ARCH32
 
 endif
 
+config HAVE_TOOLCHAIN32
+       def_bool ARCH_X86_64
+
 config CONFIGURE_HOST
 	string "Configure host string"
 	default "$(ARCH)-linux"
@@ -172,7 +175,7 @@ config SYSROOT
 
 endif
 
-if ARCH_X86_64
+if HAVE_TOOLCHAIN32
 
 config TOOLCHAIN32
        bool "Enable use of 32 bits toolchain"
