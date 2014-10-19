@@ -201,4 +201,10 @@ confcheck-$(MKR_ARCH_X86_32) += \
 			-a "$(CONFIG_IA32_EMULATION)" != "y", \
 		x86 32 user-space with x86 64 only kernel configuration)
 
+ifeq ($(MKR_ARCH_X86_64),y)
+confcheck-$(MKR_TOOLCHAIN32) += $(call confcheck-if, \
+	test -z "$(CONFIG_IA32_EMULATION)", \
+	MKR_TOOLCHAIN32 needs CONFIG_IA32_EMULATION on x86_64)
+endif
+
 confcheck: default-confcheck

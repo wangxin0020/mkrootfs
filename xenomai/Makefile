@@ -203,11 +203,8 @@ confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_DRIVERS_KLATENCY)", \
 	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_KLATENCY in kernel configuration)
 ifeq ($(MKR_ARCH_X86_64),y)
-confcheck-$(MKR_XENO32) += $(call confcheck-if, \
-	test -z "$(CONFIG_IA32_EMULATION)", \
-	MKR_XENO32 needs CONFIG_IA32_EMULATION on x86_64)
-confcheck-$(call not, $(MKR_XENO32)) += $(call confcheck-if, \
-	test -n "$(MKR_FUSE32)", \
+confcheck-$(MKR_FUSE32) += $(call confcheck-if, \
+	test -z "$(MKR_XENO32)", \
 	MKR_FUSE32 must be disabled if MKR_XENO32 is disabled)
 endif
 confcheck-$(MKR_XENO_FORGE) += $(call confcheck-if, \
