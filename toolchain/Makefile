@@ -138,10 +138,15 @@ clean: ;
 confcheck-$(MKR_LIBSTDCPP) += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
 confcheck-y += $(call confcheck-ifnot, \
 	$(pkgdir)/toolchain-ok.sh \
-		"$(ARCH)" "$(CC)" "$(LIBDIRS)" "$(BINDIRS)", \
-	Error in toolchain or sysroot settings\
+		"$(ARCH)" "$(LIBDIRS)" "$(BINDIRS)" $(CC), \
+	Error in toolchain, flags or sysroot settings\
 	maybe SYSROOT_MANUAL is necessary?)
 
+confcheck-$(MKR_TOOLCHAIN32) += $(call confcheck-ifnot, \
+	$(pkgdir)/toolchain-ok.sh \
+		"$(ARCH32)" "$(LIBDIRS32)" "$(BINDIRS32)" $(CC32), \
+	Error in 32 bits toolchain, flags or sysroot settings\
+	maybe SYSROOT32_MANUAL is necessary?)
 
 # ARM EABI check
 ifeq ($(MKR_ARCH_ARM),y)

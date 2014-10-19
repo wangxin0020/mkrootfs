@@ -1,9 +1,9 @@
 #! /bin/sh
 
 arch=$1; shift
-cc=$1; shift
 LIBDIRS="$1"; shift
 BINDIRS="$1"; shift
+cc=${1+"$@"};
 
 die()
 {

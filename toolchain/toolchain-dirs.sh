@@ -17,7 +17,7 @@ set -e
 
 # Find out to which ELF class belong the executables this compiler produces
 tmpfile=".elfbin${SUFFIX}"
-echo "int main(void) { return 0; }"| $compiler -xc -o "$tmpfile" -
+echo "int main(void) { return 0; }" | $compiler -xc -o "$tmpfile" -
 elfclass=`${cross}readelf -h "$tmpfile" | grep Class: | cut -d: -f2`
 elfloader=`${cross}readelf -l "$tmpfile" | \
 sed 's/^.*interpreter: \([^]]*\).*$/\1/;t quit;d;t;:quit q'`
