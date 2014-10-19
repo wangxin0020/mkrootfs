@@ -77,16 +77,24 @@ staging: default-autotools-staging
 
 rootfs-y := \
 	/dev/rtheap \
-	/dev/rtp*
+	/dev/rtp* \
+	/usr/sbin/autotune \
+	/usr/sbin/rtcanconfig \
+	/usr/sbin/rtps \
+	/usr/sbin/slackspot \
+	/usr/sbin/version \
+	/usr/bin/clock_settime
 rootfs-$(MKR_XENO_FORGE_REGISTRY) += \
 	/usr/bin/sysregd
 rootfs-$(MKR_XENO_A4L) += \
 	/usr/lib/libanalogy.so.* \
+	/usr/sbin/analogy_config \
 	/usr/bin/insn_read \
 	/usr/bin/insn_write \
 	/usr/bin/cmd_bits \
 	/usr/bin/cmd_read \
-	/usr/bin/cmd_write
+	/usr/bin/cmd_write \
+	/usr/bin/wf_generate
 rootfs-$(MKR_XENO_NATIVE) += \
 	/usr/lib/libalchemy.so.* \
 	/usr/lib/libnative.so.* \
@@ -131,7 +139,10 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	/usr/bin/xeno-test* \
 	/usr/bin/xeno-regression-test \
 	/usr/bin/xeno-load \
-	/usr/bin/dohell
+	/usr/bin/dohell \
+	/usr/bin/smokey \
+	/usr/lib/libtrank.so.* \
+	/usr/lib/libsmokey.so.*
 
 rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
 	$(MKR_XENO_TESTDIR)/irqloop \
