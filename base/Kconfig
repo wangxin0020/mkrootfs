@@ -24,38 +24,16 @@ config SERIAL_STD
        bool "Standard device"
        help
 	 Choose this option if the serial port used by your board is
-       	 one of the standard ports from ttyS0 to ttyS3.
-
-config SERIAL_CUSTOM
-       bool "Custom device"
-       help
-	 Choose this option if the serial port used by your board is
-       	 another device.
+	 one of the standard ports from ttyS0 to ttyS3.
 
 endchoice
-
-if SERIAL_CUSTOM
-
-config SERIAL_DEV
-	string "Serial console device"
-	default "ttyS0"
-	help
-	  Name of the serial console device node in the /dev directory.
-
-config SERIAL_MAJOR
-       int "Serial console device node major number"
-
-config SERIAL_MINOR
-       int "Serial console device node minor number"
-
-endif
 
 config KEYBOARD_MAPS
        bool "Keyboard maps"
        help
-         Choose this option if you intend to use the console on
-       	 virtual terminal instead of serial port and the default
-      	 qwerty keyboard map does not suit the heyboard.
+	 Choose this option if you intend to use the console on
+	 virtual terminal instead of serial port and the default
+	 qwerty keyboard map does not suit the heyboard.
 
 if KEYBOARD_MAPS
 
@@ -66,13 +44,13 @@ config KEYBOARD_ONE_MAP
        bool "Install only one keyboard map"
        help
 	 Choose this option if you know in advance what map you will
-       	 need on the device.
+	 need on the device.
 
 config KEYBOARD_ALL_MAPS
        bool "Install all keyboard maps"
        help
 	 Choose this option to copy all the keyboard maps in the
-       	 resulting rootfs, allowing the user to choose the map to use.
+	 resulting rootfs, allowing the user to choose the map to use.
 
 endchoice
 
@@ -92,8 +70,8 @@ config KEYBOARD_CHOOSER
        bool "Install keymap chooser"
        select DIALOG
        help
-         Install a dialog application allowing to choose the keyboard
-         map.
+	 Install a dialog application allowing to choose the keyboard
+	 map.
 
 endif
 
@@ -102,7 +80,7 @@ endif
 config SWAP
 	bool "Enable swap file on storage device"
 	help
-	  Add a swap file on a storage device on target. 
+	  Add a swap file on a storage device on target.
 	  This may be useful for enlarging virtual memory
 	  when running tests. This does not destroy the contents
 	  of the storage device.
