@@ -1,6 +1,6 @@
 #! /bin/sh
 
-dev=`sed 's/^.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
+dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 
 if [ -e /usr/bin/xeno-test-frontend.sh ]; then
     exec /usr/bin/xeno-test-frontend.sh < /dev/$dev > /dev/$dev 2> /dev/$dev

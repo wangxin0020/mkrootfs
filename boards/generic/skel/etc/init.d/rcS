@@ -88,7 +88,7 @@ if test -e /etc/defkeymap.bin.xz; then
     echo Loading default keymap
     loadkeys defkeymap
 elif test -e /usr/bin/keymap-chooser.sh; then
-    dev=`sed 's/^.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
+    dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 
     /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
 fi

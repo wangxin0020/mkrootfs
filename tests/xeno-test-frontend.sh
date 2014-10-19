@@ -8,7 +8,7 @@ height=`expr "$LINES" '*' 80 / 100`
 menuheight=`expr "$height" '*' 80 / 100`
 
 step=0
-while :; do 
+while :; do
     case "$step" in
 	0)
 	    cat > /tmp/menu <<EOF
@@ -19,7 +19,7 @@ EOF
 	    if dialog --file /tmp/menu 2> /tmp/choice; then
 		case `cat /tmp/choice` in
 		    1)
-			console=`sed 's/.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
+			console=`sed 's/.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 			clear
 			exec /sbin/getty -n -l /sbin/autologin.sh 0 "$console"
 			;;
@@ -122,7 +122,7 @@ EOF
 		step=4
 	    fi
 	    ;;
-	6)	    
+	6)
 	    cat > /tmp/menu <<EOF
 --clear --cancel-label Back --inputbox "Latency test period in micro-seconds" $height $width 100
 EOF
@@ -154,6 +154,5 @@ xeno-test -l "dohell $dohell_opts" -- -p $latency_period -g /root/histo
 echo Latency results have been saved in /root/histo, they can be processed
 echo with the gnuplot script scripts/histo.gp in xenomai sources
 
-console=`sed 's/.*console=\([^, ]*\).*$/\1/' /proc/cmdline`
+console=`sed 's/.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 exec /sbin/getty -n -l /sbin/autologin.sh 0 "$console"
-
