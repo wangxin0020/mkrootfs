@@ -43,12 +43,12 @@ EOF
 			desc=`/usr/bin/sdinfo "/dev/$dev"`
 			echo "$part \"$fstype $desc\""
 			;;
-		    hd[a-z][0-9]*|mmcblk*p*)
+		    hd[a-z][0-9]*|mmcblk*p*|md[0-9]*p*)
 			echo "$part $fstype"
 			;;
 		esac
 	    done >> /tmp/menu
-	    	
+
 	    if dialog --file /tmp/menu 2> /tmp/choice; then
 		iostress=`cat /tmp/choice`
 		step=2
