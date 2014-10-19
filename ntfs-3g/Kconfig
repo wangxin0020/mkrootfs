@@ -6,6 +6,10 @@ config NTFS
 
 if NTFS
 
+config NTFS32
+       bool
+       default FUSE32
+
 config NTFS_SRCDIR
        srcdir "Source directory"
        default "ntfs-3g_*"

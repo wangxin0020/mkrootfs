@@ -1,5 +1,13 @@
 #! /bin/sh
 
+SUFFIX=
+case "$1" in
+--32)
+	SUFFIX=32
+	shift
+	;;
+esac
+
 compiler=${1+"$@"}
 cross=`expr "$compiler" : '\(.*\)gcc'`
 BINDIRS=
@@ -8,8 +16,10 @@ LIBDIRS=
 set -e
 
 # Find out to which ELF class belong the executables this compiler produces
-echo "int foo(void) { return 0; }"|$compiler -xc -o .elfclass.o -c -
-elfclass=`${cross}readelf -h .elfclass.o | grep Class: | cut -d: -f2`
+tmpfile=".elfclass${SUFFIX}"
+echo "int foo(void) { return 0; }"|$compiler -xc -o "$tmpfile" -c -
+elfclass=`${cross}readelf -h "$tmpfile" | grep Class: | cut -d: -f2`
+rm "$tmpfile"
 
 # Get the directories
 sysroot=`$compiler --print-sysroot 2>/dev/null`
@@ -28,11 +38,10 @@ else
     tmp_libdirs=`$compiler --print-search-dirs \
 	| sed 's/^libraries: =\(.*\)$/\1/;t next;d;:next y/:/ /'`
     LIBDIRS=`for d in $tmp_libdirs; do \
-	if [ -e "$d" ]; then \
-            testfile="\`ls "$d"/lib*.so.[0-9]|head -1\`" ; \
-	    _elfclass=\`${cross}readelf -h "$testfile" | grep Class: | cut -d: -f2\` ;
-	    test "$_elfclass" = "$elfclass" && cd "$d" && pwd; \
-	fi; \
+	set -- "$d"/lib*.so.[0-9]; \
+	[ -e "$1" ] || continue; \
+	_elfclass=\`${cross}readelf -h "$1" | grep Class: | cut -d: -f2\` ;
+	test "$_elfclass" = "$elfclass" && cd "$d" && pwd; \
     done | sort -u`
     BINDIRS=`for d in $LIBDIRS; do \
 	for subd in bin ../bin sbin ../sbin ../debug-root/usr/bin; do \
@@ -47,6 +56,6 @@ LIBDIRS=`echo $LIBDIRS`
 BINDIRS=`echo $BINDIRS`
 
 cat <<EOF
-LIBDIRS=`echo $LIBDIRS`
-BINDIRS=`echo $BINDIRS`
+LIBDIRS${SUFFIX}=`echo $LIBDIRS`
+BINDIRS${SUFFIX}=`echo $BINDIRS`
 EOF

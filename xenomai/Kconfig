@@ -40,6 +40,11 @@ endchoice
 
 if XENO_FORGE
 
+config XENO32
+       bool "Compile Xenomai with 32 bits toolchain"
+       select TOOLCHAIN32
+       select FUSE32
+
 choice
        prompt "Xenomai core used"
 
@@ -140,7 +145,7 @@ config XENO_TESTSUITE_UNFREQUENT
 	 Install less frequently used tests requiring special kernel
 	 drivers:
 	 - irqbench
-       	 - klatency
+	 - klatency
 	 - rtdmtest
 	 - sigtest
 
@@ -173,8 +178,8 @@ config XENO_THREAD
        help
 	 This option enables the use of thread local data in Xenomai
 	 code using the __thread keyword. This may save a few
-       	 processor instructions in a few places, but may trigger
-       	 compiler bugs.
+	 processor instructions in a few places, but may trigger
+	 compiler bugs.
 
 config XENO_DLOPEN
        bool "Allow loading Xenomai skin libraries with dlopen"

@@ -1,10 +1,13 @@
 menu "fuse"
 
 config FUSE
-	package "FUSE support"
-	default n
+       package	"FUSE support"
+       default n
 
 if FUSE
+
+config FUSE32
+       bool "build FUSE using 32 bits toolchain"
 
 config FUSE_SRCDIR
        srcdir "FUSE directory"

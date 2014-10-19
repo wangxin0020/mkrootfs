@@ -1,76 +1,93 @@
+compile-$(call not, $(MKR_XENO32)) := default-autotools-compile
+config-$(call not, $(MKR_XENO32)) := configure
+lib-$(call not, $(MKR_XENO32)) := lib
+compile-$(MKR_XENO32) := default-autotools-compile32
+config-$(MKR_XENO32) := configure32
+lib-$(MKR_XENO32) := lib32
+
+ifeq ($(MKR_XENO32),y)
+configure := configure32
+compile-target := default-autotools-compile32
+libdir := lib32
+else
+configure := configure
+compile-target := default-autotools-compile
+libdir := lib
+endif
+
 # Configuration
-configure-args-y += --includedir=/usr/include/xenomai --disable-doc-install
-configure-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
+$(config-y)-args-y += --includedir=/usr/include/xenomai --disable-doc-install
+$(config-y)-args-$(MKR_XENO_MAINT) += --enable-maintainer-mode
 
-configure-args-$(MKR_XENO_SMP) += --enable-smp
-configure-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
+$(config-y)-args-$(MKR_XENO_SMP) += --enable-smp
+$(config-y)-args-$(call not, $(MKR_XENO_SMP)) += --disable-smp
 
-configure-args-$(MKR_XENO_SEP_TESTDIR) += --with-testdir="$(MKR_XENO_TESTDIR)"
+$(config-y)-args-$(MKR_XENO_SEP_TESTDIR) += --with-testdir="$(MKR_XENO_TESTDIR)"
 
 ifneq ($(strip $(MKR_ARCH_X86_32)$(MKR_ARCH_X86_64)),)
 ifeq ($(strip $(MKR_XENO_FORGE)),y)
 # Xenomai forge
-configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-vsyscall
-configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-vsyscall
+$(config-y)-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-vsyscall
+$(config-y)-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-vsyscall
 else
 # Xenomai classic
-configure-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-sep
-configure-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-sep
+$(config-y)-args-$(MKR_XENO_X86_VSYSCALL) += --enable-x86-sep
+$(config-y)-args-$(call not, $(MKR_XENO_X86_VSYSCALL)) += --disable-x86-sep
 endif
-configure-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
-configure-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
+$(config-y)-args-$(MKR_XENO_X86_TSC) += --enable-x86-tsc
+$(config-y)-args-$(call not, $(MKR_XENO_X86_TSC)) += --disable-x86-tsc
 endif
 
 ifeq ($(strip $(MKR_XENO_FORGE)),y)
 # Xenomai forge
-configure-args-$(MKR_XENO_THREAD) += --enable-tls
-configure-args-$(call not, $(MKR_XENO_THREAD)) += --disable-tls
-configure-args-$(MKR_XENO_DEBUG_NONE) += --disable-debug
-configure-args-$(MKR_XENO_DEBUG_SYMBOLS) += --enable-debug=symbols
-configure-args-$(MKR_XENO_DEBUG_PARTIAL) += --enable-debug=partial
-configure-args-$(MKR_XENO_DEBUG_FULL) += --enable-debug=full
-configure-args-$(MKR_XENO_VALGRIND) += --enable-valgrind-client
-configure-args-$(call not, $(MKR_XENO_VALGRIND)) += --disable-valgrind-client
-common-libs-y += /usr/lib/libcopperplate.so.*
-common-libs-$(MKR_XENO_COBALT) += /usr/lib/libcobalt.so.*
+$(config-y)-args-$(MKR_XENO_THREAD) += --enable-tls
+$(config-y)-args-$(call not, $(MKR_XENO_THREAD)) += --disable-tls
+$(config-y)-args-$(MKR_XENO_DEBUG_NONE) += --disable-debug
+$(config-y)-args-$(MKR_XENO_DEBUG_SYMBOLS) += --enable-debug=symbols
+$(config-y)-args-$(MKR_XENO_DEBUG_PARTIAL) += --enable-debug=partial
+$(config-y)-args-$(MKR_XENO_DEBUG_FULL) += --enable-debug=full
+$(config-y)-args-$(MKR_XENO_VALGRIND) += --enable-valgrind-client
+$(config-y)-args-$(call not, $(MKR_XENO_VALGRIND)) += --disable-valgrind-client
+common-libs-y += /usr/$(lib-y)/libcopperplate.so.*
+common-libs-$(MKR_XENO_COBALT) += /usr/$(lib-y)/libcobalt.so.*
 
 else
 # Xenomai classic
-configure-args-$(MKR_XENO_THREAD) += --with-__thread
-configure-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
-configure-args-$(MKR_XENO_DEBUG) += --enable-debug
-configure-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
-common-libs-y := /usr/lib/libxenomai.so.*
+$(config-y)-args-$(MKR_XENO_THREAD) += --with-__thread
+$(config-y)-args-$(call not, $(MKR_XENO_THREAD)) += --without-__thread
+$(config-y)-args-$(MKR_XENO_DEBUG) += --enable-debug
+$(config-y)-args-$(call not, $(MKR_XENO_DEBUG)) += --disable-debug
+common-libs-y := /usr/$(lib-y)/libxenomai.so.*
 endif
 
-configure-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
-configure-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
-configure-args-$(MKR_PSOS_MLOCKALL) += --enable-psos-auto-mlockall
-configure-args-$(MKR_UITRON_MLOCKALL) += --enable-uitron-auto-mlockall
+$(config-y)-args-$(MKR_XENO_DLOPEN) += --enable-dlopen-skins
+$(config-y)-args-$(MKR_POSIX_MLOCKALL) += --enable-posix-auto-mlockall
+$(config-y)-args-$(MKR_PSOS_MLOCKALL) += --enable-psos-auto-mlockall
+$(config-y)-args-$(MKR_UITRON_MLOCKALL) += --enable-uitron-auto-mlockall
 
-configure-args-$(MKR_XENO_ATOMIC_BUILTINS) += --with-atomic-ops=builtins
-configure-args-$(MKR_XENO_ATOMIC_ADHOC) += --with-atomic-ops=adhoc
+$(config-y)-args-$(MKR_XENO_ATOMIC_BUILTINS) += --with-atomic-ops=builtins
+$(config-y)-args-$(MKR_XENO_ATOMIC_ADHOC) += --with-atomic-ops=adhoc
 
 ifeq ($(MKR_ARCH_ARM),y)
 -include ../toolchain/arm-eabi
 
-configure-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)" --enable-arm-tsc="$(MKR_XENO_ARM_MACH)"
-configure-args-$(TOOLCHAIN_ARM_EABI) += --enable-arm-eabi
-configure-args-y += --enable-arm-arch="$(MKR_ARM_ARCH)"
+$(config-y)-args-y += --enable-arm-mach="$(MKR_XENO_ARM_MACH)" --enable-arm-tsc="$(MKR_XENO_ARM_MACH)"
+$(config-y)-args-$(TOOLCHAIN_ARM_EABI) += --enable-arm-eabi
+$(config-y)-args-y += --enable-arm-arch="$(MKR_ARM_ARCH)"
 endif
 
-configure-args-$(MKR_XENO_COBALT) += --with-core=cobalt
-configure-args-$(MKR_XENO_MERCURY) += --with-core=mercury
+$(config-y)-args-$(MKR_XENO_COBALT) += --with-core=cobalt
+$(config-y)-args-$(MKR_XENO_MERCURY) += --with-core=mercury
 
-configure-args-$(MKR_XENO_FORGE_MONOTONIC_RAW) += --enable-clock-monotonic-raw
-configure-args-$(MKR_XENO_FORGE_REGISTRY) += --enable-registry
-configure-args-$(MKR_XENO_FORGE_LORES_CLOCK) += --enable-lores-clock
-configure-args-$(MKR_XENO_FORGE_ASSERT) += --enable-assert
-configure-args-$(MKR_XENO_FORGE_ASYNC_CANCEL) += --enable-async-cancel
-configure-args-$(MKR_XENO_FORGE_PSHARED) += --enable-pshared
+$(config-y)-args-$(MKR_XENO_FORGE_MONOTONIC_RAW) += --enable-clock-monotonic-raw
+$(config-y)-args-$(MKR_XENO_FORGE_REGISTRY) += --enable-registry
+$(config-y)-args-$(MKR_XENO_FORGE_LORES_CLOCK) += --enable-lores-clock
+$(config-y)-args-$(MKR_XENO_FORGE_ASSERT) += --enable-assert
+$(config-y)-args-$(MKR_XENO_FORGE_ASYNC_CANCEL) += --enable-async-cancel
+$(config-y)-args-$(MKR_XENO_FORGE_PSHARED) += --enable-pshared
 
 # Compilation
-compile: default-autotools-compile
+compile: $(compile-y)
 
 # Installation
 staging: default-autotools-staging
@@ -87,7 +104,7 @@ rootfs-y := \
 rootfs-$(MKR_XENO_FORGE_REGISTRY) += \
 	/usr/bin/sysregd
 rootfs-$(MKR_XENO_A4L) += \
-	/usr/lib/libanalogy.so.* \
+	/usr/$(lib-y)/libanalogy.so.* \
 	/usr/sbin/analogy_config \
 	/usr/bin/insn_read \
 	/usr/bin/insn_write \
@@ -96,29 +113,29 @@ rootfs-$(MKR_XENO_A4L) += \
 	/usr/bin/cmd_write \
 	/usr/bin/wf_generate
 rootfs-$(MKR_XENO_NATIVE) += \
-	/usr/lib/libalchemy.so.* \
-	/usr/lib/libnative.so.* \
+	/usr/$(lib-y)/libalchemy.so.* \
+	/usr/$(lib-y)/libnative.so.* \
 	$(common-libs-y)
 rootfs-$(MKR_XENO_POSIX) += \
-	/usr/lib/libpthread_rt.so.* \
+	/usr/$(lib-y)/libpthread_rt.so.* \
 	$(common-libs-y)
 rootfs-$(MKR_XENO_PSOS) += \
-	/usr/lib/libpsos.so.* \
+	/usr/$(lib-y)/libpsos.so.* \
 	$(common-libs-y)
 rootfs-$(MKR_XENO_RTCAN) += \
 	/usr/bin/rtcanrecv \
 	/usr/bin/rtcansend
 rootfs-$(MKR_XENO_RTDM) += \
-	/usr/lib/librtdm.so.* \
+	/usr/$(lib-y)/librtdm.so.* \
 	$(common-libs-y)
 rootfs-$(MKR_XENO_UITRON) += \
-	/usr/lib/libuitron.so.* \
+	/usr/$(lib-y)/libuitron.so.* \
 	$(common-libs-y)
 rootfs-$(MKR_XENO_VRTX) += \
-	/usr/lib/libvrtx.so.* \
+	/usr/$(lib-y)/libvrtx.so.* \
 	$(common-libs-y)
 rootfs-$(MKR_XENO_VXWORKS) += \
-	/usr/lib/libvxworks.so.* \
+	/usr/$(lib-y)/libvxworks.so.* \
 	$(common-libs-y)
 
 MKR_XENO_TESTDIR ?= /usr/bin
@@ -141,8 +158,8 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	/usr/bin/xeno-load \
 	/usr/bin/dohell \
 	/usr/bin/smokey \
-	/usr/lib/libtrank.so.* \
-	/usr/lib/libsmokey.so.*
+	/usr/$(lib-y)/libtrank.so.* \
+	/usr/$(lib-y)/libsmokey.so.*
 
 rootfs-$(MKR_XENO_TESTSUITE_UNFREQUENT) += \
 	$(MKR_XENO_TESTDIR)/irqloop \
@@ -185,6 +202,11 @@ confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
 confcheck-$(MKR_XENO_TESTSUITE_UNFREQUENT) += $(call confcheck-if, \
 	test -z "$(CONFIG_XENO_DRIVERS_KLATENCY)", \
 	MKR_XENO_TESTSUITE_UNFREQUENT needs CONFIG_XENO_DRIVERS_KLATENCY in kernel configuration)
+ifeq ($(MKR_ARCH_X86_64),y)
+confcheck-$(MKR_XENO32) += $(call confcheck-if, \
+	test -z "$(CONFIG_IA32_EMULATION)", \
+	MKR_XENO32 needs CONFIG_IA32_EMULATION on x86_64)
+endif
 endif
 
 ifeq ($(MKR_XENO_CLASSIC),y)

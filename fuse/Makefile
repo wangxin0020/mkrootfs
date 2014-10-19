@@ -1,12 +1,19 @@
-compile: default-autotools-compile
+compile-$(call not, $(MKR_FUSE32)) := default-autotools-compile
+config-$(call not, $(MKR_FUSE32)) := configure
+lib-$(call not, $(MKR_FUSE32)) := lib
+compile-$(MKR_FUSE32) := default-autotools-compile32
+config-$(MKR_FUSE32) := configure32
+lib-$(MKR_FUSE32) := lib32
+
+compile: $(compile-y)
 
 staging: default-autotools-staging
 
 rootfs-y := \
 	/dev/fuse \
-	/usr/lib/libfuse.so.*
+	/usr/$(lib-y)/libfuse.so.*
 
-configure-args-y += --with-shared --disable-example
+$(config-y)-args-y += --with-shared --disable-example
 
 rootfs: default-rootfs
 

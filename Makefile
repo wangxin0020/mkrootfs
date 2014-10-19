@@ -432,7 +432,7 @@ linux/.mkr.confcheck: .mkr.basecheck linux/.config linux/Makefile .mkr.kvers
 	$(Q)success=:; $(call sub-confcheck,$(MAKE),linux/) \
 	$$success && : > $@ || { echo Configuration check failed.; false; }
 
-.mkr.confcheck: linux/.mkr.confcheck
+.mkr.confcheck: linux/.mkr.confcheck $(foreach t,$(filter-out linux,$(packages)), $(srctree)/$(t)/Makefile)
 	$(Q)success=:;$(foreach t,$(filter-out linux,$(packages)), \
 				$(call sub-confcheck,$(MAKE),$(t)/)) \
 	$(output-confcheck-y) \
@@ -456,6 +456,18 @@ check-computed-variables: .mkr.kvers FORCE
 		mv .tmp.mkr.toolchain .mkr.toolchain; \
 	else \
 		rm -f .tmp.mkr.toolchain; \
+	fi; \
+	{ \
+	echo ARCH32=$(MKR_ARCH32); \
+	echo CC32='$(shell which $(MKR_CC32))'; \
+	echo CC32VERSION='$(shell $(MKR_CC32) -v 2>&1 | tail -n 1)'; \
+	echo CFLAGS=$(MKR_CFLAGS); \
+	echo LDFLAGS=$(MKR_LDFLAGS); \
+	} > .tmp.mkr.toolchain32; \
+	if ! cmp -s .tmp.mkr.toolchain32 .mkr.toolchain32; then \
+		mv .tmp.mkr.toolchain32 .mkr.toolchain32; \
+	else \
+		rm -f .tmp.mkr.toolchain32; \
 	fi; \
 	/bin/echo -n -e $(foreach p,$(packages), \
 		$(p) $(call mksrcdir,$($($(p)/srcdir-var)))\\n) | \

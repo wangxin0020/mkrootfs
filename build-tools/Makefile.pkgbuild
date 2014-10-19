@@ -7,7 +7,7 @@ src := $(obj)
 PHONY := _build
 _build:
 
-confcheck-y =
+confcheck-y :=
 
 # Read auto.conf if it exists, otherwise ignore
 -include $(O)/include/config/auto.conf
@@ -22,10 +22,13 @@ endif
 
 # Toolchain arguments
 override ARCH := $(MKR_ARCH)
+override ARCH32 := $(MKR_ARCH32)
 override KARCH := $(MKR_KARCH)
 override ARCH_FLAGS := $(MKR_ARCH_FLAGS)
 override CC := $(MKR_CC)
+override CC32 := $(MKR_CC32)
 override CXX := $(MKR_CXX)
+override CXX32 := $(MKR_CXX32)
 override KCC := $(MKR_KCC)
 cppflags-y += -I$(staging)/usr/include
 cflags-y += $(MKR_CFLAGS) $(cppflags-y)
@@ -103,9 +106,25 @@ configure-args-y = \
 	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" CXXFLAGS="$(cxxflags-y)" \
 	LDFLAGS="$(ldflags-y)"
 
+configure32-args-y = \
+	--host="$(MKR_CONFIGURE_HOST32)" \
+	--prefix=/usr \
+	--libdir=/usr/lib32 \
+	CC="$(CC32)" CXX="$(CXX32)" LD="$(cross)ld" AR="$(cross)ar" \
+	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
+	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" CXXFLAGS="$(cxxflags-y)" \
+	LDFLAGS="$(ldflags-y)"
+
 configure-env-y = \
 	PKG_CONFIG_DIR="" \
 	PKG_CONFIG_LIBDIR=$(staging)/usr/lib/pkgconfig:$(staging)/usr/share/pkgconfig \
+	PKG_CONFIG_SYSROOT_DIR=$(staging) \
+	PKG_CONFIG_ALLOW_SYSTEM_LIBS=y \
+	PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=y
+
+configure32-env-y = \
+	PKG_CONFIG_DIR="" \
+	PKG_CONFIG_LIBDIR=$(staging)/usr/lib32/pkgconfig:$(staging)/usr/share/pkgconfig \
 	PKG_CONFIG_SYSROOT_DIR=$(staging) \
 	PKG_CONFIG_ALLOW_SYSTEM_LIBS=y \
 	PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=y
@@ -143,9 +162,17 @@ staging:
 	rm -Rf * || :
 	$(configure-env-y) $(srcdir)/configure $(configure-args-y) && : > $@
 
+.mkr.autotools.default.configured32: $(deps32)
+	rm -Rf * || :
+	$(configure32-env-y) $(srcdir)/configure $(configure32-args-y) && : > $@
+
 .PHONY: default-autotools-compile
 default-autotools-compile: .mkr.autotools.default.configured
 	$(configure-env-y) $(MAKE) $(compile-make-args-y)
+
+.PHONY: default-autotools-compile32
+default-autotools-compile32: .mkr.autotools.default.configured32
+	$(configure32-env-y) $(MAKE) $(compile-make-args-y)
 
 .PHONY: default-autotools-staging
 default-autotools-staging:

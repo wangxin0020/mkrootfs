@@ -22,6 +22,14 @@ END {
 	printf(" \\\n    $(O)/.mkr.toolchain");
 	printf(" \\\n    "FILENAME);
 	printf(" \\\n    $(srctree)/build-tools/Makefile.pkgbuild")
-	printf(" \\\n    build-tools/makefile-deps.awk");
+	printf(" \\\n    $(srctree)/build-tools/makefile-deps.awk\n")
+	printf("\ndeps32 :=");
+	printf(" \\\n    $(mkr-optdeps)")
+	printf(" \\\n    .mkr.makefile.deps");
+	printf(" \\\n    .mkr.srcdir");
+	printf(" \\\n    $(O)/.mkr.toolchain32");
+	printf(" \\\n    "FILENAME);
+	printf(" \\\n    $(srctree)/build-tools/Makefile.pkgbuild")
+	printf(" \\\n    $(srctree)/build-tools/makefile-deps.awk");
 	printf("\n");
 }

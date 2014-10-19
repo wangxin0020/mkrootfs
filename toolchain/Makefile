@@ -8,6 +8,17 @@ LIBDIRS=$(foreach d,lib usr/lib,$(MKR_SYSROOT)/$(d))
 BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
 endif
 
+ifeq ($(MKR_TOOLCHAIN32),y)
+ifeq ($(MKR_SYSROOT_AUTO),y)
+.mkr.toolchain_dirs32: $(deps)
+	$(pkgdir)/toolchain-dirs.sh --32 $(CC32) $(MKR_CFLAGS) > $@ || :
+
+-include .mkr.toolchain_dirs32
+else
+LIBDIRS32=$(foreach d,lib32 usr/lib32,$(MKR_SYSROOT32)/$(d))
+endif
+endif
+
 libs-$(MKR_ARCH_X86_64) +=  ld-linux-x86-64.so
 libs-$(MKR_ARCH_PPC32) +=  ld.so
 libs-y += \
@@ -68,6 +79,39 @@ bins:
 		done; \
 	done
 
+libs32: libs
+	rm -f "$(pkginst)/lib32" "$(pkginst)/usr/lib32"
+	mkdir -p "$(pkginst)/lib32" "$(pkginst)/usr/lib32"
+	for l in $(libs-y); do \
+		case "$$l" in \
+		*.so) \
+			for d in $(LIBDIRS32); do \
+				if [ -e "$$d"/"$$l".[0-9] ]; then \
+					case "$$d"/"$$l".[0-9] in \
+					*usr/lib*) dest=usr/lib32;; \
+					*) dest=lib32;; \
+					esac; \
+					cp --preserve=mode,timestamps "$$d"/"$$l".[0-9] "$(pkginst)/$$dest"; \
+					break; \
+				fi; \
+			done; \
+			;; \
+		*) \
+			for d in $(LIBDIRS32); do \
+				if [ -e "$$d"/"$$l"-*.so ]; then \
+					case "$$d"/"$$l"-*.so in \
+					*usr/lib*) dest=usr/lib32;; \
+					*) dest=lib32;; \
+					esac; \
+					cp --preserve=mode,timestamps "$$d"/"$$l"-*.so "$(pkginst)/$$dest"; \
+					break; \
+				fi; \
+			done; \
+			;; \
+		esac; \
+	done
+
+
 libs:
 	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"; \
 	rm -f "$(pkginst)/lib32" "$(pkginst)/lib64" \
@@ -109,7 +153,9 @@ endif
 		esac; \
 	done
 
-staging: bins libs
+libs32-$(MKR_TOOLCHAIN32) := libs32
+
+staging: bins libs $(libs32-y)
 
 rootfs: default-copyall-rootfs
 

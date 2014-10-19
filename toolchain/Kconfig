@@ -60,6 +60,14 @@ config KARCH
 	default "sh" if ARCH_SH4
 	default "x86" if ARCH_X86_32 || ARCH_X86_64
 
+if ARCH_X86_64
+
+config ARCH32
+       string
+       default "i686" if ARCH_X86_64
+
+endif
+
 config CONFIGURE_HOST
 	string "Configure host string"
 	default "$(ARCH)-linux"
@@ -97,7 +105,7 @@ config ARM_ARCH
 
 choice
 	prompt "Floating points support"
-       	default ARM_FLOAT_VFP_SOFT_ABI if ARM_ARCH = 6 || ARM_ARCH = 7
+	default ARM_FLOAT_VFP_SOFT_ABI if ARM_ARCH = 6 || ARM_ARCH = 7
 	default ARM_FLOAT_SOFT if ARM_ARCH = 4 || ARM_ARCH = 5
 
 config ARM_FLOAT_SOFT
@@ -149,7 +157,7 @@ config SYSROOT_AUTO
        bool "Automatic"
        help
 	 Try and guess toolchain sysroot automatically. If you get an
-       	 error at the configuration check step, choose SYSROOT_MANUAL,
+	 error at the configuration check step, choose SYSROOT_MANUAL,
 	 and set SYSROOT to where the toolchain sysroot is.
 
 config SYSROOT_MANUAL
@@ -161,6 +169,54 @@ if SYSROOT_MANUAL
 
 config SYSROOT
        string "sysroot location"
+
+endif
+
+if ARCH_X86_64
+
+config TOOLCHAIN32
+       bool "Enable use of 32 bits toolchain"
+
+if TOOLCHAIN32
+
+config CONFIGURE_HOST32
+	string "Configure 32 bits version host string"
+	default "$(ARCH32)-linux"
+	help
+	  String passed to the --host argument of configure scripts
+
+config CC32
+	string "32 bits Cross-compiler"
+	default "$(CC) -m32"
+
+config CXX32
+	string "32 bits C++ Cross-compiler"
+	default "$(CXX) -m32"
+
+choice
+	prompt "32 bits Toolchain sysroot"
+	default SYSROOT32_AUTO
+
+config SYSROOT32_AUTO
+       bool "Automatic"
+       help
+	 Try and guess toolchain sysroot automatically. If you get an
+	 error at the configuration check step, choose SYSROOT32_MANUAL,
+	 and set SYSROOT to where the toolchain sysroot is.
+
+config SYSROOT32_MANUAL
+       bool "Manual"
+
+endchoice
+
+if SYSROOT32_MANUAL
+
+config SYSROOT32
+       string "32 bits sysroot location"
+
+endif
+
+endif
 
 endif
 

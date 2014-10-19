@@ -1,4 +1,11 @@
-configure-args-y += \
+compile-$(call not, $(MKR_NTFS32)) := default-autotools-compile
+config-$(call not, $(MKR_NTFS32)) := configure
+lib-$(call not, $(MKR_NTFS32)) := lib
+compile-$(MKR_NTFS32) := default-autotools-compile32
+config-$(MKR_NTFS32) := configure32
+lib-$(MKR_NTFS32) := lib32
+
+$(config-y)-args-y += \
 	--disable-ldconfig \
 	--enable-posix-acls \
 	--enable-xattr-mappings \
@@ -10,7 +17,7 @@ configure-args-y += \
 rootfs-y := \
 	/bin/lowntfs-3g \
 	/bin/ntfs-3g \
-	/lib/libntfs-3g.so.* \
+	/$(lib-y)/libntfs-3g.so.* \
 	/sbin/mkfs.ntfs \
 	/sbin/mount.lowntfs-3g \
 	/sbin/mount.ntfs-3g \
@@ -36,7 +43,7 @@ rootfs-y := \
 	/usr/sbin/ntfsresize \
 	/usr/sbin/ntfsundelete
 
-compile: default-autotools-compile
+compile: $(compile-y)
 
 staging: default-autotools-staging
 
