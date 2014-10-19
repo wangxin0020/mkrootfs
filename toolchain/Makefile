@@ -19,15 +19,9 @@ LIBDIRS32=$(foreach d,lib32 usr/lib32,$(MKR_SYSROOT32)/$(d))
 endif
 endif
 
-libs-$(MKR_ARCH_X86_64) +=  ld-linux-x86-64.so
-libs-$(MKR_ARCH_PPC32) +=  ld.so
 libs-y += \
-	ld.so \
-	ld-linux.so \
-	ld-linux-armhf.so \
 	libc.so \
 	libnss_files.so \
-	ld-uClibc.so \
 	libuClibc \
 	libgcc_s.so \
 	libnsl.so \
@@ -79,81 +73,69 @@ bins:
 		done; \
 	done
 
-libs32: libs
-	rm -f "$(pkginst)/lib32" "$(pkginst)/usr/lib32"
+libs32:
 	mkdir -p "$(pkginst)/lib32" "$(pkginst)/usr/lib32"
-	for l in $(libs-y); do \
-		case "$$l" in \
-		*.so) \
-			for d in $(LIBDIRS32); do \
-				if [ -e "$$d"/"$$l".[0-9] ]; then \
-					case "$$d"/"$$l".[0-9] in \
-					*usr/lib*) dest=usr/lib32;; \
-					*) dest=lib32;; \
-					esac; \
-					cp --preserve=mode,timestamps "$$d"/"$$l".[0-9] "$(pkginst)/$$dest"; \
-					break; \
-				fi; \
-			done; \
-			;; \
-		*) \
-			for d in $(LIBDIRS32); do \
-				if [ -e "$$d"/"$$l"-*.so ]; then \
-					case "$$d"/"$$l"-*.so in \
-					*usr/lib*) dest=usr/lib32;; \
-					*) dest=lib32;; \
-					esac; \
-					cp --preserve=mode,timestamps "$$d"/"$$l"-*.so "$(pkginst)/$$dest"; \
-					break; \
-				fi; \
-			done; \
-			;; \
-		esac; \
+	loaderbase=$(shell basename $(LOADER32)); \
+	loaderdir=$(shell dirname $(LOADER32)); \
+	mkdir -p "$(pkginst)$$loaderdir"; \
+	for l in $$loaderbase $(libs-y); do \
+		for d in $(LIBDIRS32); do \
+			case "$$d" in \
+			*usr/lib*) dest=usr/lib32;; \
+			*) dest=lib32;; \
+			esac; \
+			case "$$l" in \
+			"$$loaderbase") \
+				file="$$d"/"$$l"; \
+				dest="$$loaderdir";; \
+			*.so) file="$$d"/"$$l".[0-9];; \
+			*) file="$$d"/"$$l"-*.so;; \
+			esac; \
+			set -- "$$file"; \
+			[ -e $$1 ] || continue; \
+			cp --preserve=mode,timestamps $$1 "$(pkginst)/$$dest"; \
+			break; \
+		done; \
 	done
 
+libs32-link:
+	ln -s lib "$(pkginst)/lib32"; \
+	ln -s lib "$(pkginst)/usr/lib32"
 
 libs:
 	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"; \
-	rm -f "$(pkginst)/lib32" "$(pkginst)/lib64" \
-		"$(pkginst)/usr/lib32" "$(pkginst)/usr/lib64"; \
+	rm -f "$(pkginst)/lib64" "$(pkginst)/usr/lib64"; \
 	ln -s lib "$(pkginst)/lib64"; \
-	ln -s lib "$(pkginst)/lib32"; \
-	ln -s lib "$(pkginst)/usr/lib64"; \
-	ln -s lib "$(pkginst)/usr/lib32"
+	ln -s lib "$(pkginst)/usr/lib64"
 ifeq ($(MKR_ARM_FLOAT_VFP_HARD_ABI),y)
 	ln -s . "$(pkginst)/lib/arm-linux-gnueabihf"; \
 	ln -s . "$(pkginst)/usr/lib/arm-linux-gnueabihf"
 endif
-	for l in $(libs-y); do \
-		case "$$l" in \
-		*.so) \
-			for d in $(LIBDIRS); do \
-				if [ -e "$$d"/"$$l".[0-9] ]; then \
-					case "$$d"/"$$l".[0-9] in \
-					*usr/lib*) dest=usr/lib;; \
-					*) dest=lib;; \
-					esac; \
-					cp --preserve=mode,timestamps "$$d"/"$$l".[0-9] "$(pkginst)/$$dest"; \
-					break; \
-				fi; \
-			done; \
-			;; \
-		*) \
-			for d in $(LIBDIRS); do \
-				if [ -e "$$d"/"$$l"-*.so ]; then \
-					case "$$d"/"$$l"-*.so in \
-					*usr/lib*) dest=usr/lib;; \
-					*) dest=lib;; \
-					esac; \
-					cp --preserve=mode,timestamps "$$d"/"$$l"-*.so "$(pkginst)/$$dest"; \
-					break; \
-				fi; \
-			done; \
-			;; \
-		esac; \
+	loaderbase=$(shell basename $(LOADER)); \
+	loaderdir=$(shell dirname $(LOADER)); \
+	mkdir -p "$(pkginst)$$loaderdir"; \
+	for l in $$loaderbase $(libs-y); do \
+		for d in $(LIBDIRS); do \
+			case "$$d" in \
+			*usr/lib*) dest=usr/lib;; \
+			*) dest=lib;; \
+			esac; \
+			case "$$l" in \
+			"$$loaderbase") \
+				file="$$d"/"$$l"; \
+				dest="$$loaderdir";; \
+			*.so) file="$$d"/"$$l".[0-9];; \
+			*) file="$$d"/"$$l"-*.so;; \
+			esac; \
+			set -- "$$file"; \
+			[ -e $$1 ] || continue; \
+			cp --preserve=mode,timestamps $$1 "$(pkginst)/$$dest"; \
+			break; \
+		done; \
 	done
 
 libs32-$(MKR_TOOLCHAIN32) := libs32
+libs32-$(call not, $(MKR_TOOLCHAIN32)) := libs32-link
 
 staging: bins libs $(libs32-y)
 

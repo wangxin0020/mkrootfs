@@ -16,9 +16,11 @@ LIBDIRS=
 set -e
 
 # Find out to which ELF class belong the executables this compiler produces
-tmpfile=".elfclass${SUFFIX}"
-echo "int foo(void) { return 0; }"|$compiler -xc -o "$tmpfile" -c -
+tmpfile=".elfbin${SUFFIX}"
+echo "int main(void) { return 0; }"| $compiler -xc -o "$tmpfile" -
 elfclass=`${cross}readelf -h "$tmpfile" | grep Class: | cut -d: -f2`
+elfloader=`${cross}readelf -l "$tmpfile" | \
+sed 's/^.*interpreter: \([^]]*\).*$/\1/;t quit;d;t;:quit q'`
 rm "$tmpfile"
 
 # Get the directories
@@ -54,8 +56,10 @@ fi
 
 LIBDIRS=`echo $LIBDIRS`
 BINDIRS=`echo $BINDIRS`
+LOADER=`echo $elfloader`
 
 cat <<EOF
 LIBDIRS${SUFFIX}=`echo $LIBDIRS`
 BINDIRS${SUFFIX}=`echo $BINDIRS`
+LOADER${SUFFIX}=`echo $LOADER`
 EOF
