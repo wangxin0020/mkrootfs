@@ -447,7 +447,7 @@ PHONY+=FORCE
 check-computed-variables: .mkr.kvers FORCE
 	$(Q){ \
 	echo ARCH=$(MKR_ARCH); \
-	echo CC='$(shell which $(MKR_CC))'; \
+	echo CC='$(shell set -- $(MKR_CC) && which $$1)'; \
 	echo CCVERSION='$(shell $(MKR_CC) -v 2>&1 | tail -n 1)'; \
 	echo CFLAGS=$(MKR_CFLAGS); \
 	echo LDFLAGS=$(MKR_LDFLAGS); \
@@ -459,7 +459,7 @@ check-computed-variables: .mkr.kvers FORCE
 	fi; \
 	{ \
 	echo ARCH32=$(MKR_ARCH32); \
-	echo CC32='$(shell which $(MKR_CC32))'; \
+	echo CC32='$(shell set -- $(MKR_CC32) && which $$1)'; \
 	echo CC32VERSION='$(shell $(MKR_CC32) -v 2>&1 | tail -n 1)'; \
 	echo CFLAGS=$(MKR_CFLAGS); \
 	echo LDFLAGS=$(MKR_LDFLAGS); \
