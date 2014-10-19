@@ -5,7 +5,8 @@ configure-args-y += \
 
 rootfs-y := \
 	/usr/share/terminfo/*/* \
-	/usr/lib/libncurses.so.*
+	/usr/lib/libncurses.so.* \
+	/usr/lib/libtinfo.so.*
 
 compile: default-autotools-compile
 
