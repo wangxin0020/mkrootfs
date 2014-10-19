@@ -457,7 +457,7 @@ check-computed-variables: .mkr.kvers FORCE
 	else \
 		rm -f .tmp.mkr.toolchain; \
 	fi
-ifeq ($(MKR_HAVE_TOOLCHAIN32),y)
+ifeq ($(MKR_TOOLCHAIN32),y)
 	$(Q){ \
 	echo ARCH32=$(MKR_ARCH32); \
 	echo CC32='$(shell set -- $(MKR_CC32) && which $$1)'; \
