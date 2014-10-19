@@ -838,7 +838,8 @@ $(call pkg-targets,clean): %:
 	fi
 
 clean: $(call pkg-targets,clean)
-	$(Q)rm -Rf staging/* rootfs/* .mkr.fakeroot* .mkr.stripped */.mkr.fakeroot
+	$(Q)rm -Rf staging/* rootfs/* .mkr.fakeroot* .mkr.stripped \
+	*/.mkr.fakeroot .mkr.toolchain* .mkr.confcheck linux/.mkr.confcheck
 
 # mrproper - Delete all generated files, including .config
 #

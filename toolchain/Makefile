@@ -10,7 +10,7 @@ endif
 
 ifeq ($(MKR_TOOLCHAIN32),y)
 ifeq ($(MKR_SYSROOT_AUTO),y)
-.mkr.toolchain_dirs32: $(deps)
+.mkr.toolchain_dirs32: $(deps32)
 	$(pkgdir)/toolchain-dirs.sh --32 $(CC32) $(MKR_CFLAGS) > $@ || :
 
 -include .mkr.toolchain_dirs32
