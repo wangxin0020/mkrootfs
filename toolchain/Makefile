@@ -9,7 +9,7 @@ BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
 endif
 
 ifeq ($(MKR_TOOLCHAIN32),y)
-ifeq ($(MKR_SYSROOT_AUTO),y)
+ifeq ($(MKR_SYSROOT32_AUTO),y)
 .mkr.toolchain_dirs32: $(deps32)
 	$(pkgdir)/toolchain-dirs.sh --32 $(CC32) $(MKR_CFLAGS) > $@ || :
 
@@ -17,6 +17,13 @@ ifeq ($(MKR_SYSROOT_AUTO),y)
 else
 LIBDIRS32=$(foreach d,lib lib32 usr/lib32,$(MKR_SYSROOT32)/$(d))
 endif
+endif
+
+ifeq ($(MKR_ARM_FLOAT_VFP),y)
+.mkr.toolchain.arm.vfp.abi: $(deps)
+	$(pkgdir)/toolchain-arm-vfp-abi.sh $(CC) $(MKR_CFLAGS) > $@ || :
+
+staging: .mkr.toolchain.arm.vfp.abi
 endif
 
 libs-y += \
@@ -74,9 +81,15 @@ bins:
 
 libs:
 	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"
-ifeq ($(MKR_ARM_FLOAT_VFP_HARD_ABI),y)
-	ln -s . "$(pkginst)/lib/arm-linux-gnueabihf"; \
-	ln -s . "$(pkginst)/usr/lib/arm-linux-gnueabihf"
+ifeq ($(MKR_ARM_FLOAT_VFP),y)
+	for d in $(LIBDIRS); do \
+		case "$$d" in \
+			*usr/lib*);; \
+			*lib/arm-linux-gnueabihf*) \
+				dest=lib/arm-linux-gnueabihf; \
+				mkdir -p "$(pkginst)/$$dest";; \
+		esac; \
+	done
 endif
 	loaderbase=$(shell basename $(LOADER)); \
 	loaderdir=$(shell dirname $(LOADER)); \
@@ -85,6 +98,8 @@ endif
 		for d in $(LIBDIRS); do \
 			case "$$d" in \
 			*usr/lib*) dest=usr/lib;; \
+			*lib/arm-linux-gnueabihf*) \
+				dest=lib/arm-linux-gnueabihf;; \
 			*) dest=lib;; \
 			esac; \
 			case "$$l" in \
@@ -128,6 +143,7 @@ libs32:
 
 libs32-$(MKR_TOOLCHAIN32) := libs32
 
+.PHONY: bin libs libs32
 staging: bins libs $(libs32-y)
 
 rootfs: default-copyall-rootfs
@@ -139,13 +155,13 @@ confcheck-$(MKR_LIBSTDCPP) += $(call confcheck-tool, $(MKR_CXX), MKR_CXX)
 confcheck-y += $(call confcheck-ifnot, \
 	$(pkgdir)/toolchain-ok.sh \
 		"$(ARCH)" "$(LIBDIRS)" "$(BINDIRS)" $(CC), \
-	Error in toolchain, flags or sysroot settings\
+	Error in toolchain or flags or sysroot settings\
 	maybe SYSROOT_MANUAL is necessary?)
 
 confcheck-$(MKR_TOOLCHAIN32) += $(call confcheck-ifnot, \
 	$(pkgdir)/toolchain-ok.sh \
 		"$(ARCH32)" "$(LIBDIRS32)" "$(BINDIRS32)" $(CC32), \
-	Error in 32 bits toolchain, flags or sysroot settings\
+	Error in 32 bits toolchain or flags or sysroot settings\
 	maybe SYSROOT32_MANUAL is necessary?)
 
 # ARM EABI check

@@ -454,6 +454,7 @@ check-computed-variables: .mkr.kvers FORCE
 	} > .tmp.mkr.toolchain; \
 	if ! cmp -s .tmp.mkr.toolchain .mkr.toolchain; then \
 		mv .tmp.mkr.toolchain .mkr.toolchain; \
+		rm -f toolchain/.mkr.toolchain.arm.vfp.abi; \
 	else \
 		rm -f .tmp.mkr.toolchain; \
 	fi

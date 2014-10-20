@@ -20,6 +20,8 @@ $(O)/linux/.config: ;
 endif
 endif
 
+-include $(O)/toolchain/.mkr.toolchain.arm.vfp.abi
+
 # Toolchain arguments
 override ARCH := $(MKR_ARCH)
 override ARCH32 := $(MKR_ARCH32)

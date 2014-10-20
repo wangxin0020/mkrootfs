@@ -89,14 +89,15 @@ config ARCH_FLAGS
 	string
 	default "-march=armv4t -msoft-float" if ARM_ARCH = 4
 	default "-march=armv5te -msoft-float" if ARM_ARCH = 5 && ARM_FLOAT_SOFT
-	default "-march=armv5te -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 5 && ARM_FLOAT_VFP_SOFT_ABI
-	default "-march=armv5te -mfpu=vfp -mfloat-abi=hard" if ARM_ARCH = 5 && ARM_FLOAT_VFP_HARD_ABI
+	default "-march=armv5te -mfpu=vfp $(ARM_VFP_ABI)" if ARM_ARCH = 5 && ARM_FLOAT_VFP2
 	default "-march=armv6 -msoft-float" if ARM_ARCH = 6 && ARM_FLOAT_SOFT
-	default "-march=armv6 -mfpu=vfp -mfloat-abi=softfp" if ARM_ARCH = 6 && ARM_FLOAT_VFP_SOFT_ABI
-	default "-march=armv6 -mfpu=vfp -mfloat-abi=hard" if ARM_ARCH = 6 && ARM_FLOAT_VFP_HARD_ABI
+	default "-march=armv6 -mfpu=vfp $(ARM_VFP_ABI)" if ARM_ARCH = 6 && ARM_FLOAT_VFP2
 	default "-march=armv7-a -msoft-float" if ARM_ARCH = 7 && ARM_FLOAT_SOFT
-	default "-march=armv7-a -mfpu=vfp3 -mfloat-abi=softfp" if ARM_ARCH = 7 && ARM_FLOAT_VFP_SOFT_ABI
-	default "-march=armv7-a -mfpu=vfp3 -mfloat-abi=hard" if ARM_ARCH = 7 && ARM_FLOAT_VFP_HARD_ABI
+	default "-march=armv7-a -mfpu=vfp3 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP3
+	default "-march=armv7-a -mfpu=vfp3-d16 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP3_D16
+	default "-march=armv7-a -mfpu=neon $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_NEON
+	default "-march=armv7-a -mfpu=vfp4 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP4
+	default "-march=armv7-a -mfpu=vfp4-d16 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP4_D16
 	default "-m32" if ARCH_X86_32
 
 if ARCH_ARM
@@ -108,19 +109,43 @@ config ARM_ARCH
 
 choice
 	prompt "Floating points support"
-	default ARM_FLOAT_VFP_SOFT_ABI if ARM_ARCH = 6 || ARM_ARCH = 7
+	default ARM_FLOAT_VFP2 if ARM_ARCH = 6
+	default ARM_FLOAT_VFP3 if ARM_ARCH = 7
 	default ARM_FLOAT_SOFT if ARM_ARCH = 4 || ARM_ARCH = 5
 
 config ARM_FLOAT_SOFT
 	bool "Soft-float"
 
-config ARM_FLOAT_VFP_SOFT_ABI
-	bool "VFP with soft-float ABI"
+if ARM_ARCH = 5 || ARM_ARCH = 6
 
-config ARM_FLOAT_VFP_HARD_ABI
-	bool "VFP with hard-float ABI"
+config ARM_FLOAT_VFP2
+	bool "VFP2 hard float"
+
+endif
+
+if ARM_ARCH = 7
+
+config ARM_FLOAT_VFP3
+	bool "VFP3 hard float"
+
+config ARM_FLOAT_VFP3_D16
+	bool "VFP3-D16 hard float"
+
+config ARM_FLOAT_NEON
+	bool "NEON hard float"
+
+config ARM_FLOAT_VFP4
+	bool "VFP4 hard float"
+
+config ARM_FLOAT_VFP4_D16
+	bool "VFP4-D16 hard float"
+
+endif
 
 endchoice
+
+config ARM_FLOAT_VFP
+       def_bool !ARM_FLOAT_SOFT
 
 config CFLAGS
 	string "C Compilation flags"
