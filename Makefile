@@ -553,6 +553,8 @@ build-tools/bin/fakeroot-filter: .mkr.builddir $(wait-confcheck) $(srctree)/buil
 			-f $(srctree)/build-tools/fakeroot-1.14.4/Makefile \
 			$(O)/build-tools/bin/fakeroot-filter)
 
+$(filter-out toolchain/compile, $(call pkg-targets,compile)): toolchain/staging
+
 PHONY += $(call pkg-targets,compile)
 $(call pkg-targets,compile): \
 	%/compile: prepare check-computed-variables .mkr.builddir
