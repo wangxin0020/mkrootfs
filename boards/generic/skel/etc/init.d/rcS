@@ -1,12 +1,19 @@
 #! /bin/ash
 
 mount /proc
+# Make dev a tmpfs directory
+if ! grep -q devtmpfs /proc/mounts; then
+    if grep -q devtmpfs /proc/filesystems; then
+	mount -t devtmpfs none /dev
+    else
+	mount -t tmpfs none /dev
+    fi
+fi
 echo /sbin/hotplug > /proc/sys/kernel/hotplug
 
 # Create /dev/shm and /dev/pts for devtmpfs
 mkdir -p /dev/shm /dev/pts
 mount -a
-ACTION=add /sbin/mount_storage.sh &
 mdev -s
 
 if test ! -e /etc/ld.so.cache; then
