@@ -100,6 +100,7 @@ endif
 			*usr/lib*) dest=usr/lib;; \
 			*lib/arm-linux-gnueabihf*) \
 				dest=lib/arm-linux-gnueabihf;; \
+			*lib64*) dest=lib64;; \
 			*) dest=lib;; \
 			esac; \
 			case "$$l" in \
