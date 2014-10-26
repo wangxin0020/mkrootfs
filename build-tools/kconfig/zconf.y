@@ -148,6 +148,7 @@ config_entry_start: T_CONFIG T_WORD T_EOL
 {
 	struct symbol *sym = sym_lookup($2, 0);
 	sym->flags |= SYMBOL_OPTIONAL;
+	sym->file = current_file;
 	menu_add_entry(sym);
 	printd(DEBUG_PARSE, "%s:%d:config %s\n", zconf_curname(), zconf_lineno(), $2);
 };

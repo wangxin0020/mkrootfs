@@ -6,7 +6,6 @@ source "fuse/Kconfig"
 source "libpcap/Kconfig"
 source "ncurses/Kconfig"
 source "util-linux/Kconfig"
-source "valgrind/Kconfig"
 source "xz/Kconfig"
 source "zlib/Kconfig"
 
@@ -52,6 +51,7 @@ source "parted/Kconfig"
 source "rtnet/Kconfig"
 source "strace/Kconfig"
 source "tcpdump/Kconfig"
+source "valgrind/Kconfig"
 
 endmenu
 
