@@ -410,6 +410,13 @@ void menu_finalize(struct menu *parent)
 	}
 }
 
+bool menu_has_prompt(struct menu *menu)
+{
+	if (!menu->prompt)
+		return false;
+	return true;
+}
+
 bool menu_is_visible(struct menu *menu)
 {
 	struct menu *child;
@@ -418,6 +425,7 @@ bool menu_is_visible(struct menu *menu)
 
 	if (!menu->prompt)
 		return false;
+
 	sym = menu->sym;
 	if (sym) {
 		sym_calc_value(sym);
@@ -427,12 +435,14 @@ bool menu_is_visible(struct menu *menu)
 
 	if (visible != no)
 		return true;
+
 	if (!sym || sym_get_tristate_value(menu->sym) == no)
 		return false;
 
 	for (child = menu->list; child; child = child->next)
 		if (menu_is_visible(child))
 			return true;
+
 	return false;
 }
 
