@@ -69,7 +69,9 @@ static inline QString qgettext(const QString& str)
 }
 
 ConfigSettings::ConfigSettings()
+#if QT_VERSION >= 0x040000
 	: QSettings("kernel.org", "qconf")
+#endif
 {
 }
 

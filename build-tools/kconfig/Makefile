@@ -31,7 +31,7 @@ silentoldconfig: $(obj)/conf
 
 localmodconfig: $(obj)/streamline_config.pl $(obj)/conf
 	$(Q)perl $< $(srctree) $(Kconfig) > .tmp.config
-	$(Q)if [ -f .config ]; then 				\
+	$(Q)if [ -f .config ]; then				\
 			cmp -s .tmp.config .config ||		\
 			(mv -f .config .config.old.1;		\
 			 mv -f .tmp.config .config;		\
@@ -46,7 +46,7 @@ localmodconfig: $(obj)/streamline_config.pl $(obj)/conf
 localyesconfig: $(obj)/streamline_config.pl $(obj)/conf
 	$(Q)perl $< $(srctree) $(Kconfig) > .tmp.config
 	$(Q)sed -i s/=m/=y/ .tmp.config
-	$(Q)if [ -f .config ]; then 				\
+	$(Q)if [ -f .config ]; then				\
 			cmp -s .tmp.config .config ||		\
 			(mv -f .config .config.old.1;		\
 			 mv -f .tmp.config .config;		\
@@ -221,20 +221,20 @@ $(obj)/.tmp_qtcheck:
 	      dir="$$(pkg-config $$pkg --variable=prefix)"; \
 	    else \
 	      for d in $$QTDIR /usr/share/qt* /usr/lib/qt*; do \
-	        if [ -f $$d/include/qconfig.h ]; then dir=$$d; break; fi; \
+		if [ -f $$d/include/qconfig.h ]; then dir=$$d; break; fi; \
 	      done; \
 	      if [ -z "$$dir" ]; then \
-	        echo "*"; \
-	        echo "* Unable to find any QT installation. Please make sure that"; \
-	        echo "* the QT4 or QT3 development package is correctly installed and"; \
-	        echo "* either qmake can be found or install pkg-config or set"; \
-	        echo "* the QTDIR environment variable to the correct location."; \
-	        echo "*"; \
-	        false; \
+		echo "*"; \
+		echo "* Unable to find any QT installation. Please make sure that"; \
+		echo "* the QT4 or QT3 development package is correctly installed and"; \
+		echo "* either qmake can be found or install pkg-config or set"; \
+		echo "* the QTDIR environment variable to the correct location."; \
+		echo "*"; \
+		false; \
 	      fi; \
 	      libpath=$$dir/lib; lib=qt; osdir=""; \
 	      $(HOSTCXX) -print-multi-os-directory > /dev/null 2>&1 && \
-	        osdir=x$$($(HOSTCXX) -print-multi-os-directory); \
+		osdir=x$$($(HOSTCXX) -print-multi-os-directory); \
 	      test -d $$libpath/$$osdir && libpath=$$libpath/$$osdir; \
 	      test -f $$libpath/libqt-mt.so && lib=qt-mt; \
 	      cflags="-I$$dir/include"; \
@@ -248,12 +248,10 @@ $(obj)/.tmp_qtcheck:
 	      moc="/usr/bin/moc"; \
 	    fi; \
 	else \
-	  headerpath="\$$(shell qmake -query QT_INSTALL_HEADERS)"; \
-	  libpath="\$$(shell qmake -query QT_INSTALL_LIBS)"; \
-	  binpath="\$$(shell qmake -query QT_INSTALL_BINS)"; \
-	  cflags="-I$$headerpath -I$$headerpath/QtCore -I$$headerpath/QtGui -I$$headerpath/Qt3Support -DQT3_SUPPORT"; \
-	  libs="-L$$libpath -Wl,-rpath,$$libpath -lQtCore -lQtGui -lQt3Support"; \
-	  moc="$$binpath/moc"; \
+	  cflags="\$$(shell pkg-config QtCore QtGui Qt3Support --cflags)"; \
+	  libs="\$$(shell pkg-config QtCore QtGui Qt3Support --libs)"; \
+	  moc="\$$(shell pkg-config QtCore --variable=moc_location)"; \
+	  [ -n "$$moc" ] || moc="\$$(shell pkg-config QtCore --variable=prefix)/bin/moc"; \
 	fi; \
 	echo "KC_QT_CFLAGS=$$cflags" > $@; \
 	echo "KC_QT_LIBS=$$libs" >> $@; \
@@ -271,17 +269,17 @@ $(obj)/.tmp_gtkcheck:
 		if `pkg-config --atleast-version=2.0.0 gtk+-2.0`; then			\
 			touch $@;								\
 		else									\
-			echo "*"; 							\
+			echo "*";							\
 			echo "* GTK+ is present but version >= 2.0.0 is required.";	\
 			echo "*";							\
 			false;								\
 		fi									\
 	else										\
-		echo "*"; 								\
-		echo "* Unable to find the GTK+ installation. Please make sure that"; 	\
-		echo "* the GTK+ 2.0 development package is correctly installed..."; 	\
-		echo "* You need gtk+-2.0, glib-2.0 and libglade-2.0."; 		\
-		echo "*"; 								\
+		echo "*";								\
+		echo "* Unable to find the GTK+ installation. Please make sure that";	\
+		echo "* the GTK+ 2.0 development package is correctly installed...";	\
+		echo "* You need gtk+-2.0, glib-2.0 and libglade-2.0.";			\
+		echo "*";								\
 		false;									\
 	fi
 endif
@@ -294,8 +292,11 @@ $(obj)/qconf.o: $(obj)/qconf.moc $(obj)/lkc_defs.h
 
 $(obj)/gconf.o: $(obj)/lkc_defs.h
 
-$(obj)/%.moc: $(src)/%.h
-	$(KC_QT_MOC) -i $< -o $@
+quiet_cmd_moc = MOC     $@
+      cmd_moc = $(KC_QT_MOC) -i $< -o $@
+
+$(obj)/%.moc: $(src)/%.h $(obj)/.tmp_qtcheck
+	$(call cmd,moc)
 
 $(obj)/lkc_defs.h: $(src)/lkc_proto.h
 	sed < $< > $@ 's/P(\([^,]*\),.*/#define \1 (\*\1_p)/'
