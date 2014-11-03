@@ -19,7 +19,7 @@ void usage(const char *progname)
 static int compar(const void *first, const void *second)
 {
 	long f = (long)first, s = (long)second;
-	
+
 	if (f < s)
 		return -1;
 	if (f > s)
@@ -36,12 +36,12 @@ int main(int argc, const char *argv[])
 	FILE *list;
 	long len;
 	int rc;
-	
+
 	if (argc != 4) {
 		usage(argv[0]);
 		exit(EXIT_FAILURE);
 	}
-	
+
 	basedir = argv[1];
 
 	list = fopen(argv[2], "r");
@@ -58,7 +58,7 @@ int main(int argc, const char *argv[])
 		fprintf(stderr, "malloc failed\n");
 		exit(EXIT_FAILURE);
 	}
-	
+
 	p = filename + strlen(basedir);
 	memcpy(filename, basedir, p - filename);
 	*p++ = '/';
@@ -66,7 +66,7 @@ int main(int argc, const char *argv[])
 		unsigned namelen = strlen(filename) - 1;
 		struct stat sb;
 		void *key;
-		
+
 		filename[namelen] = '\0';
 
 		rc = lstat(filename, &sb);
@@ -76,18 +76,18 @@ int main(int argc, const char *argv[])
 			fprintf(stderr, "lstat(%s): %m");
 			exit(EXIT_FAILURE);
 		}
-		
+
 		key = (void *)(long)sb.st_ino;
 
 		if (tfind(key, &troot, compar)) {
-			fprintf(stderr, "Duplicate inode number %ld\n", 
+			fprintf(stderr, "Duplicate inode number %ld\n",
 				(long)sb.st_ino);
 			exit(EXIT_FAILURE);
 		}
 		tsearch(key, &troot, compar);
 	}
 	fclose(list);
-	
+
 	list = fopen(argv[3], "r");
 	if (list == NULL) {
 		perror("fopen");
@@ -95,13 +95,13 @@ int main(int argc, const char *argv[])
 	}
 	while (fgets(buffer, sizeof(buffer), list)) {
 		long dev, ino;
-		
-		if (sscanf(buffer, "dev=%ld,ino=%ld", &dev, &ino) != 2) {
+
+		if (sscanf(buffer, "dev=%lx,ino=%ld", &dev, &ino) != 2) {
 			fprintf(stderr, "Parse error at %s", buffer);
 			exit(EXIT_FAILURE);
 		}
 
-		if (tfind((void *)ino, &troot, compar)) 
+		if (tfind((void *)ino, &troot, compar))
 			printf("%s", buffer);
 	}
 	fclose(list);
