@@ -6,6 +6,7 @@ ifeq ($(MKR_SYSROOT_AUTO),y)
 else
 LIBDIRS=$(foreach d,lib usr/lib,$(MKR_SYSROOT)/$(d))
 BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
+LOADER=$(patsubst $(MKR_SYSROOT)%,%,$(wildcard $(MKR_SYSROOT)/lib/ld*.so.*))
 endif
 
 ifeq ($(MKR_TOOLCHAIN32),y)
@@ -16,6 +17,7 @@ ifeq ($(MKR_SYSROOT32_AUTO),y)
 -include .mkr.toolchain_dirs32
 else
 LIBDIRS32=$(foreach d,lib lib32 usr/lib32,$(MKR_SYSROOT32)/$(d))
+LOADER32=$(patsubst $(MKR_SYSROOT32)%,%,$(wildcard $(MKR_SYSROOT32)/lib/ld*.so.*))
 endif
 endif
 
