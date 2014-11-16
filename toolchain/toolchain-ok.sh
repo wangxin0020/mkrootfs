@@ -15,7 +15,7 @@ if test -z "$LIBDIRS"; then
     die No directory where to search for libraries
 fi
 
-cross=`expr $cc : '\(.*\)gcc'`
+cross=`expr "$cc" : '\(.*\)gcc'`
 
 for d in $LIBDIRS; do
     for f in $d/libc.so.[0-9] $d/libuClibc*.so $d/libc.a; do
