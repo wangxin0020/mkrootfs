@@ -23,6 +23,10 @@ fi
 echo /sbin/mkrootfs_hotplug > /proc/sys/kernel/hotplug
 mdev -s
 
+if test -e /dev/rtdm/autotune; then
+    /usr/sbin/autotune --semi-quiet --background
+fi
+
 # Update clock
 if grep -q "root=/dev/nfs" /proc/cmdline; then
     rootserver=`dmesg | sed 's/^.*rootserver=\([^,]*\).*$/\1/;t;d'`
