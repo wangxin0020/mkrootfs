@@ -232,9 +232,13 @@ strip:
 		g="$(rootfs)/$$f"; \
 		case "$$f" in \
 		dev/*|*.o|*.a)continue;; \
-		*)if [ ! -f $$g -o ! $$g -nt .mkr.stripped ]; then \
+		*)if [ ! -f $$g ]; then \
 			continue; \
-		  fi;; \
+		  fi; \
+		if [ -e .mkr.stripped -a ! $$g -nt .mkr.stripped ]; then \
+			echo  $$g not new!; \
+			continue; \
+		fi;; \
 		esac; \
 		echo Stripping "$$f"; \
 		case "$$f" in \

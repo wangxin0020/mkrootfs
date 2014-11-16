@@ -342,6 +342,9 @@ all: $(outputs-y) clean-removed-packages
 
 mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
+mkr-fakeroot-staging = touch $(dir $@).mkr.fakeroot; \
+	$(O)/build-tools/bin/fakeroot \
+	-i $(dir $@).mkr.fakeroot.staging -s $(dir $@).mkr.fakeroot.staging
 mkr-shortlog = $(srctree)/build-tools/shortlog.awk
 mkr-lock = set -- lock; . $(srctree)/build-tools/display.sh
 mkr-unlock = set -- unlock; . $(srctree)/build-tools/display.sh
@@ -582,12 +585,14 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot-filte
 		if [ -e $(dir $@)/.mkr.filelist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.filelist \
 				$(dir $@)/.mkr.newfilelist 2> /dev/null \
-			| { mkdir -p staging; cd staging && xargs -r rm -f; }; \
+			| { mkdir -p staging; xargs -n 1 -i -r \
+				rm -f staging/\{\} rootfs/\{\}; }; \
 		fi; if [ -e $(dir $@)/.mkr.dirlist ]; then \
 			comm -2 -3 $(dir $@)/.mkr.dirlist \
 				$(dir $@)/.mkr.newdirlist 2> /dev/null \
-			| { mkdir -p staging; cd staging && xargs -r \
-				rmdir --ignore-fail-on-non-empty || :; }; \
+			| { mkdir -p staging; xargs -n 1 -i -r \
+				rmdir --ignore-fail-on-non-empty \
+				staging/\{\} rootfs/\{\} || :; } > /dev/null 2>&1; \
 		fi; \
 		mv $(dir $@)/.mkr.newfilelist $(dir $@)/.mkr.filelist; \
 		mv $(dir $@)/.mkr.newdirlist $(dir $@)/.mkr.dirlist; \
@@ -610,11 +615,9 @@ PHONY += staging
 staging: $(call only-pkg-targets,staging)
 	$(Q)/sbin/ldconfig -r staging/
 
-.mkr.fakeroot.staging: staging
-	$(Q)for p in $(packages); do \
-		$(O)/build-tools/bin/fakeroot-filter \
-			staging $$p/.mkr.filelist $$p/.mkr.fakeroot; \
-	done > $@
+$(call pkg-targets,.mkr.fakeroot.staging): %/.mkr.fakeroot.staging: %/staging
+	$(Q)$(O)/build-tools/bin/fakeroot-filter \
+		staging $*/.mkr.filelist $*/.mkr.fakeroot > $@
 
 PHONY += $(call pkg-targets,log)
 $(call pkg-targets,log): %:
@@ -627,36 +630,38 @@ $(call pkg-targets,shortlog): %:
 # Rootfs rules, only needed if not skipping rootfs generation.
 ifneq ($(MKR_SKIP_ROOTFS),y)
 PHONY += $(call pkg-targets,rootfs)
-$(call pkg-targets,rootfs): %/rootfs: %/staging
+$(call pkg-targets,rootfs): %/rootfs: %/.mkr.fakeroot.staging
 	$(Q)$(call mkr-run-and-log-on-failure, \
 		Installing package $(dir $@) in rootfs directory, \
 		$(dir $@), \
-		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
+		$(mkr-fakeroot-staging) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
 PHONY += $(call pkg-targets,strip)
 $(call pkg-targets,strip): %/strip: %/rootfs
 	$(Q)$(call mkr-run-and-log, \
 		Stripping package $(dir $@) files in rootfs directory, \
 		$(dir $@), \
-		$(mkr-fakeroot) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
+		$(mkr-fakeroot-staging) $(MAKE) $(call pkg-recurse,$(dir $@)) $(notdir $@))
 
 ifneq ($(MKR_CC),)
 cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
-.mkr.fakeroot: $(call only-pkg-targets,strip) FORCE
-	$(Q)for p in $(packages); do \
-		$(O)/build-tools/bin/fakeroot-filter \
-			rootfs $$p/.mkr.filelist $$p/.mkr.fakeroot; \
-	done > $@
+$(call pkg-targets,.mkr.fakeroot.rootfs): %/.mkr.fakeroot.rootfs: %/strip
+	$(Q)$(O)/build-tools/bin/fakeroot-filter \
+		rootfs $*/.mkr.filelist $*/.mkr.fakeroot > $@
+
+.mkr.fakeroot: $(call only-pkg-targets,.mkr.fakeroot.rootfs) FORCE
+	$(Q)cat $(call pkg-targets,.mkr.fakeroot.rootfs) > $@
 
 PHONY += rootfs
 rootfs: .mkr.fakeroot
 	$(Q)/sbin/ldconfig -r rootfs/
 
 else
-.mkr.fakeroot: .mkr.fakeroot.staging
-	$(Q)cp $< $@
+.mkr.fakeroot: $(call pkg-targets,.mkr.fakeroot.staging)
+	$(Q)cat $^ > $@
+
 endif
 
 dis_packages:=$(filter-out $(packages),$(all_packages))
