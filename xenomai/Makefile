@@ -137,6 +137,16 @@ rootfs-$(MKR_XENO_VRTX) += \
 rootfs-$(MKR_XENO_VXWORKS) += \
 	/usr/$(lib-y)/libvxworks.so.* \
 	$(common-libs-y)
+rootfs-$(MKR_XENO_RTNET_TOOLS) += \
+	/usr/etc/rtnet.conf \
+	/usr/etc/tdma.conf \
+	/usr/sbin/nomaccfg \
+	/usr/sbin/rtcfg \
+	/usr/sbin/rtifconfig \
+	/usr/sbin/rtiwconfig \
+	/usr/sbin/rtping \
+	/usr/sbin/rtroute \
+	/usr/sbin/tdmacfg
 
 MKR_XENO_TESTDIR ?= /usr/bin
 

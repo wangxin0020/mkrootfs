@@ -150,6 +150,12 @@ config XENO_TESTSUITE_UNFREQUENT
 	 - rtdmtest
 	 - sigtest
 
+config XENO_RTNET_TOOLS
+       bool "Install RTnet tools"
+       depends on XENO_FORGE
+       help
+	 Install the user-space tools needed to operate RTnet
+
 endmenu
 
 menu "Advanced configuration options"
