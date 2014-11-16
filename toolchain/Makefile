@@ -83,16 +83,6 @@ bins:
 
 libs:
 	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"
-ifeq ($(MKR_ARM_FLOAT_VFP),y)
-	for d in $(LIBDIRS); do \
-		case "$$d" in \
-			*usr/lib*);; \
-			*lib/arm-linux-gnueabihf*) \
-				dest=lib/arm-linux-gnueabihf; \
-				mkdir -p "$(pkginst)/$$dest";; \
-		esac; \
-	done
-endif
 	loaderbase=$(shell basename $(LOADER)); \
 	loaderdir=$(shell dirname $(LOADER)); \
 	mkdir -p "$(pkginst)$$loaderdir"; \
@@ -100,9 +90,6 @@ endif
 		for d in $(LIBDIRS); do \
 			case "$$d" in \
 			*usr/lib*) dest=usr/lib;; \
-			*lib/arm-linux-gnueabihf*) \
-				dest=lib/arm-linux-gnueabihf;; \
-			*lib64*) dest=lib64;; \
 			*) dest=lib;; \
 			esac; \
 			case "$$l" in \
@@ -114,6 +101,10 @@ endif
 			esac; \
 			set -- "$$file"; \
 			[ -e $$1 ] || continue; \
+			if [ "$$l" = "libc.so" ]; then \
+				mkdir -p $(pkginst)/etc; \
+				echo "/$$dest/`basename $$1`" > $(pkginst)/etc/ld.so.preload; \
+			fi; \
 			cp --preserve=mode,timestamps $$1 "$(pkginst)/$$dest"; \
 			break; \
 		done; \

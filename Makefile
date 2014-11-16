@@ -608,6 +608,7 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot-filte
 
 PHONY += staging
 staging: $(call only-pkg-targets,staging)
+	$(Q)/sbin/ldconfig -r staging/
 
 .mkr.fakeroot.staging: staging
 	$(Q)for p in $(packages); do \
@@ -643,13 +644,16 @@ ifneq ($(MKR_CC),)
 cross := $(shell expr $(MKR_CC) : '\(.*\)gcc')
 endif
 
-PHONY += rootfs
-
 .mkr.fakeroot: $(call only-pkg-targets,strip) FORCE
 	$(Q)for p in $(packages); do \
 		$(O)/build-tools/bin/fakeroot-filter \
 			rootfs $$p/.mkr.filelist $$p/.mkr.fakeroot; \
 	done > $@
+
+PHONY += rootfs
+rootfs: .mkr.fakeroot
+	$(Q)/sbin/ldconfig -r rootfs/
+
 else
 .mkr.fakeroot: .mkr.fakeroot.staging
 	$(Q)cp $< $@
