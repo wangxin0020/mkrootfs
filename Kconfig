@@ -118,6 +118,23 @@ config OUT_INITRAMFS_TFTP
 
 if OUT_INITRAMFS_TFTP
 
+config OUT_INITRAMFS_UBOOT
+       bool "Prepare the initramfs for U-boot"
+
+       help
+	 Run mkimage to prepare the initramfs image for loading with U-boot.
+
+if OUT_INITRAMFS_UBOOT
+
+config OUT_INITRAMFS_UBOOT_LOADADDR
+       string "Initramfs load address"
+       default ""
+       help
+	 It is necessary to pass the initramfs load address to u-boot mkimage
+	 tool
+
+endif
+
 config OUT_INITRAMFS_DEST
 	string "Initramfs destination"
 	default "/var/lib/tftpboot/$(MKR_BOARD)/initrd-$(KERNELVERSION)"

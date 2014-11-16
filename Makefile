@@ -770,29 +770,42 @@ initramfs.cpio: $(rootfs-y) .mkr.fakeroot
 		(cd $(rootfs-y); find . | cpio -o -H newc) \
 		> $@; }'
 	$(Q)echo Generating $@... done
+	$(Q)du --apparent-size -h $@
 
-ifeq ($(MKR_OUT_INITRAMFS_GZ),y)
-INITRAMFS_OUT := initramfs.cpio.gz
 initramfs.cpio.gz: initramfs.cpio
 	$(Q)echo Generating $@...
 	$(Q)gzip -c $<  > $@
 	$(Q)echo Generating $@... done
-endif
+	$(Q)du --apparent-size -h $@
 
-ifeq ($(MKR_OUT_INITRAMFS_XZ),y)
-INITRAMFS_OUT := initramfs.cpio.xz
 initramfs.cpio.xz: initramfs.cpio
 	$(Q)echo Generating $@...
 	$(Q)xz --check=crc32 --lzma2 -kf3 $<
 	$(Q)echo Generating $@... done
+	$(Q)du --apparent-size -h $@
+
+%.ub: %
+	$(Q)echo Generating $@...
+	$(Q)mkimage -A $(MKR_KARCH) -O linux -T ramdisk -C none \
+		-a $(MKR_OUT_INITRAMFS_UBOOT_LOADADDR) \
+		-n ramdisk -d $< $@
+	$(Q)echo Generating $@... done
+
+initramfs-out1-$(MKR_OUT_INITRAMFS_GZ) = initramfs.cpio.gz
+initramfs-out1-$(MKR_OUT_INITRAMFS_XZ) = initramfs.cpio.xz
+ifeq ($(MKR_OUT_INITRAMFS_GZ)$(MKR_OUT_INITRAMFS_XZ),)
+initramfs-out1-y := initramfs.cpio
 endif
+initramfs-out2-$(MKR_OUT_INITRAMFS_UBOOT) := $(initramfs-out1-y).ub
+initramfs-out2-$(call not, $(MKR_OUT_INITRAMFS_UBOOT)) := $(initramfs-out1-y)
 
 PHONY += initramfs-tftp
-initramfs-tftp: $(INITRAMFS_OUT)
+initramfs-tftp: $(initramfs-out2-y)
+	chmod a+r $<
 ifneq (,$(findstring :, $(MKR_OUT_INITRAMFS_DEST)))
-	scp $< $(MKR_OUT_INITRAMFS_DEST)
+	scp -p $< $(MKR_OUT_INITRAMFS_DEST)
 else
-	cp $< $(MKR_OUT_INITRAMFS_DEST)
+	cp -a $< $(MKR_OUT_INITRAMFS_DEST)
 endif
 endif
 
