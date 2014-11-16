@@ -154,8 +154,20 @@ confcheck:
 default-confcheck:
 	$(Q)success=:;$(confcheck-y) $$success
 
+$(O)/include/config/skip/rootfs/modules/strip.h:
+
+.mkr.rmstrip: $(O)/include/config/skip/rootfs/modules/strip.h
+	$(Q)cat $(CURDIR)/.mkr.filelist | while read f; do \
+		case "$$f" in \
+		*.ko)rm -f "$(rootfs)/$$f";; \
+		esac; \
+	done; rm -f .mkr.stripped; : > $@
+
+rmstrip-$(call not, $(MKR_SKIP_ROOTFS)) := .mkr.rmstrip
+
 .PHONY: staging
-staging:
+staging: $(rmstrip-y)
+
 
 # Rules for building autoconf packages
 # Use an improbable stamp name in order to avoid conflicts with
@@ -224,7 +236,9 @@ default-rootfs:
 strip-base := strip -R .note -R .comment
 strip-bin := $(cross)$(strip-base) -s
 strip-lib := $(cross)$(strip-base) --strip-unneeded
-strip-mod := $(kcross)$(strip-base) --strip-unneeded
+strip-mod-$(call not, $(MKR_SKIP_ROOTFS_MODULES_STRIP)) := \
+		 $(kcross)$(strip-base) --strip-unneeded
+strip-mod-$(MKR_SKIP_ROOTFS_MODULES_STRIP) := :
 
 .PHONY: strip
 strip:
@@ -242,7 +256,7 @@ strip:
 		esac; \
 		echo Stripping "$$f"; \
 		case "$$f" in \
-		*.ko) $(strip-mod) $$g > /dev/null 2>&1 || :;; \
+		*.ko) $(strip-mod-y) $$g > /dev/null 2>&1 || :;; \
 		*.so.*) $(strip-lib) $$g > /dev/null 2>&1 || :;; \
 		*) $(strip-bin) $$g > /dev/null 2>&1 || :;; \
 		esac; \

@@ -848,7 +848,7 @@ $(call pkg-targets,clean): %:
 		echo Cleaning $(dir $@)... failed; \
 		exit 1; \
 	else \
-		rm -f $(dir $@).mkr.fakeroot; \
+		rm -f $(dir $@).mkr.fakeroot* $(dir $@).mkr.rmstrip; \
 		cat $(dir $@).mkr.filelist 2> /dev/null | \
 		{ cd staging; xargs -r rm -f; } > /dev/null 2>&1; \
 		cat $(dir $@).mkr.filelist 2> /dev/null | \

@@ -166,4 +166,17 @@ config SKIP_ROOTFS
 	 Note that if you do not enable this option, you will need the
 	 strip tool provided by the toolchain you use.
 
+if !SKIP_ROOTFS
+
+config SKIP_ROOTFS_MODULES_STRIP
+       bool "Skip stripping kernel modules"
+       default y
+
+       help
+	 This option avoids stripping kernel modules. This eases debugging,
+	 as with stripped modules, kernel backtraces get the wrong symbol
+	 names.
+
+endif
+
 endmenu
