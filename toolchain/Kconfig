@@ -96,8 +96,8 @@ config ARCH_FLAGS
 	default "-march=armv7-a -mfpu=vfp3 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP3
 	default "-march=armv7-a -mfpu=vfp3-d16 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP3_D16
 	default "-march=armv7-a -mfpu=neon $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_NEON
-	default "-march=armv7-a -mfpu=vfp4 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP4
-	default "-march=armv7-a -mfpu=vfp4-d16 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP4_D16
+	default "-march=armv7-a -mfpu=vfpv4 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP4
+	default "-march=armv7-a -mfpu=vfpv4-d16 $(ARM_VFP_ABI)" if ARM_ARCH = 7 && ARM_FLOAT_VFP4_D16
 	default "-m32" if ARCH_X86_32
 
 if ARCH_ARM
