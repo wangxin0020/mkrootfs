@@ -9,18 +9,19 @@ if ! grep -q devtmpfs /proc/mounts; then
 	mount -t tmpfs none /dev
     fi
 fi
-echo /sbin/hotplug > /proc/sys/kernel/hotplug
 
 # Create /dev/shm and /dev/pts for devtmpfs
 mkdir -p /dev/shm /dev/pts
 mount -a
-mdev -s
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
     ldconfig
     echo done
 fi
+
+echo /sbin/mkrootfs_hotplug > /proc/sys/kernel/hotplug
+mdev -s
 
 # Update clock
 if grep -q "root=/dev/nfs" /proc/cmdline; then
