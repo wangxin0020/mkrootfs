@@ -659,7 +659,7 @@ rootfs: .mkr.fakeroot
 	$(Q)/sbin/ldconfig -r rootfs/
 
 else
-.mkr.fakeroot: $(call pkg-targets,.mkr.fakeroot.staging)
+.mkr.fakeroot: $(call only-pkg-targets,.mkr.fakeroot.staging)
 	$(Q)cat $^ > $@
 
 endif
