@@ -17,6 +17,7 @@ config UTIL_LINUX_LIBUUID
 
 config UTIL_LINUX_LIBBLKID
        bool "Build libblkid"
+       select UTIL_LINUX_LIBUUID
        help
 	 Build the libblkid librarry. This library is used by
 	 utilities such as e2fsprogs.

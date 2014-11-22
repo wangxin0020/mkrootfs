@@ -6,7 +6,6 @@ rootfs-y :=					\
 
 configure-args-y +=				\
 	--disable-nls				\
-	--disable-libblkid			\
 	--disable-libmount			\
 	--disable-libsmartcols			\
 	--disable-mount				\
