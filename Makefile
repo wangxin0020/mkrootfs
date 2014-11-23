@@ -613,7 +613,6 @@ $(call pkg-targets,staging): %/staging: %/compile build-tools/bin/fakeroot-filte
 
 PHONY += staging
 staging: $(call only-pkg-targets,staging)
-	$(Q)/sbin/ldconfig -r staging/
 
 $(call pkg-targets,.mkr.fakeroot.staging): %/.mkr.fakeroot.staging: %/staging
 	$(Q)$(O)/build-tools/bin/fakeroot-filter \
@@ -656,7 +655,6 @@ $(call pkg-targets,.mkr.fakeroot.rootfs): %/.mkr.fakeroot.rootfs: %/strip
 
 PHONY += rootfs
 rootfs: .mkr.fakeroot
-	$(Q)/sbin/ldconfig -r rootfs/
 
 else
 .mkr.fakeroot: $(call only-pkg-targets,.mkr.fakeroot.staging)

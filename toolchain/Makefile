@@ -1,5 +1,5 @@
 ifeq ($(MKR_SYSROOT_AUTO),y)
-.mkr.toolchain_dirs: $(deps)
+.mkr.toolchain_dirs: $(deps) $(pkgdir)/toolchain-dirs.sh
 	$(pkgdir)/toolchain-dirs.sh $(CC) $(MKR_CFLAGS) > $@ || :
 
 -include .mkr.toolchain_dirs
@@ -11,7 +11,7 @@ endif
 
 ifeq ($(MKR_TOOLCHAIN32),y)
 ifeq ($(MKR_SYSROOT32_AUTO),y)
-.mkr.toolchain_dirs32: $(deps32)
+.mkr.toolchain_dirs32: $(deps32) $(pkgdir)/toolchain-dirs.sh
 	$(pkgdir)/toolchain-dirs.sh --32 $(CC32) $(MKR_CFLAGS) > $@ || :
 
 -include .mkr.toolchain_dirs32
@@ -83,9 +83,12 @@ bins:
 
 libs:
 	mkdir -p "$(pkginst)/lib" "$(pkginst)/usr/lib"
-	loaderbase=$(shell basename $(LOADER)); \
-	loaderdir=$(shell dirname $(LOADER)); \
-	mkdir -p "$(pkginst)$$loaderdir"; \
+	if [ -n "$(LOADER_FALLBACK)" ]; then \
+		$(srctree)/build-tools/relln.sh \
+			"$(pkginst)/lib" "$(pkginst)$(LOADER_FALLBACK)"; \
+	fi
+	mkdir -p "$(pkginst)$(shell dirname $(LOADER))"
+	cp --preserve=mode,timestamps "$(LOADER_SRC)" "$(pkginst)/$(LOADER)"
 	for l in $$loaderbase $(libs-y); do \
 		for d in $(LIBDIRS); do \
 			case "$$d" in \
@@ -93,18 +96,11 @@ libs:
 			*) dest=lib;; \
 			esac; \
 			case "$$l" in \
-			"$$loaderbase") \
-				file="$$d"/"$$l"; \
-				dest="$$loaderdir";; \
 			*.so) file="$$d"/"$$l".[0-9];; \
 			*) file="$$d"/"$$l"-*.so;; \
 			esac; \
 			set -- "$$file"; \
 			[ -e $$1 ] || continue; \
-			if [ "$$l" = "libc.so" ]; then \
-				mkdir -p $(pkginst)/etc; \
-				echo "/$$dest/`basename $$1`" > $(pkginst)/etc/ld.so.preload; \
-			fi; \
 			cp --preserve=mode,timestamps $$1 "$(pkginst)/$$dest"; \
 			break; \
 		done; \
@@ -112,9 +108,8 @@ libs:
 
 libs32:
 	mkdir -p "$(pkginst)/lib32" "$(pkginst)/usr/lib32"
-	loaderbase=$(shell basename $(LOADER32)); \
-	loaderdir=$(shell dirname $(LOADER32)); \
-	mkdir -p "$(pkginst)$$loaderdir"; \
+	mkdir -p "$(pkginst)$(shell dirname $(LOADER32))"
+	cp --preserve=mode,timestamps "$(LOADER_SRC32)" "$(pkginst)/$(LOADER32)"
 	for l in $$loaderbase $(libs-y); do \
 		for d in $(LIBDIRS32); do \
 			case "$$d" in \
@@ -122,9 +117,6 @@ libs32:
 			*) dest=lib32;; \
 			esac; \
 			case "$$l" in \
-			"$$loaderbase") \
-				file="$$d"/"$$l"; \
-				dest="$$loaderdir";; \
 			*.so) file="$$d"/"$$l".[0-9];; \
 			*) file="$$d"/"$$l"-*.so;; \
 			esac; \

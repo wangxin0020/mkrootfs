@@ -21,7 +21,7 @@ echo "int main(void) { return 0; }" | $compiler -xc -o "$tmpfile" -
 elfclass=`${cross}readelf -h "$tmpfile" | grep Class: | cut -d: -f2`
 elfloader=`${cross}readelf -l "$tmpfile" | \
 sed 's/^.*interpreter: \([^]]*\).*$/\1/;t quit;d;t;:quit q'`
-rm "$tmpfile"
+rm -f "$tmpfile"
 
 # Get the directories
 sysroot=`$compiler --print-sysroot 2>/dev/null`
@@ -54,12 +54,35 @@ else
     done | sort -u`
 fi
 
+# Find the loader in the toolchain directories
+loaderbase=`basename $elfloader`
+for d in $LIBDIRS; do
+    [ -e "$d/$loaderbase" ] || continue
+    LOADER_SRC="$d/$loaderbase"
+    break
+done
+
+# Find the loader fallback directory
+for d in `strings -a $LOADER_SRC | grep '^/lib'`; do
+    if [ -z "$LOADER_FALLBACK" ]; then
+	LOADER_FALLBACK=`expr "$d" : '\(.*\)/'`
+    fi
+    if [ "$d" = "/lib/" ]; then
+	LOADER_FALLBACK=""
+	break
+    fi
+done
+
 LIBDIRS=`echo $LIBDIRS`
 BINDIRS=`echo $BINDIRS`
 LOADER=`echo $elfloader`
+LOADER_SRC=`echo $LOADER_SRC`
+LOADER_FALLBACK=`echo $LOADER_FALLBACK`
 
 cat <<EOF
 LIBDIRS${SUFFIX}=`echo $LIBDIRS`
 BINDIRS${SUFFIX}=`echo $BINDIRS`
 LOADER${SUFFIX}=`echo $LOADER`
+LOADER_SRC${SUFFIX}=`echo $LOADER_SRC`
+LOADER_FALLBACK${SUFFIX}=`echo $LOADER_FALLBACK`
 EOF
