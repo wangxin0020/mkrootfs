@@ -6,7 +6,8 @@ ifeq ($(MKR_SYSROOT_AUTO),y)
 else
 LIBDIRS=$(foreach d,lib usr/lib,$(MKR_SYSROOT)/$(d))
 BINDIRS=$(foreach d,sbin bin usr/sbin usr/bin,$(MKR_SYSROOT)/$(d))
-LOADER=$(patsubst $(MKR_SYSROOT)%,%,$(wildcard $(MKR_SYSROOT)/lib/ld*.so.*))
+LOADER_SRC=$(wildcard $(MKR_SYSROOT)/lib/ld*.so.*)
+LOADER=$(patsubst $(MKR_SYSROOT)%,%,$(LOADER_SRC))
 endif
 
 ifeq ($(MKR_TOOLCHAIN32),y)
