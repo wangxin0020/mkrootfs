@@ -1,0 +1,15 @@
+menu "Rpcbind"
+
+config RPCBIND
+	package "Rpcbind"
+	build_select LIBTIRPC
+
+if RPCBIND
+
+config RPCBIND_SRCDIR
+       srcdir "Source directory"
+       default "rpcbind-*"
+
+endif
+
+endmenu

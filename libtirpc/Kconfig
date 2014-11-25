@@ -1,0 +1,14 @@
+menu "libtirpc"
+
+config LIBTIRPC
+	package "TIRPC library"
+
+if LIBTIRPC
+
+config LIBTIRPC_SRCDIR
+       srcdir "Source directory"
+       default "libtirpc-*"
+
+endif
+
+endmenu
