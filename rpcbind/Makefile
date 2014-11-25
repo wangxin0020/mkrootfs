@@ -1,4 +1,4 @@
-configure-env-y := prefix=/
+configure-env-y += prefix=/
 
 rootfs-y += \
 	/sbin/rpcbind
