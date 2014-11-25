@@ -8,7 +8,6 @@ DIRS= \
 	/etc/init.d \
 	/root \
 	/var \
-	/var/run \
 	/mnt
 
 mount-dev-sed := \

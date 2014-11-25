@@ -35,6 +35,9 @@ if grep -q "root=/dev/nfs" /proc/cmdline; then
     fi
 fi
 
+# Create root of run state information
+mkdir -p /var/run
+
 # Start log daemons
 mkdir -p /var/log
 syslogd -S -D -L
