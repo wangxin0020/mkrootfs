@@ -1,6 +1,7 @@
+configure-env-y := prefix=/
 
 rootfs-y += \
-	/usr/sbin/rpcbind
+	/sbin/rpcbind
 
 compile: default-autotools-compile
 
