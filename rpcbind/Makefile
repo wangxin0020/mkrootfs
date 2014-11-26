@@ -1,4 +1,4 @@
-configure-args-y := \
+configure-args-y += \
 	--with-rpcuser=daemon
 
 rootfs-y += \
