@@ -1,7 +1,9 @@
-configure-env-y += prefix=/
+configure-args-y := \
+	--with-rpcuser=daemon
 
 rootfs-y += \
-	/sbin/rpcbind
+	/usr/bin/rpcbind \
+	/usr/bin/rpcinfo
 
 compile: default-autotools-compile
 
