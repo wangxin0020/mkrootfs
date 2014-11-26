@@ -33,7 +33,7 @@ skel:
 		done; \
 		cp -dR --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
 		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
-		chmod a+rx "$(pkginst)/sbin/mount_storage.sh"
+		chmod a+rx "$(pkginst)/sbin/mount_storage.sh"; \
 	}
 
 one-map:
