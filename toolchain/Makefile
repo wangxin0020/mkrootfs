@@ -76,7 +76,8 @@ bins:
 			esac; \
 			cp --preserve=timestamps "$$bin" "$(pkginst)/$$dest"; \
 			case "$$b" in \
-			ldd) sed -i 's/bash/ash/g' "$(pkginst)/$$dest/$$b";; \
+			ldd) sed -i 's/bash/ash/g' "$(pkginst)/$$dest/$$b"; \
+				chmod a+rx "$(pkginst)/$$dest/$$b";; \
 			esac; \
 			break; \
 		done; \
