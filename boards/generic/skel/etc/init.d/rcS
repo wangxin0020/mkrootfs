@@ -12,7 +12,7 @@ fi
 
 # Create /dev/shm and /dev/pts for devtmpfs
 mkdir -p /dev/shm /dev/pts
-mount -a
+mount -a -O no_netdev
 
 if test ! -e /etc/ld.so.cache; then
     echo -n 'Running ldconfig...'
@@ -81,6 +81,14 @@ if test -e /usr/sbin/dropbear; then
     fi
     dropbear -B -R
 fi
+
+# Start rpcbind
+if test -e /usr/bin/rpcbind; then
+    /usr/bin/rpcbind
+fi
+
+# Mount file systems over network devices
+mount -a -O _netdev
 
 # Install ltp (old versions)
 if test -e /ltp && test ! -e /ltp/.installed -o ! -e /ltp/testcases/bin/hackbench; then
