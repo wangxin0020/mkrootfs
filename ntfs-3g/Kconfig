@@ -3,6 +3,7 @@ menu "Ntfs-3g"
 config NTFS
 	package "Ntfs-3g tools"
 	build_select FUSE
+	build_select UTIL_LINUX
 
 if NTFS
 
@@ -13,6 +14,11 @@ config NTFS32
 config NTFS_SRCDIR
        srcdir "Source directory"
        default "ntfs-3g_*"
+
+config NTFS_LIBUUID
+       def_bool y
+       select UTIL_LINUX_LIBUUID
+
 
 endif
 
