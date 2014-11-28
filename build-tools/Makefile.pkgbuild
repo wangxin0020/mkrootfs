@@ -103,6 +103,7 @@ kcross := $(shell expr $(KCC) : '\(.*\)gcc')
 configure-args-y = \
 	--host="$(MKR_CONFIGURE_HOST)" \
 	--prefix=/usr \
+	--with-sysroot="$(staging)" \
 	CC="$(CC)" CXX="$(CXX)" LD="$(cross)ld" AR="$(cross)ar" \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
 	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" CXXFLAGS="$(cxxflags-y)" \
@@ -112,6 +113,7 @@ configure32-args-y = \
 	--host="$(MKR_CONFIGURE_HOST32)" \
 	--prefix=/usr \
 	--libdir=/usr/lib32 \
+	--with-sysroot="$(staging)" \
 	CC="$(CC32)" CXX="$(CXX32)" LD="$(cross)ld" AR="$(cross)ar" \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
 	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" CXXFLAGS="$(cxxflags-y)" \
