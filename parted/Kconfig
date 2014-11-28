@@ -11,9 +11,9 @@ config PARTED_SRCDIR
        srcdir "Source directory"
        default "parted-*"
 
-config PARTED_LIBUUID
+config PARTED_LIBBLKID
        def_bool y
-       select UTIL_LINUX_LIBUUID
+       select UTIL_LINUX_LIBBLKID
 
 endif
 
