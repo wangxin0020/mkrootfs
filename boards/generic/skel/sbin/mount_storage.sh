@@ -21,7 +21,7 @@ remove)
 
 add)
     mkdir -p $mntpt
-    fstype=`blkid "/dev/$MDEV" | sed 's,.*TYPE="\(.*\)".*,\1,;t;d'`
+    fstype=`blkid "/dev/$MDEV" | sed 's,.*TYPE="\([^"]*\)".*,\1,;t;d'`
     if test "$fstype" = "swap"; then
 	swapon /dev/$MDEV
 	rmdir $mntpt
