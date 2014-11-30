@@ -1,4 +1,5 @@
 configure-args-y += \
+	ac_cv_prog_NCURSES_CONFIG=$(staging)/usr/bin/ncurses5-config \
 	--with-ncurses
 
 rootfs-y := /usr/bin/dialog
