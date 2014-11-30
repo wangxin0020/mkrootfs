@@ -91,7 +91,7 @@ libs:
 	fi
 	mkdir -p "$(pkginst)$(shell dirname $(LOADER))"
 	cp --preserve=mode,timestamps "$(LOADER_SRC)" "$(pkginst)/$(LOADER)"
-	for l in $$loaderbase $(libs-y); do \
+	for l in $(libs-y); do \
 		for d in $(LIBDIRS); do \
 			case "$$d" in \
 			*usr/lib*) dest=usr/lib;; \
@@ -101,7 +101,7 @@ libs:
 			*.so) file="$$d"/"$$l".[0-9];; \
 			*) file="$$d"/"$$l"-*.so;; \
 			esac; \
-			set -- "$$file"; \
+			set -- $$file; \
 			[ -e $$1 ] || continue; \
 			cp --preserve=mode,timestamps $$1 "$(pkginst)/$$dest"; \
 			break; \
@@ -112,7 +112,7 @@ libs32:
 	mkdir -p "$(pkginst)/lib32" "$(pkginst)/usr/lib32"
 	mkdir -p "$(pkginst)$(shell dirname $(LOADER32))"
 	cp --preserve=mode,timestamps "$(LOADER_SRC32)" "$(pkginst)/$(LOADER32)"
-	for l in $$loaderbase $(libs-y); do \
+	for l in $(libs-y); do \
 		for d in $(LIBDIRS32); do \
 			case "$$d" in \
 			*usr/lib*) dest=usr/lib32;; \
@@ -122,7 +122,7 @@ libs32:
 			*.so) file="$$d"/"$$l".[0-9];; \
 			*) file="$$d"/"$$l"-*.so;; \
 			esac; \
-			set -- "$$file"; \
+			set -- $$file; \
 			[ -e $$1 ] || continue; \
 			cp --preserve=mode,timestamps $$1 "$(pkginst)/$$dest"; \
 			break; \
