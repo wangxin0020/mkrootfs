@@ -1,7 +1,9 @@
 configure-args-y += \
 	--with-shared \
 	--without-progs \
-	--without-manpages
+	--without-manpages \
+	--without-ada \
+	--without-gpm
 
 rootfs-y := \
 	/usr/share/terminfo/*/* \
