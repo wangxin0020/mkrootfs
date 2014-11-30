@@ -2,6 +2,7 @@ source "toolchain/Kconfig"
 
 menu "Libraries"
 
+source "alsa-lib/Kconfig"
 source "fuse/Kconfig"
 source "libpcap/Kconfig"
 source "ncurses/Kconfig"
@@ -38,6 +39,7 @@ endmenu
 
 menu "Tools"
 
+source "alsa-utils/Kconfig"
 source "debootstrap/Kconfig"
 source "dialog/Kconfig"
 source "dosfstools/Kconfig"

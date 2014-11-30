@@ -1,0 +1,19 @@
+menu "alsa-utils"
+
+config ALSA_UTILS
+	build_select ALSA_LIB
+	package "alsa-utils tools"
+
+if ALSA_UTILS
+
+config ALSA_UTILS_SRCDIR
+       srcdir "Source directory"
+       default "alsa-utils-*"
+
+config ALSA_UTILS_ALSAMIXER
+       bool "Enable alsamixer"
+       build_select NCURSES
+
+endif
+
+endmenu
