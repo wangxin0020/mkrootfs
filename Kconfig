@@ -54,6 +54,7 @@ source "parted/Kconfig"
 source "strace/Kconfig"
 source "tcpdump/Kconfig"
 source "valgrind/Kconfig"
+source "wireless-tools/Kconfig"
 
 endmenu
 

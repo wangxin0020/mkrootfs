@@ -1,0 +1,14 @@
+menu "wireless-tools"
+
+config WIRELESS_TOOLS
+	package "Wireless tools"
+
+if WIRELESS_TOOLS
+
+config WIRELESS_TOOLS_SRCDIR
+       srcdir "Source directory"
+       default "wireless_tools.*"
+
+endif
+
+endmenu
