@@ -2,7 +2,7 @@ rootfs-y := /usr/bin/parted
 
 configure-args-y += \
 	--without-readline \
-	LIBS="-luuid -ldevmapper"
+	LIBS="-lblkid -luuid -ldevmapper"
 
 compile: default-autotools-compile
 
