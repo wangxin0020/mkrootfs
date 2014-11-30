@@ -1,4 +1,4 @@
-cflags-y += -I$(srcdir)
+cflags-y += -I$(srcdir) -I.
 
 compile-make-args-y += \
 	PREFIX=/usr CC="$(CC)" CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
