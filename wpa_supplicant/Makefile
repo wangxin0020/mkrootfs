@@ -6,7 +6,10 @@ compile-make-args-y += \
 staging-make-args-y += \
 	PREFIX=/usr BINDIR=/usr/sbin
 
-rootfs-y :=
+rootfs-y := \
+	/usr/sbin/wpa_cli \
+	/usr/sbin/wpa_passphrase \
+	/usr/sbin/wpa_supplicant
 
 $(CURDIR)/wpa_supplicant/Makefile: $(srcdir)/wpa_supplicant/Makefile $(pkgdir)/Makefile $(deps)
 	mkdir -p src
