@@ -1,0 +1,14 @@
+menu "libtommath"
+
+config LIBTOMMATH
+	package "libtommath library"
+
+if LIBTOMMATH
+
+config LIBTOMMATH_SRCDIR
+       srcdir "Source directory"
+       default "libtommath-*"
+
+endif
+
+endmenu

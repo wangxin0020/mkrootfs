@@ -3,6 +3,8 @@ menu "Dropbear"
 config DROPBEAR
 	package "Dropbear embedded ssh client/server"
 	select LIBUTIL
+	build_select LIBTOMMATH
+	build_select LIBTOMCRYPT
 
 if DROPBEAR
 

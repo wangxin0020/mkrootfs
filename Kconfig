@@ -5,6 +5,8 @@ menu "Libraries"
 source "alsa-lib/Kconfig"
 source "fuse/Kconfig"
 source "libpcap/Kconfig"
+source "libtomcrypt/Kconfig"
+source "libtommath/Kconfig"
 source "ncurses/Kconfig"
 source "util-linux/Kconfig"
 source "xz/Kconfig"
@@ -25,15 +27,15 @@ config SRC_BASEDIR
 	  it is relative to Mkrootfs directory.
 
 source "base/Kconfig"
-source "device-mapper/Kconfig"
-source "linux/Kconfig"
 source "busybox/Kconfig"
-source "xenomai/Kconfig"
+source "device-mapper/Kconfig"
+source "dropbear/Kconfig"
+source "linux/Kconfig"
 source "ltp-old/Kconfig"
 source "ltp/Kconfig"
-source "tests/Kconfig"
-source "dropbear/Kconfig"
 source "rpcbind/Kconfig"
+source "tests/Kconfig"
+source "xenomai/Kconfig"
 
 endmenu
 
@@ -55,6 +57,7 @@ source "strace/Kconfig"
 source "tcpdump/Kconfig"
 source "valgrind/Kconfig"
 source "wireless-tools/Kconfig"
+source "wpa_supplicant/Kconfig"
 
 endmenu
 

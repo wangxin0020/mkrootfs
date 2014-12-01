@@ -1,3 +1,5 @@
+configure-args-y += --disable-bundled-libtom
+
 configure-args-$(MKR_DROPBEAR_ZLIB) += --enable-zlib
 configure-args-$(call not, $(MKR_DROPBEAR_ZLIB)) += --disable-zlib
 

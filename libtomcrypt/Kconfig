@@ -1,0 +1,15 @@
+menu "libtomcrypt"
+
+config LIBTOMCRYPT
+	package "libtomcrypt library"
+	build_select LIBTOMMATH
+
+if LIBTOMCRYPT
+
+config LIBTOMCRYPT_SRCDIR
+       srcdir "Source directory"
+       default "libtomcrypt-*"
+
+endif
+
+endmenu

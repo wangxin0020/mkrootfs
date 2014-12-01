@@ -1,0 +1,15 @@
+menu "wpa_supplicant"
+
+config WPA_SUPPLICANT
+	package "WPA supplicant"
+	build_select LIBTOMMATH
+
+if WPA_SUPPLICANT
+
+config WPA_SUPPLICANT_SRCDIR
+       srcdir "Source directory"
+       default "wpa_supplicant-*"
+
+endif
+
+endmenu
