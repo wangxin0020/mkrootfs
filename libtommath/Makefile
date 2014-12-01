@@ -12,7 +12,8 @@ staging-make-args-y += \
 
 rootfs-y := /usr/lib/$(LIBNAME)
 
-$(CURDIR)/Makefile: $(srcdir)/makefile $(deps)
+$(CURDIR)/.mkr.makefile.ready: $(srcdir)/makefile $(deps)
+	rm -f $@
 	{ \
 		echo srcdir = $(srcdir); \
 		echo VPATH = $$\(srcdir\); \
@@ -21,8 +22,9 @@ $(CURDIR)/Makefile: $(srcdir)/makefile $(deps)
 	mkdir -p $(CURDIR)/etc $(CURDIR)/pics
 	echo clean: > $(CURDIR)/etc/Makefile
 	echo clean: > $(CURDIR)/pics/Makefile
+	: > $@
 
-compile: $(CURDIR)/Makefile $(deps)
+compile: $(CURDIR)/.mkr.makefile.ready $(deps)
 	$(MAKE) $(compile-make-args-y)
 
 staging:
