@@ -8,17 +8,17 @@ compile-make-args-y += \
 
 staging-make-args-y += \
 	PREFIX=/usr INSTALL_GROUP=root INSTALL_USER=root \
-	AR="$(CC)" ARFLAGS="-shared -Wl,-soname,$(LIBNAME) -o" LIBNAME=$(LIBNAME)
+	AR="$(CC)" ARFLAGS="$(ldflags-y) -shared -Wl,-soname,$(LIBNAME) -o" LIBNAME=$(LIBNAME)
 
 rootfs-y := /usr/lib/$(LIBNAME)
 
-$(CURDIR)/.mkr.makefile.ready: $(srcdir)/makefile $(deps)
+$(CURDIR)/.mkr.makefile.ready: $(srcdir)/makefile $(deps) $(pkgdir)/Makefile
 	rm -f $@
 	{ \
 		echo srcdir = $(srcdir); \
 		echo VPATH = $$\(srcdir\); \
 		sed 's#$$(HEADERS)#$$\(patsubst %,$$\(srcdir\)/%,$$\(HEADERS\)\)#g;/ranlib/d' $<; \
-	} > $@
+	} > $(CURDIR)/Makefile
 	mkdir -p $(CURDIR)/etc $(CURDIR)/pics
 	echo clean: > $(CURDIR)/etc/Makefile
 	echo clean: > $(CURDIR)/pics/Makefile

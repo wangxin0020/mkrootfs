@@ -1,7 +1,8 @@
 cflags-y += -I$(srcdir) -I.
 
 compile-make-args-y += \
-	PREFIX=/usr CC="$(CC)" CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
+	PREFIX=/usr CC="$(CC)" CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)" \
+	LIBS="$(ldflags-y) -lm"
 
 staging-make-args-y += \
 	PREFIX=/usr

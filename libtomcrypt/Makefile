@@ -9,7 +9,7 @@ compile-make-args-y += \
 
 staging-make-args-y += \
 	PREFIX=/usr INSTALL_GROUP=root INSTALL_USER=root NODOCS=yes \
-	AR="$(CC)" ARFLAGS="-shared -Wl,-soname,$(LIBNAME) -o" \
+	AR="$(CC)" ARFLAGS="$(ldflags-y) -shared -Wl,-soname,$(LIBNAME) -o" \
 	LIBNAME=$(LIBNAME) RANLIB=":"
 
 rootfs-y := /usr/lib/$(LIBNAME)
@@ -20,7 +20,7 @@ $(CURDIR)/.mkr.makefile.ready: $(srcdir)/makefile $(deps)
 		echo srcdir = $(srcdir); \
 		echo VPATH = $$\(srcdir\); \
 		sed 's#$$(HEADERS)#$$\(patsubst %,$$\(srcdir\)/%,$$\(HEADERS\)\)#g;s#-I\.#-I$(srcdir)#g' $<; \
-	} > $@
+	} > $(CURDIR)/Makefile
 	{  \
 		cd $(srcdir); find src -type d; \
 	} | while read d; do mkdir -p $(CURDIR)/$$d; done
