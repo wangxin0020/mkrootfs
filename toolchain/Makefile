@@ -23,7 +23,7 @@ endif
 endif
 
 ifeq ($(MKR_ARM_FLOAT_VFP),y)
-.mkr.toolchain.arm.vfp.abi: $(deps)
+.mkr.toolchain.arm.vfp.abi: $(deps) $(pkgdir)/toolchain-arm-vfp-abi.sh
 	$(pkgdir)/toolchain-arm-vfp-abi.sh $(CC) $(MKR_CFLAGS) > $@ || :
 
 staging: .mkr.toolchain.arm.vfp.abi

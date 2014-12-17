@@ -11,11 +11,11 @@ cross=`expr "$compiler" : '\(.*\)gcc'`
 tmpfile=".vfpbin"
 echo "int main(void) { return 0; }" | $compiler -xc -o "$tmpfile" -
 abi=`${cross}readelf -h "$tmpfile" | \
-sed 's/^.*Flags:.*soft-float ABI.*$/soft-float/;t quit;d;:quit q'`
+sed 's/^.*Flags:.*hard-float ABI.*$/hard-float/;t quit;d;:quit q'`
 rm "$tmpfile"
 
-if [ "$abi" = "soft-float" ]; then
-    echo ARM_VFP_ABI=-mfloat-abi=softfp
-else
+if [ "$abi" = "hard-float" ]; then
     echo ARM_VFP_ABI=-mfloat-abi=hard
+else
+    echo ARM_VFP_ABI=-mfloat-abi=softfp
 fi
