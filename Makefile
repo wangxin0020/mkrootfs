@@ -622,6 +622,12 @@ PHONY += $(call pkg-targets,log)
 $(call pkg-targets,log): %:
 	$(Q)cat $(dir $@).mkr.log 2> /dev/null || :
 
+ifneq ($(LOGVIEW),)
+PHONY += $(call pkg-targets,logview)
+$(call pkg-targets,logview): %:
+	$(Q)$(LOGVIEW) $(dir $@).mkr.log 2> /dev/null || :
+endif
+
 PHONY += $(call pkg-targets,shortlog)
 $(call pkg-targets,shortlog): %:
 	$(Q)cat $(dir $@).mkr.shortlog 2> /dev/null || :
@@ -926,7 +932,7 @@ help:
 	@echo  ''
 	@echo  '  package/target  - run target in the package build directory, where target is'
 	@echo  '                  one of compile, staging, rootfs, clean, shortlog, log,'
-	@echo  '                  or one of the *config targets for busybox and linux.'
+	@echo  '                  logview or one of the *config targets for busybox and linux.'
 	@echo  ''
 	@echo  '                  busybox and linux also have a mkr-config target which'
 	@echo  '                  restores their .config from mkrootfs configuration.'
