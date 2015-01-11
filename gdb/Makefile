@@ -1,6 +1,7 @@
 configure-args-y += \
 	--without-expat \
 	--with-curses \
+	--with-system-readline \
 	--disable-nls \
 	--disable-sim \
 	--disable-gdbserver

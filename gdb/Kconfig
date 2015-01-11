@@ -1,7 +1,7 @@
 menu "GDB"
 
 config GDB
-        build_select NCURSES
+        build_select READLINE
 	package "GDB debugger"
 	default n
 
