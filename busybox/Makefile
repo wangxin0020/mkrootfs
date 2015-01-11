@@ -7,7 +7,7 @@ defconfig-$(defconfig) = $(MAKE) $(args) defconfig
 defconfig-$(call not,$(defconfig)) = cp $(board-config) .config
 
 # Configuring busybox
-args := V=$(KBUILD_VERBOSE) -C $(srcdir) O=$(CURDIR) \
+args := V=$(KBUILD_VERBOSE) SKIP_STRIP=y -C $(srcdir) O=$(CURDIR) \
 	CC="$(CC)" CXX="$(CXX)" LD="$(CC) -nostdlib" AR="$(cross)ar" \
 	EXTRA_CFLAGS="$(MKR_CFLAGS)" \
 	EXTRA_LDFLAGS="$(MKR_LDFLAGS)" \
