@@ -1,4 +1,6 @@
 configure-args-y += \
+	--disable-static \
+	--enable-host-shared \
 	--without-expat \
 	--with-curses \
 	--with-system-readline \
