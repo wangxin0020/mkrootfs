@@ -1,0 +1,15 @@
+menu "Bash"
+
+config BASH
+	build_select READLINE
+	package "Bash shell"
+
+if BASH
+
+config BASH_SRCDIR
+       srcdir "Source directory"
+       default "bash-*"
+
+endif
+
+endmenu

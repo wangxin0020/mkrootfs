@@ -1,4 +1,4 @@
-menu "Libpcap"
+menu "libpcap"
 
 config LIBPCAP
 	package "Libpcap network capture library"

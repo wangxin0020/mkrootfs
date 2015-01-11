@@ -1,0 +1,15 @@
+menu "readline"
+
+config READLINE
+	build_select NCURSES
+	package "Readline library"
+
+if READLINE
+
+config READLINE_SRCDIR
+       srcdir "Source directory"
+       default "readline-*"
+
+endif
+
+endmenu

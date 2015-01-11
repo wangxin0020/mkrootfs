@@ -1,4 +1,4 @@
-menu "Zlib"
+menu "zlib"
 
 config ZLIB
 	package "Zlib compression library"

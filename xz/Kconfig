@@ -1,4 +1,4 @@
-menu "Xz"
+menu "xz"
 
 config XZ
 	package "Xz compression library and tool"

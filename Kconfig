@@ -8,6 +8,7 @@ source "libpcap/Kconfig"
 source "libtomcrypt/Kconfig"
 source "libtommath/Kconfig"
 source "ncurses/Kconfig"
+source "readline/Kconfig"
 source "util-linux/Kconfig"
 source "xz/Kconfig"
 source "zlib/Kconfig"
@@ -27,6 +28,7 @@ config SRC_BASEDIR
 	  it is relative to Mkrootfs directory.
 
 source "base/Kconfig"
+source "bash/Kconfig"
 source "busybox/Kconfig"
 source "device-mapper/Kconfig"
 source "dropbear/Kconfig"
