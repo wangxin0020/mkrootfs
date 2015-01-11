@@ -6,6 +6,7 @@ configure-args-y += \
 	--with-curses
 
 rootfs-y += \
+	/usr/lib/libhistory.so* \
 	/usr/lib/libreadline.so*
 
 compile: default-autotools-compile
