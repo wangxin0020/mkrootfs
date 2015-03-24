@@ -172,11 +172,13 @@ rmstrip-$(call not, $(MKR_SKIP_ROOTFS)) := .mkr.rmstrip
 .PHONY: staging
 staging: $(rmstrip-y)
 
+$(srcdir)/configure:
+	cd $(srcdir) && autoreconf -fi
 
 # Rules for building autoconf packages
 # Use an improbable stamp name in order to avoid conflicts with
 # packages with custom rules.
-.mkr.autotools.default.configured: $(deps)
+.mkr.autotools.default.configured: $(deps) $(srcdir)/configure
 	rm -Rf * || :
 	$(configure-env-y) $(srcdir)/configure $(configure-args-y) && : > $@
 
