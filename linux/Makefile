@@ -106,8 +106,8 @@ endif
 cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a
 
-FULL_DT_NAME = $(wildcard arch/$(KARCH)/boot/$(MKR_LINUX_DT_NAME) arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME))
 ZIMAGE_PATH = arch/$(KARCH)/boot/zImage
+DT_BLOB="`ls arch/$(KARCH)/boot/$(MKR_LINUX_DT_NAME) arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME) 2> /dev/null`"
 
 targets-y := $(MKR_LINUX_TARGETS)
 targets-$(CONFIG_MODULES) += modules
@@ -117,7 +117,8 @@ targets-$(MKR_LINUX_DT) += $(MKR_LINUX_DT_NAME)
 compile: include/generated/autoconf.h
 	$(MAKE) $(buildargs) $(targets-y)
 ifeq ($(MKR_LINUX_DT_MERGED),y)
-	cat $(ZIMAGE_PATH) $(FULL_DT_NAME) > zImage-dt
+	dt_blob=$(DT_BLOB); \
+	cat $(ZIMAGE_PATH) \$dt_blob > zImage-dt ; \
 	mkimage -A $(KARCH) -O linux -T kernel -C none \
 		-a $(MKR_LINUX_LOADADDR) \
 		-e $(MKR_LINUX_LOADADDR) -n Linux -d zImage-dt uImage
@@ -127,8 +128,9 @@ else
 	chmod a+r $(MKR_LINUX_IMAGE)
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
 ifneq ($(strip $(MKR_LINUX_DT_NAME)),)
-	chmod a+r $(FULL_DT_NAME)
-	$(cp-y) $(FULL_DT_NAME) $(MKR_LINUX_DT_DEST)
+	dt_blob=$(DT_BLOB); \
+	chmod a+r $$dt_blob; \
+	$(cp-y) $$dt_blob $(MKR_LINUX_DT_DEST)
 endif
 endif
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
