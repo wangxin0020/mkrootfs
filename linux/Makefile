@@ -118,7 +118,7 @@ compile: include/generated/autoconf.h
 	$(MAKE) $(buildargs) $(targets-y)
 ifeq ($(MKR_LINUX_DT_MERGED),y)
 	dt_blob=$(DT_BLOB); \
-	cat $(ZIMAGE_PATH) \$dt_blob > zImage-dt ; \
+	cat $(ZIMAGE_PATH) $$dt_blob > zImage-dt ; \
 	mkimage -A $(KARCH) -O linux -T kernel -C none \
 		-a $(MKR_LINUX_LOADADDR) \
 		-e $(MKR_LINUX_LOADADDR) -n Linux -d zImage-dt uImage
