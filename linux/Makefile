@@ -106,7 +106,7 @@ endif
 cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a
 
-FULL_DT_NAME = arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME)
+FULL_DT_NAME = $(wildcard arch/$(KARCH)/boot/$(MKR_LINUX_DT_NAME) arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME))
 ZIMAGE_PATH = arch/$(KARCH)/boot/zImage
 
 targets-y := $(MKR_LINUX_TARGETS)
