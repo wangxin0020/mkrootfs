@@ -24,7 +24,7 @@ echo /sbin/mkrootfs_hotplug > /proc/sys/kernel/hotplug
 mdev -s
 
 if test -e /dev/rtdm/autotune; then
-    /usr/sbin/autotune --quiet=semi --background
+    /usr/sbin/autotune --verbose --background
 fi
 
 # Update clock
