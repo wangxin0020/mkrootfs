@@ -1,0 +1,15 @@
+menu "Iperf"
+
+config IPERF
+	package "Iperf"
+	select LIBSTDCPP
+
+if IPERF
+
+config IPERF_SRCDIR
+       srcdir "Source directory"
+       default "iperf-*"
+
+endif
+
+endmenu
