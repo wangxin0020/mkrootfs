@@ -1,11 +1,11 @@
-menu "zlib"
+menu "zlib-ng"
 
 config ZLIB
 	package "Zlib compression library"
 
 if ZLIB
 
-config ZLIB_SRCDIR
+config ZLIB_NG_SRCDIR
        srcdir "Source directory"
        default "zlib-ng*"
 
