@@ -11,7 +11,7 @@ source "ncurses/Kconfig"
 source "readline/Kconfig"
 source "util-linux/Kconfig"
 source "xz/Kconfig"
-source "zlib/Kconfig"
+source "zlib-ng/Kconfig"
 source "libtirpc/Kconfig"
 
 endmenu

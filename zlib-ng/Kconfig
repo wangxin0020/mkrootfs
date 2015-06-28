@@ -7,7 +7,7 @@ if ZLIB
 
 config ZLIB_SRCDIR
        srcdir "Source directory"
-       default "zlib-*"
+       default "zlib-ng*"
 
 endif
 

@@ -1,7 +1,9 @@
-configure-args-y :=
+configure-args-y := \
+	--zlib-compat \
+	--prefix=/usr
 
 configure-env-y := \
-	prefix=/usr \
+	CHOST="$(MKR_CONFIGURE_HOST)" \
 	CC="$(CC)" \
 	CFLAGS="$(cflags-y)" \
 	LDFLAGS="$(ldflags-y)"
