@@ -51,8 +51,8 @@ rootfs-y := \
 	/usr/sbin/tdmacfg \
 	/usr/sbin/rtvconfig \
 	$(moddir)/* \
-	$(moddir)/rtnet/examples/xenomai/posix/* \
-	$(moddir)/rtnet/examples/xenomai/native/* \
+	$(moddir)/examples/xenomai/native/* \
+	$(moddir)/examples/xenomai/posix/* \
 	/usr/examples/generic/* \
 	/usr/examples/xenomai/native/* \
 	/usr/examples/xenomai/posix/*
