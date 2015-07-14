@@ -334,8 +334,14 @@ rootfs-$(call not,$(MKR_SKIP_ROOTFS)) := rootfs
 outputs-y := $(rootfs-y)
 outputs-$(MKR_OUT_TAR) += rootfs.tar
 outputs-$(MKR_OUT_NFS) += nfsroot
-outputs-$(MKR_OUT_INITRAMFS_GZ) += initramfs.cpio.gz
-outputs-$(MKR_OUT_INITRAMFS_XZ) += initramfs.cpio.xz
+initramfs-out1-$(MKR_OUT_INITRAMFS_GZ) = initramfs.cpio.gz
+initramfs-out1-$(MKR_OUT_INITRAMFS_XZ) = initramfs.cpio.xz
+ifeq ($(MKR_OUT_INITRAMFS_GZ)$(MKR_OUT_INITRAMFS_XZ),)
+initramfs-out1-$(MKR_OUT_INITRAMFS) := initramfs.cpio
+endif
+initramfs-out2-$(MKR_OUT_INITRAMFS_UBOOT) := $(initramfs-out1-y).ub
+initramfs-out2-$(call not, $(MKR_OUT_INITRAMFS_UBOOT)) := $(initramfs-out1-y)
+outputs-$(MKR_OUT_INITRAMFS) += $(initramfs-out2-y)
 outputs-$(MKR_OUT_INITRAMFS_TFTP) += initramfs-tftp
 
 all: $(outputs-y) clean-removed-packages
@@ -798,14 +804,6 @@ initramfs.cpio.xz: initramfs.cpio
 		-a $(MKR_OUT_INITRAMFS_UBOOT_LOADADDR) \
 		-n ramdisk -d $< $@
 	$(Q)echo Generating $@... done
-
-initramfs-out1-$(MKR_OUT_INITRAMFS_GZ) = initramfs.cpio.gz
-initramfs-out1-$(MKR_OUT_INITRAMFS_XZ) = initramfs.cpio.xz
-ifeq ($(MKR_OUT_INITRAMFS_GZ)$(MKR_OUT_INITRAMFS_XZ),)
-initramfs-out1-y := initramfs.cpio
-endif
-initramfs-out2-$(MKR_OUT_INITRAMFS_UBOOT) := $(initramfs-out1-y).ub
-initramfs-out2-$(call not, $(MKR_OUT_INITRAMFS_UBOOT)) := $(initramfs-out1-y)
 
 PHONY += initramfs-tftp
 initramfs-tftp: $(initramfs-out2-y)

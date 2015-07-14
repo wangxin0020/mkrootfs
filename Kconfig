@@ -53,15 +53,6 @@ config OUT_INITRAMFS_XZ
 
 endchoice
 
-config OUT_INITRAMFS_TFTP
-	bool "Install the initramfs in a tftp directory"
-
-	help
-	  Install the initramfs image in a tftp directory, allowing a
-	  network boot with initramfs.
-
-if OUT_INITRAMFS_TFTP
-
 config OUT_INITRAMFS_UBOOT
        bool "Prepare the initramfs for U-boot"
 
@@ -78,6 +69,15 @@ config OUT_INITRAMFS_UBOOT_LOADADDR
 	 tool
 
 endif
+
+config OUT_INITRAMFS_TFTP
+	bool "Install the initramfs in a tftp directory"
+
+	help
+	  Install the initramfs image in a tftp directory, allowing a
+	  network boot with initramfs.
+
+if OUT_INITRAMFS_TFTP
 
 config OUT_INITRAMFS_DEST
 	string "Initramfs destination"
