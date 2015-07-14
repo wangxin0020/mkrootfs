@@ -1,70 +1,5 @@
 source "toolchain/Kconfig"
 
-menu "Libraries"
-
-source "alsa-lib/Kconfig"
-source "fuse/Kconfig"
-source "libpcap/Kconfig"
-source "libtirpc/Kconfig"
-source "libtomcrypt/Kconfig"
-source "libtommath/Kconfig"
-source "ncurses/Kconfig"
-source "readline/Kconfig"
-source "util-linux/Kconfig"
-source "xz/Kconfig"
-source "zlib-ng/Kconfig"
-
-endmenu
-
-menu "Base packages"
-
-config SRC_BASEDIR
-	string "Package source trees search path"
-	default "$(HOME)/src:/usr/src"
-
-	help
-	  The list of directories, separated by columns, under which
-	  the packages source trees will be looked for. If relative,
-	  it is relative to Mkrootfs directory.
-
-source "base/Kconfig"
-source "bash/Kconfig"
-source "busybox/Kconfig"
-source "device-mapper/Kconfig"
-source "dropbear/Kconfig"
-source "linux/Kconfig"
-source "ltp-old/Kconfig"
-source "ltp/Kconfig"
-source "rpcbind/Kconfig"
-source "tests/Kconfig"
-source "xenomai/Kconfig"
-
-endmenu
-
-menu "Tools"
-
-source "alsa-utils/Kconfig"
-source "debootstrap/Kconfig"
-source "dialog/Kconfig"
-source "dosfstools/Kconfig"
-source "e2fsprogs/Kconfig"
-source "file/Kconfig"
-source "gdb/Kconfig"
-source "iperf/Kconfig"
-source "kexec-tools/Kconfig"
-source "make/Kconfig"
-source "mdadm/Kconfig"
-source "ntfs-3g/Kconfig"
-source "parted/Kconfig"
-source "strace/Kconfig"
-source "tcpdump/Kconfig"
-source "valgrind/Kconfig"
-source "wireless-tools/Kconfig"
-source "wpa_supplicant/Kconfig"
-
-endmenu
-
-
 menu "Output"
 
 config OUT_TAR
@@ -187,5 +122,70 @@ config SKIP_ROOTFS_MODULES_STRIP
 	 names.
 
 endif
+
+endmenu
+
+menu "Base"
+
+config SRC_BASEDIR
+	string "Package source trees search path"
+	default "$(HOME)/src:/usr/src"
+
+	help
+	  The list of directories, separated by columns, under which
+	  the packages source trees will be looked for. If relative,
+	  it is relative to Mkrootfs directory.
+
+source "base/Kconfig"
+source "busybox/Kconfig"
+source "dropbear/Kconfig"
+source "linux/Kconfig"
+source "ltp-old/Kconfig"
+source "ltp/Kconfig"
+source "tests/Kconfig"
+source "xenomai/Kconfig"
+
+endmenu
+
+menu "Other"
+
+source "alsa-utils/Kconfig"
+source "bash/Kconfig"
+source "debootstrap/Kconfig"
+source "device-mapper/Kconfig"
+source "dialog/Kconfig"
+source "dosfstools/Kconfig"
+source "e2fsprogs/Kconfig"
+source "file/Kconfig"
+source "gdb/Kconfig"
+source "iperf/Kconfig"
+source "kexec-tools/Kconfig"
+source "make/Kconfig"
+source "mdadm/Kconfig"
+source "ntfs-3g/Kconfig"
+source "parted/Kconfig"
+source "rpcbind/Kconfig"
+source "strace/Kconfig"
+source "tcpdump/Kconfig"
+source "valgrind/Kconfig"
+source "wireless-tools/Kconfig"
+source "wpa_supplicant/Kconfig"
+
+endmenu
+
+
+menu "Libraries"
+
+source "alsa-lib/Kconfig"
+source "fuse/Kconfig"
+source "libpcap/Kconfig"
+source "libtirpc/Kconfig"
+source "libtomcrypt/Kconfig"
+source "libtommath/Kconfig"
+source "ncurses/Kconfig"
+source "readline/Kconfig"
+source "util-linux/Kconfig"
+source "xz/Kconfig"
+source "zlib-ng/Kconfig"
 
 endmenu
