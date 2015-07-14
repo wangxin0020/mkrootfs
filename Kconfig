@@ -142,6 +142,7 @@ source "dropbear/Kconfig"
 source "linux/Kconfig"
 source "ltp-old/Kconfig"
 source "ltp/Kconfig"
+source "rtnet/Kconfig"
 source "tests/Kconfig"
 source "xenomai/Kconfig"
 

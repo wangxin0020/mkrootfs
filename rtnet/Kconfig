@@ -1,0 +1,23 @@
+menu "RTnet"
+
+config RTNET
+	package "RTnet (old)"
+	depends on XENO_CLASSIC
+	build_depends on LINUX
+	build_depends on XENO
+
+	help
+	  This allows building RTnet with some preset configuration for 
+	  Xenomai 2.x, for rapidly testing for regressions between in Xenomai
+	  3.x. If you are looking for a really configurable RTnet, you should
+	  install Xenomai 3.x.
+
+if RTNET
+
+config RTNET_SRCDIR
+       srcdir "Source directory"
+       default "rtnet-*"
+
+endif
+
+endmenu
