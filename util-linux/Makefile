@@ -1,6 +1,6 @@
 rootfs-y :=					\
-	/lib/libblkid.so.1			\
-	/lib/libuuid.so.1			\
+	/lib/libblkid.so.*			\
+	/lib/libuuid.so.*			\
 	/sbin/fsck.cramfs			\
 	/sbin/mkfs.cramfs
 

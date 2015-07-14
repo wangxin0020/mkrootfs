@@ -1,4 +1,8 @@
-rootfs-y := /usr/bin/parted
+rootfs-y := \
+	/usr/lib/libparted-fs-resize.so.* \
+	/usr/lib/libparted.so.* \
+	/usr/sbin/parted \
+	/usr/sbin/partprobe
 
 configure-args-y += \
 	--without-readline \

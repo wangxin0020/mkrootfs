@@ -1,6 +1,6 @@
 rootfs-y :=					\
-	/sbin/dmsetup				\
-	/lib/libdevmapper.so.*
+	/usr/sbin/dmsetup				\
+	/usr/lib/libdevmapper.so.*
 
 configure-args-y +=				\
 	ac_cv_func_malloc_0_nonnull=yes		\
