@@ -412,6 +412,10 @@ output-confcheck-$(MKR_OUT_NFS) += \
 	$(call confcheck-tool-var,hexdump,OUT_NFS)
 output-confcheck-$(MKR_OUT_TGZ) += \
 	$(call confcheck-tool-var,tar,OUT_TGZ)
+output-confcheck-$(MKR_OUT_INITRAMFS_GZ) += \
+	$(call confcheck-tool-var,gzip,OUT_INITRAMFS_GZ)
+output-confcheck-$(MKR_OUT_INITRAMFS_XZ) += \
+	$(call confcheck-tool-var,xz,OUT_INITRAMFS_XZ)
 
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(call mksrcdir,$(MKR_LINUX_SRCDIR))/Makefile)))

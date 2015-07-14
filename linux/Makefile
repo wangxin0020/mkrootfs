@@ -175,6 +175,12 @@ confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-not-empty, \
 	MKR_LINUX_DT_NAME)
 confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-not-empty, \
 	MKR_LINUX_LOADADDR)
+confcheck-$(MKR_OUT_INITRAMFS_GZ) += $(call confcheck-if, \
+	test -z "$(CONFIG_RD_GZIP)", \
+	initramfs Gzip compression requires CONFIG_RD_GZIP in kernel configuration)
+confcheck-$(MKR_OUT_INITRAMFS_XZ) += $(call confcheck-if, \
+	test -z "$(CONFIG_RD_XZ)", \
+	initramfs Xz compression requires CONFIG_RD_XZ in kernel configuration)
 
 confcheck: default-confcheck
 
