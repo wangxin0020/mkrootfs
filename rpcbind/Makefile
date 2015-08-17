@@ -1,5 +1,5 @@
 configure-args-y += \
-	--with-rpcuser=daemon
+	--with-rpcuser=daemon --with-systemdsystemunitdir=no
 
 rootfs-y += \
 	/usr/bin/rpcbind \
