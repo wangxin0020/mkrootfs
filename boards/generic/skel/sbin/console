@@ -2,8 +2,15 @@
 
 dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 
+if [ "$dev" != "tty1" ]; then
+    param=`sed 's/^.*console=[^,]*,\([^ ]*\).*$/\1/;t;d' /proc/cmdline`
+    case "$param" in
+       [0-9]*r) maybe_rtscts="-h"
+    esac
+fi
+
 if [ -e /usr/bin/xeno-test-frontend.sh ]; then
     exec /usr/bin/xeno-test-frontend.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
 fi
 
-exec /sbin/getty -n -l /sbin/autologin.sh 0 "$dev"
+exec /sbin/getty $maybe_rtscts -n -l /sbin/autologin.sh 0 "$dev"
