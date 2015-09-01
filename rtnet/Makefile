@@ -27,13 +27,15 @@ configure-args-$(MKR_ARCH_X86_32) += \
 	--enable-eepro100 \
 	--enable-r8169 \
 	--enable-e1000-new \
-	--enable-e1000e
+	--enable-e1000e \
+	--enable-igb
 
 configure-args-$(MKR_ARCH_X86_64) += \
 	--enable-eepro100 \
 	--enable-r8169 \
 	--enable-e1000-new \
-	--enable-e1000e
+	--enable-e1000e \
+	--enable-igb
 
 configure-args-$(MKR_ARCH_ARM) += \
 	--enable-macb
