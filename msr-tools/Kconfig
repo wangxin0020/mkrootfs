@@ -1,0 +1,15 @@
+menu "msr-tools"
+
+config MSR_TOOLS
+       depends on ARCH_X86_32 || ARCH_X86_64
+       package "MSR tools"
+
+if MSR_TOOLS
+
+config MSR_TOOLS_SRCDIR
+       srcdir "Source directory"
+       default "msr-tools-*"
+
+endif
+
+endmenu
