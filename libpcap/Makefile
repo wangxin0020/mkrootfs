@@ -3,7 +3,12 @@ confcheck-y += $(call confcheck-if, \
 	libpcap requires CONFIG_PACKET in kernel configuration.)
 
 configure-args-y += \
-	--with-pcap=linux
+	--with-pcap=linux \
+	--without-libnl \
+	--disable-bluetooth \
+	--disable-canusb \
+	--disable-can \
+	--disable-dbus
 
 rootfs-y += /usr/lib/libpcap.so.*
 
