@@ -1,0 +1,14 @@
+menu "pciutils"
+
+config PCIUTILS
+       package "PCI utilities"
+
+if PCIUTILS
+
+config PCIUTILS_SRCDIR
+       srcdir "Source directory"
+       default "pciutils-*"
+
+endif
+
+endmenu
