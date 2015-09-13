@@ -1,0 +1,14 @@
+menu "libusb"
+
+config LIBUSB
+	package "Usb library"
+
+if LIBUSB
+
+config LIBUSB_SRCDIR
+       srcdir "Source directory"
+       default "libusb-*"
+
+endif
+
+endmenu

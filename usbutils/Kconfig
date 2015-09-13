@@ -1,0 +1,16 @@
+menu "Usbutils"
+
+config USBUTILS
+       build_select BUSYBOX
+       build_select LIBUSB
+       package "Usb utilities"
+
+if USBUTILS
+
+config USBUTILS_SRCDIR
+       srcdir "Source directory"
+       default "usbutils-*"
+
+endif
+
+endmenu
