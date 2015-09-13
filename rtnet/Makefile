@@ -47,6 +47,7 @@ rootfs-y := \
 	/usr/sbin/rtcfg \
 	/usr/sbin/rtifconfig \
 	/usr/sbin/rtiwconfig \
+	/usr/sbin/rtifupdown.sh \
 	/usr/sbin/rtnet \
 	/usr/sbin/rtping \
 	/usr/sbin/rtroute \
@@ -57,7 +58,8 @@ rootfs-y := \
 	$(moddir)/examples/xenomai/posix/* \
 	/usr/examples/generic/* \
 	/usr/examples/xenomai/native/* \
-	/usr/examples/xenomai/posix/*
+	/usr/examples/xenomai/posix/* \
+	/etc/default/rtnet.example
 
 compile: default-autotools-compile
 
