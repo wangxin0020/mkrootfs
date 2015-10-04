@@ -2,6 +2,9 @@ configure-args-y := \
 	--zlib-compat \
 	--prefix=/usr
 
+configure-args-$(MKR_ARCH_X86_32) += --32
+configure-args-$(MKR_ARCH_X86_64) += --64
+
 configure-env-y := \
 	CHOST="$(MKR_CONFIGURE_HOST)" \
 	CC="$(CC)" \
