@@ -140,9 +140,9 @@ endif
 
 compile-deps-y := build
 compile-deps-$(MKR_OUT_TFTP) += copy-kernel
-compile-deps-$(MKR_OUT_TFTP)$(MKR_LINUX_DT) += copy-dtb
+compile-deps-$(MKR_OUT_TFTP)-$(MKR_LINUX_DT) += copy-dtb
 
-compile: $(compile-deps-y) $(compile-deps-yy)
+compile: $(compile-deps-y) $(compile-deps-y-y)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	chmod a+r $(MKR_LINUX_EXTRA_FILES)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
