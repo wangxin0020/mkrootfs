@@ -156,6 +156,12 @@ config XENO_RTNET_TOOLS
        help
 	 Install the user-space tools needed to operate RTnet
 
+config XENO_DEMOS
+       bool "Install Xenomai 3.x demos"
+       depends on XENO_FORGE
+       help
+	 Install the user-space demos
+
 endmenu
 
 menu "Advanced configuration options"

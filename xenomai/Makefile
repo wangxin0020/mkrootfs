@@ -147,6 +147,8 @@ rootfs-$(MKR_XENO_RTNET_TOOLS) += \
 	/usr/sbin/rtping \
 	/usr/sbin/rtroute \
 	/usr/sbin/tdmacfg
+rootfs-$(MKR_XENO_DEMOS) += \
+	/usr/demo/*
 
 MKR_XENO_TESTDIR ?= /usr/bin
 
