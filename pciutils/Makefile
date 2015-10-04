@@ -20,12 +20,14 @@ staging-make-args-y += SHARED=yes PREFIX=/usr install-lib
 Makefile: $(srcdir)/Makefile $(deps)
 	echo "VPATH=$(srcdir)" > $@
 	sed "s#\./configure#$(srcdir)/lib/configure#;s#-m 644 \$$(PCIINC_INS)#-m644 \$$(filter %.h,\$$^)#" $< >> $@
+
+lib/Makefile: $(srcdir)/lib/Makefile Makefile
 	mkdir -p lib
-	echo "VPATH=$(srcdir)/lib" > lib/Makefile
-	sed "s#=libpci\.ver#=$(srcdir)/lib/libpci.ver#" $(srcdir)/lib/Makefile >> lib/Makefile
+	echo "VPATH=$(srcdir)/lib" > $@
+	sed "s#=libpci\.ver#=$(srcdir)/lib/libpci.ver#" $< >> $@
 	$(MAKE) clean
 
-compile: Makefile
+compile: lib/Makefile
 	$(configure-env-y) $(MAKE) $(compile-make-args-y)
 
 staging: default-autotools-staging
