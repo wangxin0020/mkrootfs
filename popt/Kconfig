@@ -1,0 +1,15 @@
+menu "popt"
+
+config POPT
+	package "POPT support"
+	default n
+
+if POPT
+
+config POPT_SRCDIR
+       srcdir "Source directory"
+       default "popt-*"
+
+endif
+
+endmenu
