@@ -342,9 +342,13 @@ endif
 initramfs-out2-$(MKR_OUT_INITRAMFS_UBOOT) := $(initramfs-out1-y).ub
 initramfs-out2-$(call not, $(MKR_OUT_INITRAMFS_UBOOT)) := $(initramfs-out1-y)
 outputs-$(MKR_OUT_INITRAMFS) += $(initramfs-out2-y)
-outputs-$(MKR_OUT_INITRAMFS_TFTP) += initramfs-tftp
+outputs-$(MKR_OUT_TFTP)$(MKR_OUT_INITRAMFS) += initramfs-tftp
 
-all: $(outputs-y) clean-removed-packages
+messages-$(MKR_OUT_TFTP)$(MKR_OUT_INITRAMFS) += print-initramfs-desination
+messages-$(MKR_OUT_TFTP) += print-kernel-destination
+messages-$(MKR_OUT_TFTP)$(MKR_LINUX_DT) += print-dtb-destination
+
+all: $(messages-y) $(messages-yy) $(outputs-y) $(outputs-yy) clean-removed-packages
 
 mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
@@ -807,13 +811,24 @@ initramfs.cpio.xz: initramfs.cpio
 
 PHONY += initramfs-tftp
 initramfs-tftp: $(initramfs-out2-y)
-	chmod a+r $<
-ifneq (,$(findstring :, $(MKR_OUT_INITRAMFS_DEST)))
-	scp -p $< $(MKR_OUT_INITRAMFS_DEST)
+	$(Q)chmod a+r $<
+ifneq (,$(findstring :, $(MKR_OUT_TFTP_DIRNAME)))
+	$(Q)scp -p $< $(MKR_OUT_TFTP_DIRNAME)/initramfs-$(MKR_OUT_TFTP_BASENAME)
 else
-	cp -a $< $(MKR_OUT_INITRAMFS_DEST)
+	$(Q)cp -a $< $(MKR_OUT_TFTP_DIRNAME)/initramfs-$(MKR_OUT_TFTP_BASENAME)
 endif
 endif
+
+print-kernel-destination: $(outputs-y) $(outputs-yy)
+	$(Q)$(mkr-locked-echo) '***********************************************'
+	$(Q)$(mkr-locked-echo) Copy to $(MKR_OUT_TFTP_DIRNAME)
+	$(Q)$(mkr-locked-echo) kernel copied to kernel-$(MKR_OUT_TFTP_BASENAME)
+
+print-dtb-destination: print-kernel-destination
+	$(Q)$(mkr-locked-echo) dtb copied to dtb-$(MKR_OUT_TFTP_BASENAME)
+
+print-initramfs-desination: print-kernel-destination
+	$(Q)$(mkr-locked-echo) initramfs copied to initramfs-$(MKR_OUT_TFTP_BASENAME)
 
 # Things we need to do before we recursively start building the kernel
 # or the modules are listed in "prepare".

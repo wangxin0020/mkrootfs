@@ -34,13 +34,6 @@ config LINUX_IMAGE
 	help
 	  Kernel image to be copied to a boot-loader specific directory.
 
-config LINUX_IMAGE_DEST
-	string "Image destination"
-	default "/var/lib/tftpboot/$(MKR_BOARD)/uImage-$(KERNELVERSION)"
-	help
-	  Directory where the kernel image file will be copied. The copy uses
-	  scp if this destination has the form host:path or user@host:path.
-
 if ARCH_ARM
 
 config LINUX_LOADADDR
@@ -74,18 +67,6 @@ config LINUX_DT_NAME
        default ""
        help
 	 The name of the dtb file
-
-endif
-
-if LINUX_DT
-
-config LINUX_DT_DEST
-       string "Device tree file destination"
-       default ""
-	help
-	  Destination to which the device tree file will be
-	  copied. The copy uses scp if this destination has the form
-	  host:path or user@host:path.
 
 endif
 

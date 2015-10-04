@@ -70,24 +70,32 @@ config OUT_INITRAMFS_UBOOT_LOADADDR
 
 endif
 
-config OUT_INITRAMFS_TFTP
-	bool "Install the initramfs in a tftp directory"
-
-	help
-	  Install the initramfs image in a tftp directory, allowing a
-	  network boot with initramfs.
-
-if OUT_INITRAMFS_TFTP
-
-config OUT_INITRAMFS_DEST
-	string "Initramfs destination"
-	default "/var/lib/tftpboot/$(MKR_BOARD)/initrd-$(KERNELVERSION)"
-
-	help
-	  Directory where the initramfs will be copied. The copy uses
-	  scp if this destination has the form host:path or user@host:path.
-
 endif
+
+config OUT_TFTP
+	bool "Copy generated files in a tftp directory"
+
+	help
+	  Copy the generated files in a tftp directory, for network boot.
+
+if OUT_TFTP
+
+config OUT_TFTP_DIRNAME
+        string "tftp directory name"
+	default "/var/lib/tftpboot/$(MKR_BOARD)"
+
+	help
+	  Choose where to install files. If the path is of the form
+	  servername:path, scp will be used to copy files.
+
+config OUT_TFTP_BASENAME
+	string "Copied files basename"
+	default "mkrootfs"
+
+	help
+	  Choose the basename of the installed files. Kernel name will be
+	  prefixed with kernel-, initramfs with initramfs- and device tree file
+	  with dtb-.
 
 endif
 

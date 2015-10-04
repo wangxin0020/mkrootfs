@@ -1,6 +1,6 @@
 defconfig := $(if $(findstring defconfig,$(MKR_LINUX_CONFIG)),y)
 netdest := $(if $(findstring :, \
-	$(MKR_LINUX_IMAGE_DEST)$(MKR_LINUX_EXTRA_INSTALL)$(MKR_LINUX_DT_DEST)),y)
+	$(MKR_OUT_TFTP_DIRNAME)$(MKR_LINUX_EXTRA_INSTALL)),y)
 
 # Getting the kernel version
 # Upper Makefile checked that Makefile existed in Linux sources directory
@@ -107,15 +107,17 @@ cp-$(netdest) := scp -p
 cp-$(call not,$(netdest)) := cp -a
 
 ZIMAGE_PATH = arch/$(KARCH)/boot/zImage
-DT_BLOB="`ls arch/$(KARCH)/boot/$(MKR_LINUX_DT_NAME) arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME) 2> /dev/null`"
+DT_BLOB=$(wildcard arch/$(KARCH)/boot/$(MKR_LINUX_DT_NAME) arch/$(KARCH)/boot/dts/$(MKR_LINUX_DT_NAME))
 
 targets-y := $(MKR_LINUX_TARGETS)
 targets-$(CONFIG_MODULES) += modules
 targets-$(MKR_LINUX_DT_MERGED) += $(MKR_LINUX_DT_NAME)
 targets-$(MKR_LINUX_DT) += $(MKR_LINUX_DT_NAME)
 
-compile: include/generated/autoconf.h
+build: include/generated/autoconf.h
 	$(MAKE) $(buildargs) $(targets-y)
+
+copy-kernel: build
 ifeq ($(MKR_LINUX_DT_MERGED),y)
 	dt_blob=$(DT_BLOB); \
 	cat $(ZIMAGE_PATH) $$dt_blob > zImage-dt ; \
@@ -123,16 +125,24 @@ ifeq ($(MKR_LINUX_DT_MERGED),y)
 		-a $(MKR_LINUX_LOADADDR) \
 		-e $(MKR_LINUX_LOADADDR) -n Linux -d zImage-dt uImage
 	chmod a+r uImage
-	$(cp-y) uImage $(MKR_LINUX_IMAGE_DEST)
+	$(cp-y) uImage $(MKR_OUT_TFTP_DIRNAME)/kernel-$(MKR_OUT_TFTP_BASENAME)
 else
 	chmod a+r $(MKR_LINUX_IMAGE)
-	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_LINUX_IMAGE_DEST)
+	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_OUT_TFTP_DIRNAME)/kernel-$(MKR_OUT_TFTP_BASENAME)
+endif
+
+copy-dtb: build
 ifneq ($(strip $(MKR_LINUX_DT_NAME)),)
 	dt_blob=$(DT_BLOB); \
 	chmod a+r $$dt_blob; \
-	$(cp-y) $$dt_blob $(MKR_LINUX_DT_DEST)
+	$(cp-y) $$dt_blob $(MKR_OUT_TFTP_DIRNAME)/dtb-$(MKR_OUT_TFTP_BASENAME)
 endif
-endif
+
+compile-deps-y := build
+compile-deps-$(MKR_OUT_TFTP) += copy-kernel
+compile-deps-$(MKR_OUT_TFTP)$(MKR_LINUX_DT) += copy-dtb
+
+compile: $(compile-deps-y) $(compile-deps-yy)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
 	chmod a+r $(MKR_LINUX_EXTRA_FILES)
 	$(cp-y) $(MKR_LINUX_EXTRA_FILES) $(MKR_LINUX_EXTRA_INSTALL)
