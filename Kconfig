@@ -160,6 +160,7 @@ menu "Other"
 
 source "alsa-utils/Kconfig"
 source "bash/Kconfig"
+source "cryptsetup/Kconfig"
 source "debootstrap/Kconfig"
 source "device-mapper/Kconfig"
 source "dialog/Kconfig"

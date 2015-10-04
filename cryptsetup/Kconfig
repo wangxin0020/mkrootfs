@@ -1,0 +1,21 @@
+menu "Cryptsetup"
+
+config CRYPTSETUP
+	package "Cryptsetup"
+	build_select UTIL_LINUX
+	build_select DEVICE_MAPPER
+	build_select POPT
+
+if CRYPTSETUP
+
+config CRYPTSETUP_SRCDIR
+       srcdir "Source directory"
+       default "cryptsetup-*"
+
+config CRYPTSETUP_LIBUUID
+       def_bool y
+       select UTIL_LINUX_LIBUUID
+
+endif
+
+endmenu
