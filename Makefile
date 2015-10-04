@@ -342,13 +342,13 @@ endif
 initramfs-out2-$(MKR_OUT_INITRAMFS_UBOOT) := $(initramfs-out1-y).ub
 initramfs-out2-$(call not, $(MKR_OUT_INITRAMFS_UBOOT)) := $(initramfs-out1-y)
 outputs-$(MKR_OUT_INITRAMFS) += $(initramfs-out2-y)
-outputs-$(MKR_OUT_TFTP)$(MKR_OUT_INITRAMFS) += initramfs-tftp
+outputs-$(MKR_OUT_TFTP)-$(MKR_OUT_INITRAMFS) += initramfs-tftp
 
-messages-$(MKR_OUT_TFTP)$(MKR_OUT_INITRAMFS) += print-initramfs-desination
+messages-$(MKR_OUT_TFTP)-$(MKR_OUT_INITRAMFS) += print-initramfs-desination
 messages-$(MKR_OUT_TFTP) += print-kernel-destination
-messages-$(MKR_OUT_TFTP)$(MKR_LINUX_DT) += print-dtb-destination
+messages-$(MKR_OUT_TFTP)-$(MKR_LINUX_DT) += print-dtb-destination
 
-all: $(messages-y) $(messages-yy) $(outputs-y) $(outputs-yy) clean-removed-packages
+all: $(messages-y) $(messages-y-y) $(outputs-y) $(outputs-y-y) clean-removed-packages
 
 mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
