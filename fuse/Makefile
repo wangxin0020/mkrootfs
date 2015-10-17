@@ -11,7 +11,11 @@ staging: default-autotools-staging
 
 rootfs-y := \
 	/dev/fuse \
-	/usr/$(lib-y)/libfuse.so.*
+	/sbin/mount.fuse \
+	/usr/bin/fusermount \
+	/usr/bin/ulockmgr_server \
+	/usr/$(lib-y)/libfuse.so.* \
+	/usr/$(lib-y)/libulockmgr.so.*
 
 $(config-y)-args-y += --with-shared --disable-example
 
