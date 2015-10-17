@@ -12,6 +12,9 @@ choice
 config ARCH_ARM
 	bool "arm"
 
+config ARCH_ARM64
+        bool "arm64"
+
 config ARCH_BFIN
 	bool "blackfin"
 
@@ -40,6 +43,7 @@ endchoice
 
 config ARCH
 	string
+	default "aarch64" if ARCH_ARM64
 	default "arm" if ARCH_ARM
 	default "bfin" if ARCH_BFIN
 	default "nios2" if ARCH_NIOS2
@@ -52,6 +56,7 @@ config ARCH
 
 config KARCH
 	string
+	default "arm64" if ARCH_ARM64
 	default "arm" if ARCH_ARM
 	default "blackfin" if ARCH_BFIN
 	default "i386" if ARCH_I386

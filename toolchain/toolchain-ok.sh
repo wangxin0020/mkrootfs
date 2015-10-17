@@ -31,6 +31,7 @@ for d in $LIBDIRS; do
 
 	    case "$mach" in
 		"ARM") sr_arch=arm;;
+		"AArch64") sr_arch=aarch64;;
 		*Blackfin) sr_arch=bfin;;
 		*"Nios II") sr_arch=nios2;;
 		"PowerPC64") sr_arch=ppc64;;
