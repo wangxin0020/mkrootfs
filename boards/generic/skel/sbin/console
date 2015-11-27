@@ -1,9 +1,9 @@
 #! /bin/sh
 
-dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
+dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t quit;s/.*/tty1/;t quit;d; :quit q' /proc/cmdline`
 
 if [ "$dev" != "tty1" ]; then
-    param=`sed 's/^.*console=[^,]*,\([^ ]*\).*$/\1/;t;d' /proc/cmdline`
+    param=`sed 's/^.*console=[^,]*,\([^ ]*\).*$/\1/;t quit;d; :quit q' /proc/cmdline`
     case "$param" in
        [0-9]*r) maybe_rtscts="-h"
     esac
