@@ -31,7 +31,7 @@ skel:
 			cp -dR --preserve=mode,timestamps $$f "$(pkginst)/$$f"; \
 		}; \
 		done; \
-		cp -dR --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
+		cp -L --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
 		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
 		chmod a+rx "$(pkginst)/sbin/mount_storage.sh"; \
 	}
