@@ -1,5 +1,7 @@
 #! /bin/ash
 
+secure_network="@MKR_SECURE_NETWORK@"
+
 mount /proc
 # Make dev a tmpfs directory
 if ! grep -q devtmpfs /proc/mounts; then
@@ -65,7 +67,9 @@ if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
 fi
 
 # Start telnet
-telnetd
+if ! $secure_network; then
+    telnetd
+fi
 
 # Start ssh
 if test -e /usr/sbin/dropbear; then
@@ -79,7 +83,17 @@ if test -e /usr/sbin/dropbear; then
     else
 	/usr/bin/dropbearkey -y -f $ECDSA_KEY
     fi
-    dropbear -B -R
+    if ! $secure_network; then
+	dropbear -B -R
+    else
+	echo '*************************************************'
+	echo '*'
+	echo '*' root password must be set to allow ssh access '*'
+	echo '*'
+	echo '*************************************************'
+
+	dropbear -R
+    fi
 fi
 
 # Start rpcbind

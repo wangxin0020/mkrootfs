@@ -77,6 +77,13 @@ endif
 
 endif
 
+config SECURE_NETWORK
+       bool "Improve network access security"
+       select DROPBEAR
+       help
+	 Do not start telnet server, and disable ssh login with empty root
+ 	 password.
+
 config SWAP
 	bool "Enable swap file on storage device"
 	help

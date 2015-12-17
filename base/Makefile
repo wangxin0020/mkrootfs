@@ -13,6 +13,9 @@ DIRS= \
 mount-dev-sed := \
 	sed -i 's,@MKR_SWAP_DEV@,$(MKR_SWAP_DEV),g'
 
+secure-access-sed := \
+	sed -i 's,@MKR_SECURE_NETWORK@,$(if $(MKR_SECURE_NETWORK),true,false),g'
+
 # Compiling: nothing to do
 compile: ;
 
@@ -34,6 +37,7 @@ skel:
 		cp -L --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
 		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
 		chmod a+rx "$(pkginst)/sbin/mount_storage.sh"; \
+		$(secure-access-sed) "$(pkginst)/etc/init.d/rcS"; \
 	}
 
 one-map:
