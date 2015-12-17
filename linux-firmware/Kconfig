@@ -1,0 +1,26 @@
+menu "Linux firmware"
+
+config LINUX_FW
+	package "Linux firmware"
+	help
+	  If this option is enabled, binary firmwares will be downloaded from
+	  kernel.org git repository
+
+if LINUX_FW
+
+config LINUX_FW_REPO
+       string "Git repository URL"
+       default "git://git.click-hack.org/kernel.org/linux-firmware.git"
+       help
+	 Repository to use as source for the firmware binaries.
+
+config LINUX_FW_UPDATE
+       bool "Sync repository everytime"
+       help
+         Enable this option to synchronize with the git repository every time
+       	 the package is installed. This probably slows down the compilation, and
+       	 should not be very useful as the firmware binaries do not change very
+	 often.
+endif
+
+endmenu
