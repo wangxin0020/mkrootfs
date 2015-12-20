@@ -38,6 +38,7 @@ skel:
 		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
 		chmod a+rx "$(pkginst)/sbin/mount_storage.sh"; \
 		$(secure-access-sed) "$(pkginst)/etc/init.d/rcS"; \
+		chmod a+rx "$(pkginst)/etc/init.d/rcS"; \
 	}
 
 one-map:
