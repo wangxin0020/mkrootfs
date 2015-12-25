@@ -4,7 +4,7 @@ configure-args-y += \
 	--without-manpages \
 	--without-ada \
 	--without-gpm \
-	--with-termlib \
+	--without-termlib \
 	--enable-termcap \
 	--enable-pc-files \
 	--enable-tcap-names \
