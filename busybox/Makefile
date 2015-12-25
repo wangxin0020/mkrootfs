@@ -48,8 +48,15 @@ compile: include/autoconf.h
 	$(MAKE) $(args)
 
 # Installing it
-staging:
+busybox-install:
 	$(MAKE) $(args) install
+
+remove-sh: busybox-install
+	$(RM) $(pkginst)/bin/sh
+
+staging-$(MKR_BASH):= remove-sh
+staging-$(call not, $(MKR_BASH)) := busybox-install
+staging: $(staging-y)
 
 rootfs: default-copyall-rootfs
 

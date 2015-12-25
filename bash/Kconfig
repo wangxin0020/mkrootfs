@@ -1,6 +1,7 @@
 menu "Bash"
 
 config BASH
+        build_depends on BUSYBOX
 	build_select READLINE
 	package "Bash shell"
 
