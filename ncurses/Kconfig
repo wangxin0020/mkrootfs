@@ -10,6 +10,9 @@ config NCURSES_SRCDIR
        srcdir "Source directory"
        default "ncurses-*"
 
+config NCURSES_WIDEC
+       bool "Enable wide characters support"
+
 endif
 
 endmenu

@@ -3,20 +3,28 @@ configure-args-y += \
 	--without-progs \
 	--without-manpages \
 	--without-ada \
-	--without-gpm
+	--without-gpm \
+	--with-termlib \
+	--enable-termcap \
+	--enable-pc-files \
+	--enable-tcap-names \
+	--enable-hard-tabs
+
+configure-args-$(MKR_NCURSES_WIDEC) += --enable-widec
 
 rootfs-y := \
 	/usr/share/terminfo/*/* \
+	/usr/share/tabset/* \
+	/usr/lib/terminfo \
 	/usr/lib/libncurses.so.* \
-	/usr/lib/libtinfo.so.*
+	/usr/lib/libtinfo.so.* \
+	/usr/lib/libtic.so.*
+
+rootfs-$(MKR_NCURSES_WIDEC) += /usr/lib/libncursesw.so.*
 
 compile: default-autotools-compile
 
 staging: default-autotools-staging
-	@cd $(pkginst)/usr/lib; \
-	for lib in libncurses.so*; do \
-		ln -sf $$lib `echo $$lib | sed -e 's,ncurses,tinfo,'`; \
-	done
 
 rootfs: default-rootfs
 

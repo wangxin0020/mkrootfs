@@ -10,6 +10,10 @@ config DIALOG_SRCDIR
        srcdir "Source directory"
        default "dialog-*"
 
+config DIALOG_WIDEC
+       select NCURSES_WIDEC
+       bool "Enable wide characters support"
+
 endif
 
 endmenu
