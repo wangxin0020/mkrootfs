@@ -10,11 +10,11 @@ DIRS= \
 	/var \
 	/mnt
 
-mount-dev-sed := \
-	sed -i 's,@MKR_SWAP_DEV@,$(MKR_SWAP_DEV),g'
+vars-subst := \
+	sed -e 's,@MKR_SWAP_DEV@,$(MKR_SWAP_DEV),g' \
+	  -e 's,@MKR_SECURE_NETWORK@,$(if $(MKR_SECURE_NETWORK),true,false),g' \
+	  -e 's,@MKR_BASE_SHELL@,$(MKR_BASE_SHELL),g'
 
-secure-access-sed := \
-	sed -i 's,@MKR_SECURE_NETWORK@,$(if $(MKR_SECURE_NETWORK),true,false),g'
 
 # Compiling: nothing to do
 compile: ;
@@ -31,14 +31,11 @@ skel:
 	cd $(skeldir) && { \
 		find . -! -type d -! -name '*~' | while read f; do { \
 			mkdir -p `dirname $(pkginst)/$$f`; \
-			cp -dR --preserve=mode,timestamps $$f "$(pkginst)/$$f"; \
+			$(vars-subst) $$f > "$(pkginst)/$$f"; \
+			chmod --reference="$$f" "$(pkginst)/$$f"; \
 		}; \
 		done; \
 		cp -L --preserve=mode,timestamps /etc/localtime "$(pkginst)/etc/localtime" || :; \
-		$(mount-dev-sed) "$(pkginst)/sbin/mount_storage.sh"; \
-		chmod a+rx "$(pkginst)/sbin/mount_storage.sh"; \
-		$(secure-access-sed) "$(pkginst)/etc/init.d/rcS"; \
-		chmod a+rx "$(pkginst)/etc/init.d/rcS"; \
 	}
 
 one-map:

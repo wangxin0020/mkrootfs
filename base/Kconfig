@@ -108,6 +108,11 @@ config SWAP_DEV
 
 endif
 
+config BASE_SHELL
+       string
+       default "/bin/ash" if !BASH
+       default "/bin/bash" if BASH
+
 endif
 
 endmenu
