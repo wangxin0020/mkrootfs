@@ -11,6 +11,7 @@ config NCURSES_SRCDIR
        default "ncurses-*"
 
 config NCURSES_WIDEC
+       depends on !READLINE
        bool "Enable wide characters support"
 
 endif

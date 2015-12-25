@@ -11,6 +11,7 @@ config DIALOG_SRCDIR
        default "dialog-*"
 
 config DIALOG_WIDEC
+       depends on !READLINE
        select NCURSES_WIDEC
        bool "Enable wide characters support"
 
