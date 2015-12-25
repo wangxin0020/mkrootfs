@@ -10,7 +10,7 @@ for f in /usr/share/keymaps/*; do
     echo $map \"\"
 done > /tmp/menu
 
-if dialog --scrollbar --menu "Choose a keyboard map" $height $width $menuheight  --file /tmp/menu 2> /tmp/lang; then
+if dialog --colors --scrollbar --menu "Choose a keyboard map" $height $width $menuheight  --file /tmp/menu 2> /tmp/lang; then
     loadkeys `cat /tmp/lang`
 fi
 reset

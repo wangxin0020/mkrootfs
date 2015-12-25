@@ -127,5 +127,9 @@ if test -e /etc/defkeymap.bin.xz; then
 elif test -e /usr/bin/keymap-chooser.sh; then
     dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 
+    case "$dev" in
+    tty[0-9]*)export TERM=linux;;
+    esac
+
     /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
 fi

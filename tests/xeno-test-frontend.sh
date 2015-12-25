@@ -16,7 +16,7 @@ while :; do
 1 "Get a shell"
 2 "Run xeno-test"
 EOF
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		case `cat /tmp/choice` in
 		    1)
 			console=`sed 's/.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
@@ -49,7 +49,7 @@ EOF
 		esac
 	    done >> /tmp/menu
 
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		iostress=`cat /tmp/choice`
 		step=2
 	    else
@@ -63,7 +63,7 @@ EOF
 LTP ""
 Hackbench ""
 EOF
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		case `cat /tmp/choice` in
 		    LTP)
 			load="-l /ltp"
@@ -85,7 +85,7 @@ EOF
 	    cat > /tmp/menu <<EOF
 --clear --cancel-label Back --inputbox "Test duration in seconds" $height $width 7200
 EOF
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		load="-b /ltp/testcases/bin/hackbench `cat /tmp/choice`"
 		step=4
 	    else
@@ -96,7 +96,7 @@ EOF
 	    cat > /tmp/menu <<EOF
 --clear --cancel-label Back --inputbox "Choose the IP used to create network load (leave empty for no network load)" $height $width
 EOF
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		server=`cat /tmp/choice`
 		if test -z "$server"; then
 		    step=6
@@ -115,7 +115,7 @@ EOF
 	    cat > /tmp/menu <<EOF
 --clear --cancel-label Back --inputbox "Choose the port number used to create network load" $height $width 9
 EOF
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		port=`cat /tmp/choice`
 		step=6
 	    else
@@ -126,7 +126,7 @@ EOF
 	    cat > /tmp/menu <<EOF
 --clear --cancel-label Back --inputbox "Latency test period in micro-seconds" $height $width 100
 EOF
-	    if dialog --file /tmp/menu 2> /tmp/choice; then
+	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
 		latency_period=`cat /tmp/choice`
 		step=7
 	    else
