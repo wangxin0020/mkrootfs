@@ -1,5 +1,5 @@
 configure-args-y += \
-	ac_cv_rl_version=5.0 \
+	ac_cv_rl_version=6.0 \
 	--bindir=/bin \
 	--disable-nls \
 	--enable-readline \
