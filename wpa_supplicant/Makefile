@@ -31,8 +31,10 @@ $(CURDIR)/wpa_supplicant/.config: $(CURDIR)/.mkr.makefile.ready
 	rm -f $@
 	echo CONFIG_DRIVER_HOSTAP=y > $@.tmp
 	echo CONFIG_DRIVER_WEXT=y >> $@.tmp
-	echo CONFIG_TLS=internal >> $@.tmp
-	echo CONFIG_EAP_TLS=yes >> $@.tmp
+	echo CONFIG_TLS=$(MKR_WPA_SUPPLICANT_CONFIG_TLS) >> $@.tmp
+	echo CONFIG_TLSV12=y >> $@.tmp
+	echo CONFIG_EAP_TLS=y >> $@.tmp
+	echo CONFIG_EAP_FAST=y >> $@.tmp
 	echo CONFIG_WPS=yes >> $@.tmp
 	mv $@.tmp $@
 

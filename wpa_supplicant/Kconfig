@@ -2,13 +2,32 @@ menu "wpa_supplicant"
 
 config WPA_SUPPLICANT
 	package "WPA supplicant"
-	build_select LIBTOMMATH
 
 if WPA_SUPPLICANT
 
 config WPA_SUPPLICANT_SRCDIR
-       srcdir "Source directory"
-       default "wpa_supplicant-*"
+	srcdir "Source directory"
+	default "wpa_supplicant-*"
+
+choice
+	prompt "TLS library"
+	help
+	  Choose library used for TLS implementation.
+
+config WPA_SUPPLICANT_TLS_INTERNAL
+	bool "Internal (libtommath based)"
+	build_select LIBTOMMATH
+
+config WPA_SUPPLICANT_TLS_LIBRESSL
+	bool "LibreSSL"
+	build_select LIBRESSL
+
+endchoice
+
+config WPA_SUPPLICANT_CONFIG_TLS
+	string
+	default "internal" if WPA_SUPPLICANT_TLS_INTERNAL
+	default "openssl" if WPA_SUPPLICANT_TLS_LIBRESSL
 
 endif
 
