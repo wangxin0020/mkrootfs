@@ -21,5 +21,6 @@ staging:
 rootfs: default-copyall-rootfs
 
 clean:
+	-$(RM) refresh
 	-mv $(fwdir) $(fwdir).removed
 	-$(RM) -R $(fwdir).removed
