@@ -10,17 +10,24 @@ configure-args-y += \
 	--enable-tcap-names \
 	--enable-hard-tabs
 
-configure-args-$(MKR_NCURSES_WIDEC) += --enable-widec
+configure-args-$(MKR_NCURSES_WIDEC) += \
+	--enable-widec
 
 rootfs-y := \
-	/usr/share/terminfo/*/* \
 	/usr/share/tabset/* \
 	/usr/lib/terminfo \
-	/usr/lib/libncurses.so.* \
-	/usr/lib/libtinfo.so.* \
-	/usr/lib/libtic.so.*
+	/usr/lib/libncurses.so.*
 
-rootfs-$(MKR_NCURSES_WIDEC) += /usr/lib/libncursesw.so.*
+rootfs-$(call not,$(MKR_FULL_TERMINFO)) += \
+	/usr/share/terminfo/l/* \
+	/usr/share/terminfo/v/* \
+	/usr/share/terminfo/x/*
+
+rootfs-$(MKR_FULL_TERMINFO) += \
+	/usr/share/terminfo/*/*
+
+rootfs-$(MKR_NCURSES_WIDEC) += \
+	/usr/lib/libncursesw.so.*
 
 compile: default-autotools-compile
 
