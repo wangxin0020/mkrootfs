@@ -1,0 +1,17 @@
+menu "OpenSSH"
+
+config OPENSSH
+       select LIBUTIL
+       build_select ZLIB
+       build_select LIBRESSL
+       package "OpenSSH"
+
+if OPENSSH
+
+config OPENSSH_SRCDIR
+       srcdir "Source directory"
+       default "openssh-*"
+
+endif
+
+endmenu

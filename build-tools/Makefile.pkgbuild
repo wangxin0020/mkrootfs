@@ -103,6 +103,8 @@ kcross := $(shell expr $(KCC) : '\(.*\)gcc')
 configure-args-y = \
 	--host="$(MKR_CONFIGURE_HOST)" \
 	--prefix=/usr \
+	--sysconfdir=/etc \
+	--localstatedir=/var \
 	--with-sysroot="$(staging)" \
 	CC="$(CC)" CXX="$(CXX)" LD="$(cross)ld" AR="$(cross)ar" \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \

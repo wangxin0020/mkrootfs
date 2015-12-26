@@ -72,7 +72,35 @@ if ! $secure_network; then
 fi
 
 # Start ssh
-if test -e /usr/sbin/dropbear; then
+if test -e /usr/sbin/sshd; then
+    ECDSA_KEY=/etc/ssh_host_ecdsa_key
+
+    if test ! -e /var/empty; then
+	mkdir /var/empty
+    fi
+
+    if test ! -e $ECDSA_KEY; then
+	rm -f $ECDSA_KEY.tmp
+	ssh-keygen -N "" -t ecdsa -f $ECDSA_KEY.tmp
+	mv $ECDSA_KEY.tmp.pub $ECDSA_KEY.pub
+	mv $ECDSA_KEY.tmp $ECDSA_KEY
+	sync
+    fi
+    ssh-keygen -y -f /etc/ssh_host_ecdsa_key > /etc/motd
+
+    if ! $secure_network; then
+	/usr/sbin/sshd -o PermitRootLogin=yes -o PermitEmptyPasswords=yes
+    else
+	cat >> /etc/motd <<EOF
+*******************************************************
+*                                                     *
+* root password must not be empty to allow ssh access *
+*                                                     *
+*******************************************************
+EOF
+	/usr/sbin/sshd -o PermitRootLogin=yes
+    fi
+elif test -e /usr/sbin/dropbear; then
     ECDSA_KEY=/etc/dropbear/dropbear_ecdsa_host_key
 
     if test ! -e $ECDSA_KEY; then
@@ -80,18 +108,18 @@ if test -e /usr/sbin/dropbear; then
 	/usr/bin/dropbearkey -t ecdsa -f $ECDSA_KEY.tmp
 	mv $ECDSA_KEY.tmp $ECDSA_KEY
 	sync
-    else
-	/usr/bin/dropbearkey -y -f $ECDSA_KEY
     fi
+    /usr/bin/dropbearkey -y -f $ECDSA_KEY > /etc/motd
     if ! $secure_network; then
 	dropbear -B -R
     else
-	echo '*************************************************'
-	echo '*'
-	echo '*' root password must be set to allow ssh access '*'
-	echo '*'
-	echo '*************************************************'
-
+	cat >> /etc/motd <<EOF
+*************************************************
+*                                               *
+* root password must be set to allow ssh access *
+*                                               *
+*************************************************
+EOF
 	dropbear -R
     fi
 fi

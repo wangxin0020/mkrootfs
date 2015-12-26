@@ -1,0 +1,17 @@
+menu "libressl"
+
+config LIBRESSL
+	package "LibreSSL"
+
+if LIBRESSL
+
+config LIBRESSL_SRCDIR
+       srcdir "Source directory"
+       default "libressl-*"
+
+config LIBRESSL_OPENSSL
+       bool "Install openssl tool"
+
+endif
+
+endmenu
