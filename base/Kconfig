@@ -17,23 +17,12 @@ config BOARD
 	  Directory where architecture or board specific files will be taken.
 	  This is a path relative to the boards directory in mkrootfs tree.
 
-choice
-	prompt "Serial console device"
-
-config SERIAL_STD
-       bool "Standard device"
-       help
-	 Choose this option if the serial port used by your board is
-	 one of the standard ports from ttyS0 to ttyS3.
-
-endchoice
-
 config KEYBOARD_MAPS
        bool "Keyboard maps"
        help
 	 Choose this option if you intend to use the console on
 	 virtual terminal instead of serial port and the default
-	 qwerty keyboard map does not suit the heyboard.
+	 qwerty keyboard map does not suit the keyboard.
 
 if KEYBOARD_MAPS
 
@@ -79,10 +68,26 @@ endif
 
 config SECURE_NETWORK
        bool "Improve network access security"
-       select DROPBEAR
        help
 	 Do not start telnet server, and disable ssh login with empty root
  	 password.
+
+if SECURE_NETWORK
+
+choice
+	prompt "SSH server"
+
+config BASE_SSH_DROPBEAR
+	select DROPBEAR
+	bool "Dropbear"
+
+config BASE_SSH_OPENSSH
+	select OPENSSH
+	bool "OpenSSH"
+
+endchoice
+
+endif
 
 config SWAP
 	bool "Enable swap file on storage device"
