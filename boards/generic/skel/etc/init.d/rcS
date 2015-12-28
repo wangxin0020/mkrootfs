@@ -1,4 +1,4 @@
-#! /bin/ash
+#!@MKR_BASE_SHELL@
 
 secure_network="@MKR_SECURE_NETWORK@"
 
