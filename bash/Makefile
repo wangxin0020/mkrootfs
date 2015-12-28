@@ -4,7 +4,7 @@ configure-args-y += \
 	--disable-nls \
 	--enable-readline \
 	--with-curses \
-	--with-installed-readline=$(staging)/usr
+	--with-installed-readline=$(staging)/
 
 rootfs-y += \
 	/bin/bash \

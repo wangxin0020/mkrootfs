@@ -1,4 +1,5 @@
 configure-args-y += \
+	--libdir=/lib \
 	--with-shared \
 	--without-progs \
 	--without-manpages \
@@ -15,8 +16,8 @@ configure-args-$(MKR_NCURSES_WIDEC) += \
 
 rootfs-y := \
 	/usr/share/tabset/* \
-	/usr/lib/terminfo \
-	/usr/lib/libncurses.so.*
+	/lib/terminfo \
+	/lib/libncurses.so.*
 
 rootfs-$(call not,$(MKR_FULL_TERMINFO)) += \
 	/usr/share/terminfo/l/* \
@@ -27,7 +28,7 @@ rootfs-$(MKR_FULL_TERMINFO) += \
 	/usr/share/terminfo/*/*
 
 rootfs-$(MKR_NCURSES_WIDEC) += \
-	/usr/lib/libncursesw.so.*
+	/lib/libncursesw.so.*
 
 compile: default-autotools-compile
 
