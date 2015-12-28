@@ -12,6 +12,9 @@ if ! grep -q devtmpfs /proc/mounts; then
     fi
 fi
 
+dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
+exec < /dev/$dev > /dev/$dev 2> /dev/$dev
+
 # Create /dev/shm and /dev/pts for devtmpfs
 mkdir -p /dev/shm /dev/pts
 mount -a -O no_netdev
@@ -72,7 +75,8 @@ if ! $secure_network; then
 fi
 
 # Start ssh
-if test -e /usr/sbin/sshd; then
+start_openssh()
+{
     ECDSA_KEY=/etc/ssh_host_ecdsa_key
 
     if test ! -e /var/empty; then
@@ -86,7 +90,8 @@ if test -e /usr/sbin/sshd; then
 	mv $ECDSA_KEY.tmp $ECDSA_KEY
 	sync
     fi
-    ssh-keygen -y -f /etc/ssh_host_ecdsa_key > /etc/motd
+    echo OpenSSH server public key: > /etc/motd
+    ssh-keygen -y -f /etc/ssh_host_ecdsa_key >> /etc/motd
 
     if ! $secure_network; then
 	/usr/sbin/sshd -o PermitRootLogin=yes -o PermitEmptyPasswords=yes
@@ -100,7 +105,10 @@ if test -e /usr/sbin/sshd; then
 EOF
 	/usr/sbin/sshd -o PermitRootLogin=yes
     fi
-elif test -e /usr/sbin/dropbear; then
+}
+
+start_dropbear()
+{
     ECDSA_KEY=/etc/dropbear/dropbear_ecdsa_host_key
 
     if test ! -e $ECDSA_KEY; then
@@ -122,6 +130,15 @@ elif test -e /usr/sbin/dropbear; then
 EOF
 	dropbear -R
     fi
+}
+
+ssh_pid=
+if test -e /usr/sbin/sshd; then
+    (start_openssh) &
+    ssh_pid=$!
+elif test -e /usr/sbin/dropbear; then
+    (start_dropbear) &
+    ssh_pid=$!
 fi
 
 # Start rpcbind
@@ -153,11 +170,15 @@ if test -e /etc/defkeymap.bin.xz; then
     echo Loading default keymap
     loadkeys defkeymap
 elif test -e /usr/bin/keymap-chooser.sh; then
-    dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
-
     case "$dev" in
     tty[0-9]*)export TERM=linux;;
     esac
 
+    echo 3 4 1 7 > /proc/sys/kernel/printk
+
     /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
+fi
+
+if test -n "$ssh_pid"; then
+    wait "$ssh_pid"
 fi
