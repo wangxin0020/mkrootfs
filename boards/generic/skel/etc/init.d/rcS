@@ -57,6 +57,22 @@ if test -e /usr/bin/keymap-chooser.sh; then
     done
 fi
 
+# Install default keymap if available
+chooser_pid=
+if test -e /etc/defkeymap.bin.xz; then
+    echo Loading default keymap
+    loadkeys defkeymap
+elif test -e /usr/bin/keymap-chooser.sh; then
+    case "$dev" in
+    tty[0-9]*)export TERM=linux;;
+    esac
+
+    echo 3 4 1 7 > /proc/sys/kernel/printk
+
+    /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev &
+    chooser_pid=$!
+fi
+
 # Start RAID
 if test -e /sbin/mdadm; then
     /sbin/mdadm --assemble --scan
@@ -75,8 +91,7 @@ if ! $secure_network; then
 fi
 
 # Start ssh
-start_openssh()
-{
+if test -e /usr/sbin/sshd; then
     ECDSA_KEY=/etc/ssh_host_ecdsa_key
 
     if test ! -e /var/empty; then
@@ -105,10 +120,7 @@ start_openssh()
 EOF
 	/usr/sbin/sshd -o PermitRootLogin=yes
     fi
-}
-
-start_dropbear()
-{
+elif test -e /usr/sbin/dropbear; then
     ECDSA_KEY=/etc/dropbear/dropbear_ecdsa_host_key
 
     if test ! -e $ECDSA_KEY; then
@@ -130,15 +142,6 @@ start_dropbear()
 EOF
 	dropbear -R
     fi
-}
-
-ssh_pid=
-if test -e /usr/sbin/sshd; then
-    (start_openssh) &
-    ssh_pid=$!
-elif test -e /usr/sbin/dropbear; then
-    (start_dropbear) &
-    ssh_pid=$!
 fi
 
 # Start rpcbind
@@ -165,20 +168,6 @@ fi
 chown root:0 /bin/ping
 chmod u+sx /bin/ping
 
-# Install default keymap if available
-if test -e /etc/defkeymap.bin.xz; then
-    echo Loading default keymap
-    loadkeys defkeymap
-elif test -e /usr/bin/keymap-chooser.sh; then
-    case "$dev" in
-    tty[0-9]*)export TERM=linux;;
-    esac
-
-    echo 3 4 1 7 > /proc/sys/kernel/printk
-
-    /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev
-fi
-
-if test -n "$ssh_pid"; then
-    wait "$ssh_pid"
+if test -n "$chooser_pid"; then
+    wait "$chooser_pid"
 fi
