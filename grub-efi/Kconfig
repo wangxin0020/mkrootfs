@@ -1,0 +1,17 @@
+config GRUB_EFI
+       package "EFI support for bootable ISO"
+       build_depends on OUT_ISO_BOOT
+       help
+	This pseudo-package generates the necessary contents to allow booting an
+        ISO image on a machine with EFI support. It requires the following tools
+       	to be installed:
+	- mtools
+	- grub
+
+if GRUB_EFI
+
+config GRUB_EFI_DIR
+       srcdir "GRUB x86_64 EFI directory"
+       default "/usr/lib64/grub/x86_64-efi"
+
+endif

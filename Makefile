@@ -343,12 +343,16 @@ initramfs-out2-$(MKR_OUT_INITRAMFS_UBOOT) := $(initramfs-out1-y).ub
 initramfs-out2-$(call not, $(MKR_OUT_INITRAMFS_UBOOT)) := $(initramfs-out1-y)
 outputs-$(MKR_OUT_INITRAMFS) += $(initramfs-out2-y)
 outputs-$(MKR_OUT_TFTP)-$(MKR_OUT_INITRAMFS) += initramfs-tftp
+outputs-$(MKR_OUT_ISO_BOOT)-$(call not,$(MKR_GRUB_EFI)) += boot.iso
+outputs-$(MKR_OUT_ISO_BOOT)-$(call not,$(MKR_GRUB_EFI))-$(MKR_OUT_ISO_HYBRID) += boot.hybrid.iso
+outputs-$(MKR_OUT_ISO_BOOT)-$(MKR_GRUB_EFI) += boot.efi.iso
+outputs-$(MKR_OUT_ISO_BOOT)-$(MKR_GRUB_EFI)-$(MKR_OUT_ISO_HYBRID) += boot.efi.hybrid.iso
 
 messages-$(MKR_OUT_TFTP)-$(MKR_OUT_INITRAMFS) += print-initramfs-desination
 messages-$(MKR_OUT_TFTP) += print-kernel-destination
 messages-$(MKR_OUT_TFTP)-$(MKR_LINUX_DT) += print-dtb-destination
 
-all: $(messages-y) $(messages-y-y) $(outputs-y) $(outputs-y-y) clean-removed-packages
+all: $(messages-y) $(messages-y-y) $(outputs-y) $(outputs-y-y) $(outputs-y-y-y) clean-removed-packages
 
 mkr-fakeroot = touch $(dir $@).mkr.fakeroot; $(O)/build-tools/bin/fakeroot \
 	-i $(dir $@).mkr.fakeroot -s $(dir $@).mkr.fakeroot
@@ -820,7 +824,54 @@ else
 endif
 endif
 
-print-kernel-destination: $(outputs-y) $(outputs-yy)
+linux/$(MKR_LINUX_IMAGE): linux/staging
+
+boot.iso.d/linux: linux/$(MKR_LINUX_IMAGE) iso-boot/staging
+	$(Q)install -m 0644 -D $< $@
+
+boot.iso.d/rootfs: $(initramfs-out1-y)
+	$(Q)install -m 0644 -D $< $@
+
+ifeq ($(KBUILD_VERBOSE),1)
+  MKISOFS = mkisofs
+else
+  MKISOFS = @mkisofs --quiet
+endif
+
+boot.iso: boot.iso.d/linux boot.iso.d/rootfs
+	$(Q)echo Generating $@...
+	$(MKISOFS) -J -R -o $@ -b isolinux/isolinux.bin -c isolinux/boot.cat \
+		-no-emul-boot -boot-load-size 4 -boot-info-table boot.iso.d
+	$(Q)echo Generating $@... done
+	$(Q)du --apparent-size -h $@
+
+boot.hybrid.iso: boot.iso
+	$(Q)echo Generating $@...
+	$(Q)cp $< $@.tmp
+	$(Q)isohybrid $@.tmp
+	$(Q)mv $@.tmp $@
+	$(Q)echo Generating $@... done
+	$(Q)du --apparent-size -h $@
+
+boot.efi.iso: boot.iso.d/linux boot.iso.d/rootfs
+	$(Q)echo Generating $@...
+	$(MKISOFS) -J -R -o $@ -b isolinux/isolinux.bin -c isolinux/boot.cat \
+		-no-emul-boot -boot-load-size 4 -boot-info-table \
+		-eltorito-alt-boot -eltorito-platform 0xEF \
+		-eltorito-boot isolinux/efiboot.img \
+		-no-emul-boot boot.iso.d
+	$(Q)echo Generating $@... done
+	$(Q)du --apparent-size -h $@
+
+boot.efi.hybrid.iso: boot.efi.iso
+	$(Q)echo Generating $@...
+	$(Q)cp $< $@.tmp
+	$(Q)isohybrid --uefi $@.tmp
+	$(Q)mv $@.tmp $@
+	$(Q)echo Generating $@... done
+	$(Q)du --apparent-size -h $@
+
+print-kernel-destination: $(outputs-y) $(outputs-y-y) $(outputs-y-y-y)
 	$(Q)$(mkr-locked-echo) '***********************************************'
 	$(Q)$(mkr-locked-echo) Copy to $(MKR_OUT_TFTP_DIRNAME)
 	$(Q)$(mkr-locked-echo) kernel copied to kernel-$(MKR_OUT_TFTP_BASENAME)

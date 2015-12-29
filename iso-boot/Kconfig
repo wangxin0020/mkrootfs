@@ -1,0 +1,17 @@
+config OUT_ISO_BOOT
+       package "Generate bootable iso"
+       select OUT_INITRAMFS
+       help
+	This pseudo-package generates the necessary contents to generate a
+	bootable ISO image. This package requires syslinux to be installed.
+
+if OUT_ISO_BOOT
+
+config OUT_ISO_BOOT_DIR
+       srcdir "Syslinux binaries directory"
+       default "/usr/share/syslinux"
+
+config OUT_ISO_HYBRID
+       bool "Generate hybrid ISO image, bootable via USB"
+
+endif

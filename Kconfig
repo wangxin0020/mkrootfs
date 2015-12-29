@@ -131,6 +131,18 @@ config SKIP_ROOTFS_MODULES_STRIP
 
 endif
 
+if ARCH_X86_64
+
+source "iso-boot/Kconfig"
+
+if OUT_ISO_BOOT
+
+source "grub-efi/Kconfig"
+
+endif
+
+endif
+
 endmenu
 
 menu "Base"
