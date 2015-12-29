@@ -22,7 +22,7 @@ clean:
 	$(RM) -r $(isobootdir)/isolinux
 
 confcheck-$(MKR_OUT_ISO_BOOT) += $(call confcheck-ifnot,test -e $(MKR_OUT_ISO_BOOT_DIR)/isolinux.bin,isolinux binary not found. Check OUT_ISO_BOOT_DIR)
-confcheck-$(MKR_OUT_ISO_BOOT) += $(call concheck-tool-var,mkisofs,OUT_ISO_BOOT)
-confcheck-$(MKR_OUT_ISO_HYBRID) += $(call concheck-tool-var,isohybrid,OUT_ISO_HYBRID)
+confcheck-$(MKR_OUT_ISO_BOOT) += $(call confcheck-tool-var,mkisofs,OUT_ISO_BOOT)
+confcheck-$(MKR_OUT_ISO_HYBRID) += $(call confcheck-tool-var,isohybrid,OUT_ISO_HYBRID)
 
 confcheck: default-confcheck
