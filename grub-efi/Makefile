@@ -1,7 +1,3 @@
-CYL=14
-HEADS=2
-SEC_PER_CYL=32
-# SECTORS=CYL * HEADS * 32 == 896, i.e. 448KiB
 INSTALL:=install -m 0644 -D
 
 isobootdir := $(staging)/../boot.iso.d
@@ -12,8 +8,9 @@ bootx64.efi: $(pkgdir)/Makefile $(deps) $(pkgdir)/mkefi.sh $(pkgdir)/grub-standa
 	$(pkgdir)/mkefi.sh $(pkgdir) $(srcdir) `pwd`
 
 efiboot.img: bootx64.efi
-	dd if=/dev/zero of=$@.tmp bs=512 count=$$(($(CYL)*$(HEADS)*$(SEC_PER_CYL)))
-	mformat -i $@.tmp -t $(CYL) -s $(SEC_PER_CYL) -h $(HEADS)
+	CYL=$$(((`du -b $< | awk '{ print $$1 }'` + 32767) / 16384)) && \
+	dd if=/dev/zero of=$@.tmp bs=16384 count=$$CYL && \
+	mformat -i $@.tmp -t $$CYL -s 32 -h 1
 	mmd -i $@.tmp ::EFI ::EFI/Boot
 	mcopy -i $@.tmp $< ::EFI/Boot/bootx64.efi
 	mv $@.tmp $@
