@@ -853,7 +853,7 @@ boot.hybrid.iso: boot.iso
 	$(Q)echo Generating $@... done
 	$(Q)du --apparent-size -h $@
 
-boot.efi.iso: boot.iso.d/linux boot.iso.d/rootfs
+boot.efi.iso: boot.iso.d/linux boot.iso.d/rootfs grub-efi/staging
 	$(Q)echo Generating $@...
 	$(MKISOFS) -J -R -o $@ -b isolinux/isolinux.bin -c isolinux/boot.cat \
 		-no-emul-boot -boot-load-size 4 -boot-info-table \
