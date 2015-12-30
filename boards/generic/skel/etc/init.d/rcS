@@ -67,6 +67,8 @@ elif test -e /usr/bin/keymap-chooser.sh; then
     tty[0-9]*)export TERM=linux;;
     esac
 
+# Become silent
+    exec > /dev/null 2> /dev/null < /dev/null
     echo 3 4 1 7 > /proc/sys/kernel/printk
 
     /usr/bin/keymap-chooser.sh < /dev/$dev > /dev/$dev 2> /dev/$dev &
