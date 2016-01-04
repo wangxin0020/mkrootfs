@@ -11,6 +11,17 @@ configure-args-$(call not, $(MKR_XZ_XZ)) += \
 rootfs-y := \
 	/usr/lib/liblzma.so.*
 rootfs-$(MKR_XZ_XZ) += \
+	/usr/bin/lzcat \
+	/usr/bin/lzcmp \
+	/usr/bin/lzdiff \
+	/usr/bin/lzegrep \
+	/usr/bin/lzfgrep \
+	/usr/bin/lzgrep \
+	/usr/bin/lzless \
+	/usr/bin/lzma \
+	/usr/bin/lzmore \
+	/usr/bin/unlzma \
+	/usr/bin/unxz \
 	/usr/bin/xz \
 	/usr/bin/xzcat \
 	/usr/bin/xzcmp \
