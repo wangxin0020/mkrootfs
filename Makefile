@@ -347,6 +347,7 @@ outputs-$(MKR_OUT_ISO_BOOT)-$(call not,$(MKR_GRUB_EFI)) += boot.iso
 outputs-$(MKR_OUT_ISO_BOOT)-$(call not,$(MKR_GRUB_EFI))-$(MKR_OUT_ISO_HYBRID) += boot.hybrid.iso
 outputs-$(MKR_OUT_ISO_BOOT)-$(MKR_GRUB_EFI) += boot.efi.iso
 outputs-$(MKR_OUT_ISO_BOOT)-$(MKR_GRUB_EFI)-$(MKR_OUT_ISO_HYBRID) += boot.efi.hybrid.iso
+rootfs-$(MKR_OUT_ISO_BOOT) += linux/$(rootfs-y)
 
 messages-$(MKR_OUT_TFTP)-$(MKR_OUT_INITRAMFS) += print-initramfs-desination
 messages-$(MKR_OUT_TFTP) += print-kernel-destination
