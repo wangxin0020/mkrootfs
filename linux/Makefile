@@ -150,7 +150,7 @@ endif
 
 staging:
 ifeq ($(CONFIG_MODULES),y)
-	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(pkginst) modules_install
+	$(MAKE) $(buildargs) INSTALL_MOD_PATH=$(pkginst) modules_install firmware_install
 endif
 
 rootfs: default-copyall-rootfs
