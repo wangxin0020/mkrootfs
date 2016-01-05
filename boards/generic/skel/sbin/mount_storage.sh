@@ -23,7 +23,10 @@ add)
     mkdir -p $mntpt
     fstype=`blkid "/dev/$MDEV" | sed 's,.*TYPE="\([^"]*\)".*,\1,;t;d'`
     if test "$fstype" = "swap"; then
-	swapon /dev/$MDEV
+	if swapon /dev/$MDEV; then
+	    size=`awk '/^\/dev\/'"$MDEV"'/ { print $3 }' /proc/swaps`
+	    mount -o remount,size=${size}k /tmp
+	fi
 	rmdir $mntpt
     elif test "$fstype" = "ntfs" -a -e /sbin/mount.ntfs-3g; then
 	mount.ntfs-3g /dev/$MDEV $mntpt || { rmdir $mntpt; exit 1; }
