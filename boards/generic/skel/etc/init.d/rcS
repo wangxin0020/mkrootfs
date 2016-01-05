@@ -84,7 +84,7 @@ fi
 if ! ifconfig lo | grep -s UP > /dev/null 2>&1; then
     ifconfig lo 127.0.0.1 up
     ifconfig eth0 up 0.0.0.0
-    udhcpc -abRS
+    udhcpc -a -b -R -S
 fi
 
 # Start telnet

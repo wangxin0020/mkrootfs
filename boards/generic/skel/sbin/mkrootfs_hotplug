@@ -5,6 +5,6 @@ if test -n "$MODALIAS"; then
 fi
 if test -n "$IFINDEX" -a "$INTERFACE" != "eth0"; then
     ifconfig "$INTERFACE" up 0.0.0.0
-    udhcpc -abRS -i "$INTERFACE"
+    udhcpc -a -b -R -S -i "$INTERFACE"
 fi
 exec /sbin/mdev
