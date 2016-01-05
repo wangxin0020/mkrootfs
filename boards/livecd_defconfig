@@ -86,7 +86,7 @@ MKR_BASE_SHELL=/bin/bash
 #
 MKR_BUSYBOX=y
 MKR_BUSYBOX_SRCDIR=busybox-*
-MKR_BUSYBOX_CONFIG=live-initramfs/busybox_defconfig
+MKR_BUSYBOX_CONFIG=livecd/busybox_defconfig
 
 #
 # Dropbear
@@ -99,7 +99,7 @@ MKR_BUSYBOX_CONFIG=live-initramfs/busybox_defconfig
 MKR_LINUX=y
 MKR_KCC=$(CC)
 MKR_LINUX_SRCDIR=ipipe
-MKR_LINUX_CONFIG=live-initramfs/config-$(KERNELVERSION)
+MKR_LINUX_CONFIG=livecd/config-$(KERNELVERSION)
 MKR_LINUX_TARGETS=bzImage
 MKR_LINUX_IMAGE=arch/x86/boot/bzImage
 MKR_LINUX_NO_DT=y
