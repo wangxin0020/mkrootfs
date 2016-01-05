@@ -28,10 +28,6 @@ fi
 echo /sbin/mkrootfs_hotplug > /proc/sys/kernel/hotplug
 mdev -s
 
-if test -e /dev/rtdm/autotune; then
-    /usr/sbin/autotune --verbose --background
-fi
-
 # Update clock
 if grep -q "root=/dev/nfs" /proc/cmdline; then
     rootserver=`dmesg | sed 's/^.*rootserver=\([^,]*\).*$/\1/;t;d'`
@@ -50,6 +46,7 @@ klogd
 
 # Load modules
 if test -e /usr/bin/keymap-chooser.sh; then
+    modprobe xeno_autotune > /dev/null 2>&1 || :
     modprobe xhci_hcd > /dev/null 2>&1
     modprobe ehci_hcd > /dev/null 2>&1
     find /sys -name modalias | while read f; do
@@ -169,6 +166,10 @@ fi
 
 chown root:0 /bin/ping
 chmod u+sx /bin/ping
+
+if test -e /dev/rtdm/autotune; then
+    /usr/sbin/autotune --verbose --background
+fi
 
 if test -n "$chooser_pid"; then
     wait "$chooser_pid"
