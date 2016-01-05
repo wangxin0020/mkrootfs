@@ -2,8 +2,8 @@ config OUT_ISO_BOOT
        package "Generate bootable iso"
        select OUT_INITRAMFS
        help
-	This pseudo-package generates the necessary contents to generate a
-	bootable ISO image. This package requires syslinux to be installed.
+	Generates the necessary contents for a bootable ISO image. This package
+        requires syslinux to be installed.
 
 if OUT_ISO_BOOT
 
