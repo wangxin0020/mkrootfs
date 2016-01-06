@@ -317,7 +317,7 @@ only-packages-y:=$(filter $(packages),$(MAKECMDGOALS))
 ifeq ($(strip $(only-packages-y)),)
 only-packages-y:=$(packages)
 endif
-only-packages-$(MKR_OUT_ISO_BOOT) += $(if $(wildcard boot.iso.d/linux),,linux)
+only-packages-$(MKR_OUT_ISO_BOOT) += $(if $(wildcard boot.iso.d/linux),$(if $(wildcard linux/$(MKR_LINUX_IMAGE)),,linux),linux)
 
 PHONY += $(only-packages-y)
 $(only-packages-y): %: all
@@ -368,9 +368,6 @@ mkr-locked-echo = $(srctree)/build-tools/display.sh locked-echo
 $(patsubst %, linux/%, $(allconfigs) mkr-config): %: check-computed-variables
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
-	$(Q)if [ -e linux/.config ]; then \
-		cp -a linux/.config .linux_config; \
-	fi
 
 linux/.config:
 	$(Q)mkdir -p linux
@@ -379,9 +376,6 @@ linux/.config:
 linux/%_defconfig:
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
-	$(Q)if [ -e linux/.config ]; then \
-		cp -a linux/.config .linux_config; \
-	fi
 
 $(patsubst %, busybox/%, $(allconfigs) mkr-config): \
 	%: prepare check-computed-variables
@@ -825,7 +819,7 @@ else
 endif
 endif
 
-linux/$(MKR_LINUX_IMAGE): $(if $(wildcard boot.iso.d/linux),,linux/staging)
+linux/$(MKR_LINUX_IMAGE): $(if $(wildcard boot.iso.d/linux),$(if $(wildcard linux/$(MKR_LINUX_IMAGE)),,linux/staging),linux/staging)
 
 boot.iso.d/linux: linux/$(MKR_LINUX_IMAGE) iso-boot/staging
 	$(Q)install -m 0644 -D $< $@

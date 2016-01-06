@@ -23,16 +23,31 @@ else
 board-config := $(MKR_LINUX_CONFIG)
 endif
 
+defconfig-$(call not,$(defconfig)) = \
+	if test -e "$(board-config)"; then \
+		echo Resetting Linux configuration to $(board-config); \
+		cp $(board-config) .config; \
+	else \
+		echo "No board config found (tried $(board-config))"; \
+	fi
+
+defconfig-$(defconfig) = \
+	$(Q)echo Resetting Linux configuration to $(board-config); \
+	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG)
+
 # Checking whether the .config must change
-.mkr.cleanconf: \
-	$(O)/include/config/karch.h \
-	$(O)/include/config/board.h \
-	$(O)/include/config/linux/config.h
-	$(Q)$(RM) .config ../.linux_config && : > $@
+../.linux_config: $(O)/include/config/karch.h \
+		$(O)/include/config/board.h \
+		$(O)/include/config/linux/config.h
+	$(Q)$(defconfig-y)
+	$(Q)mv .config $@
 
 .mkr.cleaned: $(wildcard $(O)/include/config/xeno/kernel.h  \
-			$(O)/include/config/xeno.h) .mkr.cleanconf
-	$(Q)rm -Rf * $(filter-out .config .mkr.cleanconf .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
+			$(O)/include/config/xeno.h \
+			$(O)/include/config/karch.h \
+			$(O)/include/config/board.h \
+			$(O)/include/config/linux/config.h)
+	$(Q)rm -Rf * $(filter-out .config .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 # Patching the kernel with Xenomai
 ifeq ($(MKR_XENO_KERNEL),y)
@@ -69,30 +84,17 @@ endif
 # Configuring the kernel
 configargs += V=$(KBUILD_VERBOSE) ARCH=$(KARCH)
 
-defconfig-$(call not,$(defconfig)) = \
-	test -n "$(board-config)" && cp $(board-config) .config || :
-defconfig-$(defconfig) = \
-	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG)
-
-.config: $(ready)
-	$(Q)if [ ! -e $@ ]; then \
-		if [ ! -e ../.linux_config ]; then \
-			echo Resetting Linux configuration to $(board-config); \
-			$(defconfig-y); \
-		else \
-			echo Resetting Linux configuration to .linux_config; \
-			cp ../.linux_config $@; \
-		fi; \
-	fi
+.config: ../.linux_config $(ready)
+	$(Q)cmp $< $@ || cp $< $@
 
 mkr-config: $(ready)
-	$(Q)echo Resetting Linux configuration to $(board-config); \
-	$(RM) ../.linux_config; \
-	$(defconfig-y)
+	$(Q)$(defconfig-y)
+	$(Q)cp .config ../.linux_config
 
 include/generated/autoconf.h: .config ../.mkr.kvers \
 	$(wildcard $(O)/include/config/xeno/kernel.h)
 	yes "" | $(MAKE) $(configargs) oldconfig
+	$(Q)cp .config ../.linux_config
 
 # Building the kernel
 # get CONFIG_MODULES from kernel configuration
@@ -116,6 +118,7 @@ targets-$(MKR_LINUX_DT) += $(MKR_LINUX_DT_NAME)
 
 build: include/generated/autoconf.h
 	$(MAKE) $(buildargs) $(targets-y)
+	$(Q)cp .config ../.linux_config
 
 copy-kernel: build
 ifeq ($(MKR_LINUX_DT_MERGED),y)
@@ -198,6 +201,7 @@ confcheck: default-confcheck
 # *config ones, and clean)
 %config: .config
 	$(MAKE) $(configargs) $@
+	$(Q)cp .config ../.linux_config
 
 clean: .config
 	$(MAKE) $(buildargs) $@
