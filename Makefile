@@ -313,19 +313,20 @@ else
 include/config/auto.conf: ;
 endif # $(dot-config)
 
-only-packages:=$(filter $(packages),$(MAKECMDGOALS))
-ifeq ($(strip $(only-packages)),)
-only-packages:=$(packages)
+only-packages-y:=$(filter $(packages),$(MAKECMDGOALS))
+ifeq ($(strip $(only-packages-y)),)
+only-packages-y:=$(packages)
 endif
+only-packages-$(MKR_OUT_ISO_BOOT) += $(if $(wildcard boot.iso.d/linux),,linux)
 
-PHONY += $(only-packages)
-$(only-packages): %: all
+PHONY += $(only-packages-y)
+$(only-packages-y): %: all
 
 # The all: target is the default when no target is given on the
 # command line.
 # This allow a user to issue only 'make' to build a kernel including modules
 # Defaults vmlinux but it is usually overridden in the arch makefile
-only-pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(only-packages)))
+only-pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(only-packages-y)))
 pkg-targets = $(foreach t,$(1),$(patsubst %,%/$(t),$(packages)))
 
 rootfs-$(MKR_SKIP_ROOTFS) := staging
@@ -347,7 +348,6 @@ outputs-$(MKR_OUT_ISO_BOOT)-$(call not,$(MKR_GRUB_EFI)) += boot.iso
 outputs-$(MKR_OUT_ISO_BOOT)-$(call not,$(MKR_GRUB_EFI))-$(MKR_OUT_ISO_HYBRID) += boot.hybrid.iso
 outputs-$(MKR_OUT_ISO_BOOT)-$(MKR_GRUB_EFI) += boot.efi.iso
 outputs-$(MKR_OUT_ISO_BOOT)-$(MKR_GRUB_EFI)-$(MKR_OUT_ISO_HYBRID) += boot.efi.hybrid.iso
-rootfs-$(MKR_OUT_ISO_BOOT) += linux/$(rootfs-y)
 
 messages-$(MKR_OUT_TFTP)-$(MKR_OUT_INITRAMFS) += print-initramfs-desination
 messages-$(MKR_OUT_TFTP) += print-kernel-destination
@@ -825,7 +825,7 @@ else
 endif
 endif
 
-linux/$(MKR_LINUX_IMAGE): linux/staging
+linux/$(MKR_LINUX_IMAGE): $(if $(wildcard boot.iso.d/linux),,linux/staging)
 
 boot.iso.d/linux: linux/$(MKR_LINUX_IMAGE) iso-boot/staging
 	$(Q)install -m 0644 -D $< $@
