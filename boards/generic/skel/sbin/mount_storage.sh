@@ -14,9 +14,10 @@ remove)
 	mount -o remount,size=64M /tmp
 	swapoff $mntpt/swap
     fi
-    fstype=`sed 's,^/dev/'"$MDEV"' [^ ]* \([^ ]*\).*$,\1,;t;d' /proc/mounts`
+    fstype=`blkid "/dev/$MDEV" | sed 's,.*TYPE="\([^"]*\)".*,\1,;t;d'`
     umount -f "/dev/$MDEV"
     test -n "$fstype" && modprobe -r "$fstype"
+    rmdir "$mntpt"
     ;;
 
 add)
