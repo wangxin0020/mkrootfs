@@ -36,17 +36,38 @@ none ""
 EOF
 	    for f in /mnt/*; do
 		part=`basename $f`
-		fstype=`sed 's,^/dev/'"$part"' [^ ]* \([^ ]*\).*$,\1,;t;d' /proc/mounts`
+		mntfstype=`sed 's,^/dev/'"$part"' [^ ]* \([^ ]*\).*$,\1,;t;d' /proc/mounts`
+
+		# Is the device still mounted ?
+		case "$mntfstype" in
+		    "")continue;;
+		esac
+
+		# Is it mounted read-only ?
+		if ! grep -q "^/dev/$part /mnt/$part $mntfstype rw," \
+		    /proc/mounts; then
+		    continue
+		fi
+
+
+		fstype=`blkid "/dev/$part" | sed 's,.*TYPE="\([^"]*\)".*,\1,;t;d'`
+		if test -z "$fstype"; then
+		    fstype="$mntfstype"
+		fi
+
+		size=`df -h "$f" | tail -1 | awk '{ print $4 }'`
+
 		case "$part" in
 		    sd[a-z][0-9]*)
 			dev=`expr "$part" : '\(sd[a-z]\)'`
 			desc=`/usr/bin/sdinfo "/dev/$dev"`
-			echo "$part \"$fstype $desc\""
 			;;
 		    hd[a-z][0-9]*|mmcblk*p*|md[0-9]*p*)
-			echo "$part $fstype"
+			desc=""
 			;;
 		esac
+
+		printf "$part \"%10s %10s Free $desc\"\n" $fstype $size
 	    done >> /tmp/menu
 
 	    if dialog --colors --file /tmp/menu 2> /tmp/choice; then
