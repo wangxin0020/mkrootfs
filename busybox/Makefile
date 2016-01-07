@@ -13,45 +13,37 @@ args := V=$(KBUILD_VERBOSE) SKIP_STRIP=y -C $(srcdir) O=$(CURDIR) \
 	EXTRA_LDFLAGS="$(MKR_LDFLAGS)" \
 	CROSS_COMPILE="$(cross)"
 
-.mkr.cleanconf: \
+../.busybox_config: \
 	$(O)/include/config/arch.h \
 	$(O)/include/config/board.h \
 	$(O)/include/config/busybox/config.h
-	$(Q)$(RM) .config ../.busybox_config && : > $@
+	$(Q)$(defconfig-y)
+	$(Q)sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
+	$(Q)mv .config $@
 
-.config: .mkr.cleanconf
-	$(Q)if [ ! -e $@ ]; then \
-		if [ ! -e ../.busybox_config ]; then \
-			echo Resetting busybox configuration to $(board-config); \
-			$(defconfig-y); \
-		else \
-			echo Resetting Linux configuration to .busybox_config; \
-			cp ../.busybox_config $@; \
-		fi; \
-	fi
+.config: ../.busybox_config
+	$(Q)cmp $< $@ || cp $< $@
 
 mkr-config:
 	@echo Resetting busybox configuration to $(board-config); \
-	$(Q)$(RM) ../.busybox_config; \
-	$(defconfig-y)
-	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
+	$(Q)$(defconfig-y)
+	$(Q)sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
+	$(Q)cp .config ../.busybox_config
 
 include/autoconf.h: .config ../.mkr.builddir .mkr.srcdir
-	cp .config saved-busybox-config
 	test -f Makefile && $(MAKE) $(args) distclean || :
-	mv saved-busybox-config .config
+	cp ../.busybox_config .config
 	yes "" | $(MAKE) $(args) oldconfig
 	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 
 # Building busybox
 compile: include/autoconf.h
 	$(MAKE) $(args)
+	$(Q)cp .config ../.busybox_config
 
 # Installing it
-busybox-install:
+staging:
 	$(MAKE) $(args) install
-
-staging: busybox-install
 
 rootfs: default-copyall-rootfs
 
@@ -66,6 +58,7 @@ confcheck: default-confcheck
 %config: .config
 	$(MAKE) $(args) $@
 	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
+	$(Q)cp .config ../.busybox_config
 
 clean: .config
 	$(MAKE) $(args) $@

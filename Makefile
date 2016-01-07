@@ -381,9 +381,6 @@ $(patsubst %, busybox/%, $(allconfigs) mkr-config): \
 	%: prepare check-computed-variables
 	$(Q)mkdir -p busybox
 	$(Q)$(MAKE) $(call pkg-recurse,busybox/) $(notdir $@)
-	$(Q)if [ -e busybox/.config ]; then \
-		cp -a busybox/.config .busybox_config; \
-	fi
 
 confcheck-srcdirs = $(foreach p, \
 			$(packages), \
