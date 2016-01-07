@@ -60,7 +60,7 @@ EOF
 		case "$part" in
 		    sd[a-z][0-9]*)
 			dev=`expr "$part" : '\(sd[a-z]\)'`
-			desc=`/usr/bin/sdinfo "/dev/$dev"`
+			desc=`/usr/bin/sdinfo "/dev/$dev" | sed 's/"/\\\\\\\\"/g'`
 			;;
 		    hd[a-z][0-9]*|mmcblk*p*|md[0-9]*p*)
 			desc=""
