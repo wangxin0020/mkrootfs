@@ -14,12 +14,28 @@ config LINUX_SRCDIR
 	srcdir "Sources directory"
 	default "linux-*"
 
-config LINUX_CONFIG
-	string "Configuration file"
-	default "config-$(KERNELVERSION)"
+choice
+	prompt "Configuration file"
+
+config LINUX_BOARD_CONFIG
+	bool "From board directory"
 	help
-	  The kernel configuration file, it may be a path, it will be
-	  taken as relative to the board directory, or a defconfig target name.
+	  Use the file named linux-config-$(KERNELVERSION) in the 
+	  boards/$(MKR_BOARD_NAME) directory in mkrootfs tree.
+
+config LINUX_BOARD_DEFCONFIG
+	bool "Use kernel defconfig"
+	help
+	  Use a kernel defconfig file (specified with
+	  LINUX_BOARD_DEFCONFIG_NAME).
+
+endchoice
+
+config LINUX_BOARD_DEFCONFIG_NAME
+	string "Defconfig name"
+	depends on LINUX_BOARD_DEFCONFIG
+	help
+	  Choose the Linux kernel defconfig file name.
 
 config LINUX_TARGETS
 	string "Targets"

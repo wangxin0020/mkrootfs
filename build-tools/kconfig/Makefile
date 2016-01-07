@@ -104,7 +104,7 @@ else
 endif
 
 %_defconfig: $(obj)/conf
-	$(Q)$< -D boards/$@ $(Kconfig)
+	$(Q)$< -D boards/$(subst _defconfig,/mkrootfs-defconfig,$@) $(Kconfig)
 
 # Help text used by make help
 help:

@@ -239,7 +239,7 @@ ifneq ($(filter $(no-dot-config-targets), $(MAKECMDGOALS)),)
 	endif
 endif
 
-boards := $(notdir $(wildcard $(srctree)/boards/*_defconfig))
+boards := $(patsubst %,%_defconfig,$(notdir $(wildcard $(srctree)/boards/*)))
 packages-dirs := $(notdir $(patsubst %/,%,$(dir $(wildcard $(srctree)/*/Kconfig))))
 
 ifneq ($(filter $(allconfigs) $(boards),$(MAKECMDGOALS)),)
@@ -272,6 +272,7 @@ $(allconfigs): %: build-tools_basic outputmakefile FORCE
 $(boards): %: build-tools_basic outputmakefile FORCE
 	$(Q)mkdir -p include/config
 	$(Q)$(MAKE) $(build)=build-tools/kconfig $@
+	$(Q)$(MAKE) $(build)=. linux/.config busybox/.config
 
 else
 # ===========================================================================
@@ -369,7 +370,7 @@ $(patsubst %, linux/%, $(allconfigs) mkr-config): %: check-computed-variables
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
 
-linux/.config:
+linux/.config: .mkr.kvers
 	$(Q)mkdir -p linux
 	$(Q)$(MAKE) $(call pkg-recurse,linux/) $(notdir $@)
 
@@ -379,6 +380,10 @@ linux/%_defconfig:
 
 $(patsubst %, busybox/%, $(allconfigs) mkr-config): \
 	%: prepare check-computed-variables
+	$(Q)mkdir -p busybox
+	$(Q)$(MAKE) $(call pkg-recurse,busybox/) $(notdir $@)
+
+busybox/.config:
 	$(Q)mkdir -p busybox
 	$(Q)$(MAKE) $(call pkg-recurse,busybox/) $(notdir $@)
 
@@ -425,10 +430,16 @@ output-confcheck-$(MKR_OUT_INITRAMFS_XZ) += \
 
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(call mksrcdir,$(MKR_LINUX_SRCDIR))/Makefile)))
+STABLE_KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
+ifeq ($(VERSION),2)
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
+else
+KERNELVERSION = $(VERSION).$(PATCHLEVEL)
+endif
+
 
 .mkr.kvers: FORCE
-	$(Q)echo $(KERNELVERSION) > .tmp$@; \
+	$(Q)echo $(STABLE_KERNELVERSION) > .tmp$@; \
 	if ! cmp -s .tmp$@ $@; then \
 		mv .tmp$@ $@; \
 	else \
@@ -898,6 +909,19 @@ prepare: prepare0 .mkr.confcheck
 
 # Generate some files
 # ---------------------------------------------------------------------------
+
+saveconfig-y := mkdir -p $(srctree)/boards/$(MKR_BOARD_NAME) && \
+	cp .config $(srctree)/boards/$(MKR_BOARD_NAME)/mkrootfs-defconfig
+
+saveconfig-$(MKR_LINUX_BOARD_CONFIG) += \
+	&& cp .linux_config $(srctree)/boards/$(MKR_BOARD_NAME)/linux-defconfig-$(KERNELVERSION)
+
+saveconfig-$(MKR_BUSYBOX_BOARD_CONFIG) += \
+	&& cp .busybox_config $(srctree)/boards/$(MKR_BOARD_NAME)/busybox-defconfig
+
+saveconfig:
+	 $(saveconfig-y)
+
 
 ###
 # make clean     Delete most generated files

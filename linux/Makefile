@@ -1,4 +1,3 @@
-defconfig := $(if $(findstring defconfig,$(MKR_LINUX_CONFIG)),y)
 netdest := $(if $(findstring :, \
 	$(MKR_OUT_TFTP_DIRNAME)$(MKR_LINUX_EXTRA_INSTALL)),y)
 
@@ -6,53 +5,48 @@ netdest := $(if $(findstring :, \
 # Upper Makefile checked that Makefile existed in Linux sources directory
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(srcdir)/Makefile)))
+ifeq ($(VERSION),2)
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
-
-ifeq ($(defconfig),)
-# board-config is $(MKR_LINUX_CONFIG), but if it contains the
-# kernel version and can not be found, try another config file with the
-# same name but a different version number
-board-config := $(srctree)/boards/$(MKR_BOARD)/$(MKR_LINUX_CONFIG)
-ifeq ($(wildcard $(board-config)),)
-ifneq ($(findstring $(KERNELVERSION),$(board-config)),)
-board-config-wildcard := $(subst $(KERNELVERSION),*,$(board-config))
-board-config := $(lastword $(sort $(wildcard $(board-config-wildcard))))
-endif
-endif
 else
-board-config := $(MKR_LINUX_CONFIG)
+KERNELVERSION = $(VERSION).$(PATCHLEVEL)
 endif
 
-defconfig-$(call not,$(defconfig)) = \
-	if test -e "$(board-config)"; then \
-		echo Resetting Linux configuration to $(board-config); \
-		cp $(board-config) .config; \
+board-config-$(MKR_LINUX_BOARD_CONFIG) := $(srctree)/boards/$(MKR_BOARD_NAME)/linux-defconfig-$(KERNELVERSION)
+
+defconfig-$(MKR_LINUX_BOARD_CONFIG) = \
+	if test -e "$(board-config-y)"; then \
+		echo Resetting Linux configuration to $(board-config-y); \
+		cp $(board-config-y) .config; \
 	else \
-		echo "No board config found (tried $(board-config))"; \
+		echo "No board config found (tried $(board-config-y))"; \
+		exit 1; \
 	fi
 
-defconfig-$(defconfig) = \
-	$(Q)echo Resetting Linux configuration to $(board-config); \
-	$(MAKE) $(configargs) $(MKR_LINUX_CONFIG)
+defconfig-$(MKR_LINUX_BOARD_DEFCONFIG) = \
+	$(Q)echo Resetting Linux configuration to $(MKR_LINUX_BOARD_DEFCONFIG_NAME); \
+	$(MAKE) $(configargs-y) $(MKR_LINUX_BOARD_DEFCONFIG_NAME)
 
 # Checking whether the .config must change
 ../.linux_config: $(O)/include/config/karch.h \
-		$(O)/include/config/board.h \
-		$(O)/include/config/linux/config.h
+		$(O)/include/config/board/name.h \
+		$(wildcard $(O)/include/config/linux/board/config.h \
+			$(O)/include/config/linux/board/defconfig.h)
 	$(Q)$(defconfig-y)
 	$(Q)mv .config $@
 
 .mkr.cleaned: $(wildcard $(O)/include/config/xeno/kernel.h  \
 			$(O)/include/config/xeno.h \
 			$(O)/include/config/karch.h \
-			$(O)/include/config/board.h \
-			$(O)/include/config/linux/config.h)
+			$(O)/include/config/board/name.h \
+			$(O)/include/config/linux/board/config.h \
+			$(O)/include/config/linux/board/defconfig.h)
 	$(Q)rm -Rf * $(filter-out .config .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
-# Patching the kernel with Xenomai
-ifeq ($(MKR_XENO_KERNEL),y)
+ready-y := .mkr.cleaned 
+configargs-$(call not,$(MKR_XENO_KERNEL)) := -C $(srcdir) O=$(CURDIR)
 
-lndir-$(call not $(MKR_XENO_MAINT)) := cp -sfR
+# Patching the kernel with Xenomai
+lndir-$(call not,$(MKR_XENO_MAINT)) := cp -sfR
 lndir-$(MKR_XENO_MAINT) := lndir -silent -ignorelinks
 
 xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
@@ -60,7 +54,9 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 .mkr.cleaned: $(wildcard $(O)/include/config/linux/srcdir.h \
 			$(O)/include/config/xeno/srcdir.h) ../.mkr.kvers
 
-.mkr.prepared: .mkr.cleaned
+force-prepare-$(MKR_XENO_MAINT) := FORCE
+
+.mkr.prepared: .mkr.cleaned $(force-prepare-y)
 	$(Q)echo Preparing linux sources directory...
 	$(Q)rm -f drivers/Makefile kernel/Makefile \
 		arch/$(KARCH)/Makefile init/Kconfig; \
@@ -71,36 +67,28 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 	$(Q)echo Preparing linux sources directory...done.
 
 # In maintainer mode, trigger prepare-kernel for every compilation
-ifeq ($(MKR_XENO_MAINT),y)
-.mkr.prepared: FORCE
-endif
-ready := .mkr.prepared
-else
-ready := .mkr.cleaned
-
-configargs := -C $(srcdir) O=$(CURDIR)
-endif
+ready-y += .mkr.prepared
 
 # Configuring the kernel
-configargs += V=$(KBUILD_VERBOSE) ARCH=$(KARCH)
+configargs-y += V=$(KBUILD_VERBOSE) ARCH=$(KARCH)
 
-.config: ../.linux_config $(ready)
-	$(Q)cmp $< $@ || cp $< $@
+.config: ../.linux_config $(ready-y)
+	$(Q)cmp -s $< $@ || cp $< $@
 
-mkr-config: $(ready)
+mkr-config: $(ready-y)
 	$(Q)$(defconfig-y)
 	$(Q)cp .config ../.linux_config
 
 include/generated/autoconf.h: .config ../.mkr.kvers \
 	$(wildcard $(O)/include/config/xeno/kernel.h)
-	yes "" | $(MAKE) $(configargs) oldconfig
+	yes "" | $(MAKE) $(configargs-y) oldconfig
 	$(Q)cp .config ../.linux_config
 
 # Building the kernel
 # get CONFIG_MODULES from kernel configuration
 $(eval $(shell grep '^CONFIG_MODULES=y' .config 2> /dev/null))
 
-buildargs := $(configargs) CROSS_COMPILE=$(kcross) CC=$(KCC)
+buildargs := $(configargs-y) CROSS_COMPILE=$(kcross) CC=$(KCC)
 ifneq ($(MKR_LINUX_LOADADDR),)
 buildargs += LOADADDR="$(MKR_LINUX_LOADADDR)"
 endif
@@ -159,11 +147,6 @@ endif
 rootfs: default-copyall-rootfs
 
 # Checking mkrootfs configuration for building the kernel
-confcheck-$(call not, $(defconfig)) += \
-	$(call confcheck-if, \
-		test -z "$(board-config)", \
-		No kernel configuration file found see MKR_LINUX_CONFIG) \
-	$(call confcheck-exists,$(board-config),MKR_LINUX_CONFIG)
 confcheck-$(netdest) += $(call confcheck-tool,scp,MKR_LINUX_IMAGE_DEST)
 confcheck-y += $(call confcheck-not-empty, MKR_LINUX_TARGETS)
 ifneq ($(strip $(MKR_LINUX_EXTRA_FILES)),)
@@ -177,22 +160,25 @@ ifeq ($(MKR_XENO_KERNEL),y)
 ipipe := $(wildcard $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/ipipe.h)
 confcheck-$(MKR_XENO_MAINT) += $(if $(ipipe),,echo Maintainer mode only works with I-pipe patched kernel sources; success=false;)
 endif
-confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-tool,mkimage,MKR_LINUX_DT_MERGED)
-confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-if, \
-	test -z "$(CONFIG_ARM_APPENDED_DTB)", \
+confcheck-$(MKR_LINUX_DT_MERGED) += \
+	$(call confcheck-tool,mkimage,MKR_LINUX_DT_MERGED)
+confcheck-$(MKR_LINUX_DT_MERGED) += \
+	$(call confcheck-if, \
+		test -z "$(CONFIG_ARM_APPENDED_DTB)", \
 	MKR_LINUX_DT_MERGED requires CONFIG_ARM_APPENDED_DTB in kernel configuration)
-confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-if, \
-	test -z "$(CONFIG_ARM_ATAG_DTB_COMPAT)", \
+confcheck-$(MKR_LINUX_DT_MERGED) += \
+	$(call confcheck-if, \
+		test -z "$(CONFIG_ARM_ATAG_DTB_COMPAT)", \
 	MKR_LINUX_DT_MERGED requires CONFIG_ARM_ATAG_DTB_COMPAT in kernel configuration)
-confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-not-empty, \
-	MKR_LINUX_DT_NAME)
-confcheck-$(MKR_LINUX_DT_MERGED) += $(call confcheck-not-empty, \
-	MKR_LINUX_LOADADDR)
-confcheck-$(MKR_OUT_INITRAMFS_GZ) += $(call confcheck-if, \
-	test -z "$(CONFIG_RD_GZIP)", \
+confcheck-$(MKR_LINUX_DT_MERGED) += \
+	$(call confcheck-not-empty, MKR_LINUX_DT_NAME)
+confcheck-$(MKR_LINUX_DT_MERGED) += \
+	$(call confcheck-not-empty, MKR_LINUX_LOADADDR)
+confcheck-$(MKR_OUT_INITRAMFS_GZ) += \
+	$(call confcheck-if, test -z "$(CONFIG_RD_GZIP)", \
 	initramfs Gzip compression requires CONFIG_RD_GZIP in kernel configuration)
-confcheck-$(MKR_OUT_INITRAMFS_XZ) += $(call confcheck-if, \
-	test -z "$(CONFIG_RD_XZ)", \
+confcheck-$(MKR_OUT_INITRAMFS_XZ) += \
+	$(call confcheck-if, test -z "$(CONFIG_RD_XZ)", \
 	initramfs Xz compression requires CONFIG_RD_XZ in kernel configuration)
 
 confcheck: default-confcheck
@@ -200,7 +186,7 @@ confcheck: default-confcheck
 # Catch-all target, allow to run all the targets (including the
 # *config ones, and clean)
 %config: .config
-	$(MAKE) $(configargs) $@
+	$(MAKE) $(configargs-y) $@
 	$(Q)cp .config ../.linux_config
 
 clean: .config

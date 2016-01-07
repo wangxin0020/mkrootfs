@@ -1,10 +1,13 @@
-ifeq ($(MKR_BUSYBOX_CONFIG),defconfig)
-defconfig:=y
-endif
-
-board-config = $(srctree)/boards/$(MKR_BOARD)/$(MKR_BUSYBOX_CONFIG)
-defconfig-$(defconfig) = $(MAKE) $(args) defconfig
-defconfig-$(call not,$(defconfig)) = cp $(board-config) .config
+board-config = $(srctree)/boards/$(MKR_BOARD_NAME)/busybox-defconfig
+defconfig-$(MKR_BUSYBOX_BOARD_DEFCONFIG) = $(MAKE) $(args) defconfig
+defconfig-$(MKR_BUSYBOX_BOARD_CONFIG) = \
+	if test -e "$(board-config)"; then \
+		echo Resetting Busybox configuration to $(board-config); \
+		cp $(board-config) .config; \
+	else \
+		echo "No board config found (tried $(board-config))"; \
+		exit 1; \
+	fi
 
 # Configuring busybox
 args := V=$(KBUILD_VERBOSE) SKIP_STRIP=y -C $(srcdir) O=$(CURDIR) \
@@ -15,14 +18,15 @@ args := V=$(KBUILD_VERBOSE) SKIP_STRIP=y -C $(srcdir) O=$(CURDIR) \
 
 ../.busybox_config: \
 	$(O)/include/config/arch.h \
-	$(O)/include/config/board.h \
-	$(O)/include/config/busybox/config.h
+	$(O)/include/config/board/name.h \
+	$(wildcard $(O)/include/config/busybox/board/config.h \
+		$(O)/include/config/busybox/board/defconfig.h)
 	$(Q)$(defconfig-y)
 	$(Q)sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 	$(Q)mv .config $@
 
 .config: ../.busybox_config
-	$(Q)cmp $< $@ || cp $< $@
+	$(Q)cmp -s $< $@ || cp $< $@
 
 mkr-config:
 	@echo Resetting busybox configuration to $(board-config); \

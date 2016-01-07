@@ -1,3 +1,11 @@
+config BOARD_NAME
+	string "Board directory name"
+	default "livecd"
+	help
+	  Directory where board specific files (including linux, busybox and
+	  mkrootfs configuration) are stored.
+	  This is a path relative to the boards directory in mkrootfs tree.
+
 source "toolchain/Kconfig"
 
 menu "Output"
@@ -82,7 +90,7 @@ if OUT_TFTP
 
 config OUT_TFTP_DIRNAME
         string "tftp directory name"
-	default "/var/lib/tftpboot/$(MKR_BOARD)"
+	default "/var/lib/tftpboot/$(MKR_BOARD_NAME)"
 
 	help
 	  Choose where to install files. If the path is of the form

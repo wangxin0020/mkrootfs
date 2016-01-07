@@ -10,13 +10,21 @@ config BUSYBOX_SRCDIR
 	srcdir "Source directory"
 	default "busybox-*"
 
-config BUSYBOX_CONFIG
-	string "Configuration file"
-	default "defconfig"
+choice
+	prompt "Configuration file"
+
+config BUSYBOX_BOARD_DEFCONFIG
+	bool "Use busybox defconfig"
 	help
-	  The configuration file, it may be a relative path, it will be
-	  taken as relative to the board directory, or defconfig to
-	  use BusyBox default configuration.
+	  Use busybox defconfig file.
+
+config BUSYBOX_BOARD_CONFIG
+	bool "From board directory"
+	help
+	  Use the file named busybox-config in the boards/$(MKR_BOARD_NAME)
+	  directory in mkrootfs tree.
+
+endchoice
 
 endif
 

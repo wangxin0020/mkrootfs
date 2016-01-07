@@ -6,16 +6,21 @@ config BASE
 
 if BASE
 
+choice
+	prompt "Base files source directory"
+
+config BASE_SRC_GENERIC
+       bool "Generic"
+
+config BASE_SRC_BOARD
+       bool "Board specific"
+
+endchoice
+
 config BASE_SRCDIR
        srcdir
-       default "$(srctree)/boards/$(MKR_BOARD)"
-
-config BOARD
-	string "Board directory name"
-	default "generic"
-	help
-	  Directory where architecture or board specific files will be taken.
-	  This is a path relative to the boards directory in mkrootfs tree.
+       default "$(srctree)/boards/generic" if BASE_SRC_GENERIC
+       default "$(srctree)/boards/$(MKR_BOARD_DIRNAME)" if BASE_SRC_BOARD
 
 config KEYBOARD_MAPS
        bool "Keyboard maps"
