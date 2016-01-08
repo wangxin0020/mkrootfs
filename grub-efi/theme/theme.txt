@@ -1,0 +1,40 @@
+title-color: "#336799"
+title-text: "Boot options"
+desktop-color: "black"
+desktop-image: "/isolinux/splash.png"
+message-color: "black"
+message-bg-color: "black"
+terminal-box: "menu_bkg_*.png"
+
++ boot_menu {
+  left = 10%
+  width = 80%
+  top = 40%
+  height = 20%
+  item_color = #336799
+  selected_item_color = "white"
+  selected_item_pixmap_style = "select_bkg_*.png"
+  item_height = 20
+  item_padding = 15
+  item_spacing = 5
+}
+
++ vbox {
+  top = 100%-60
+  left = 10%
+  + hbox {
+    top = 0
+    left = 20%
+    + label {text = "Enter: " color = "black" align = "left"}
+    + label {text = "Select             " color = "#336799" align = "left"}
+  }
+  + hbox {
+    top = 0
+    left = 20%
+    + label {text = "E:     " color = "black" align = "left"}
+    + label {text = "Edit Selection     " color = "#336799" align = "left"}
+    + label {text = "           " color = "black" align = "left"}
+    + label {text = "C:     " color = "black" align = "left"}
+    + label {text = "GRUB Command line" color = "#336799" align = "left"}
+  }  
+}

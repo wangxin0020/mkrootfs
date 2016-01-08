@@ -21,10 +21,11 @@ staging:
 	$(INSTALL) efiboot.img $(isobootdir)/isolinux/efiboot.img
 	$(INSTALL) bootx64.efi $(isobootdir)/EFI/Boot/bootx64.efi
 	$(INSTALL) $(pkgdir)/grub.cfg $(isobootdir)/boot/grub/grub.cfg
+	$(INSTALL) -d $(isobootdir)/boot/grub/theme
+	$(INSTALL) $(pkgdir)/theme/* $(isobootdir)/boot/grub/theme
 	$(INSTALL) -d $(isobootdir)/boot/grub/x86_64-efi
 	$(INSTALL) $(srcdir)/*.mod $(isobootdir)/boot/grub/x86_64-efi
 	$(INSTALL) $(srcdir)/*.lst $(isobootdir)/boot/grub/x86_64-efi
-	$(INSTALL) $(pkgdir)/dejavusansmono.pf2 $(isobootdir)/boot/grub
 
 rootfs:
 

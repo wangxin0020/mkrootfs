@@ -1,4 +1,4 @@
-ISOLINUX_FILES=isolinux.bin menu.c32 ldlinux.c32 libutil.c32
+ISOLINUX_FILES=isolinux.bin vesamenu.c32 ldlinux.c32 libutil.c32
 INSTALL:=install -m 0644 -D
 
 isobootdir := $(staging)/../boot.iso.d
@@ -9,7 +9,9 @@ compile:
 
 staging:
 	$(RM) -r $(isobootdir)
-	$(INSTALL) $(pkgdir)/isolinux.cfg $(isobootdir)/isolinux/isolinux.cfg
+	for f in isolinux.cfg splash.png; do \
+		$(INSTALL) $(pkgdir)/$$f $(isobootdir)/isolinux/$$f; \
+	done
 	for f in $(ISOLINUX_FILES); do \
 		if test -e $(srcdir)/$$f; then \
 			$(INSTALL) $(srcdir)/$$f $(isobootdir)/isolinux/$$f; \
