@@ -3,17 +3,20 @@
 secure_network="@MKR_SECURE_NETWORK@"
 
 mount /proc
+dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
+
 # Make dev a tmpfs directory
 if ! grep -q devtmpfs /proc/mounts; then
     if grep -q devtmpfs /proc/filesystems; then
 	mount -t devtmpfs none /dev
+	exec < /dev/$dev > /dev/$dev 2> /dev/$dev
     else
 	mount -t tmpfs none /dev
     fi
+else
+    exec < /dev/$dev > /dev/$dev 2> /dev/$dev
 fi
 
-dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
-exec < /dev/$dev > /dev/$dev 2> /dev/$dev
 
 # Create /dev/shm and /dev/pts for devtmpfs
 mkdir -p /dev/shm /dev/pts
@@ -27,6 +30,7 @@ fi
 
 echo /sbin/mkrootfs_hotplug > /proc/sys/kernel/hotplug
 mdev -s
+exec < /dev/$dev > /dev/$dev 2> /dev/$dev
 
 # Update clock
 if grep -q "root=/dev/nfs" /proc/cmdline; then
