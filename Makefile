@@ -430,16 +430,10 @@ output-confcheck-$(MKR_OUT_INITRAMFS_XZ) += \
 
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(call mksrcdir,$(MKR_LINUX_SRCDIR))/Makefile)))
-STABLE_KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
-ifeq ($(VERSION),2)
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
-else
-KERNELVERSION = $(VERSION).$(PATCHLEVEL)
-endif
-
 
 .mkr.kvers: FORCE
-	$(Q)echo $(STABLE_KERNELVERSION) > .tmp$@; \
+	$(Q)echo $(KERNELVERSION) > .tmp$@; \
 	if ! cmp -s .tmp$@ $@; then \
 		mv .tmp$@ $@; \
 	else \

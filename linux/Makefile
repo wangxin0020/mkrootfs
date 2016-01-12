@@ -5,11 +5,7 @@ netdest := $(if $(findstring :, \
 # Upper Makefile checked that Makefile existed in Linux sources directory
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(srcdir)/Makefile)))
-ifeq ($(VERSION),2)
 KERNELVERSION = $(VERSION).$(PATCHLEVEL).$(SUBLEVEL)
-else
-KERNELVERSION = $(VERSION).$(PATCHLEVEL)
-endif
 
 board-config-$(MKR_LINUX_BOARD_CONFIG) := $(srctree)/boards/$(MKR_BOARD_NAME)/linux-defconfig-$(KERNELVERSION)
 
@@ -42,7 +38,7 @@ defconfig-$(MKR_LINUX_BOARD_DEFCONFIG) = \
 			$(O)/include/config/linux/board/defconfig.h)
 	$(Q)rm -Rf * $(filter-out .config .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
-ready-y := .mkr.cleaned 
+ready-$(call not,$(MKR_XENO_KERNEL)) := .mkr.cleaned
 configargs-$(call not,$(MKR_XENO_KERNEL)) := -C $(srcdir) O=$(CURDIR)
 
 # Patching the kernel with Xenomai
@@ -54,6 +50,7 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 .mkr.cleaned: $(wildcard $(O)/include/config/linux/srcdir.h \
 			$(O)/include/config/xeno/srcdir.h) ../.mkr.kvers
 
+# In maintainer mode, trigger prepare-kernel for every compilation
 force-prepare-$(MKR_XENO_MAINT) := FORCE
 
 .mkr.prepared: .mkr.cleaned $(force-prepare-y)
@@ -66,8 +63,7 @@ force-prepare-$(MKR_XENO_MAINT) := FORCE
 	: > $@
 	$(Q)echo Preparing linux sources directory...done.
 
-# In maintainer mode, trigger prepare-kernel for every compilation
-ready-y += .mkr.prepared
+ready-$(MKR_XENO_KERNEL) += .mkr.prepared
 
 # Configuring the kernel
 configargs-y += V=$(KBUILD_VERBOSE) ARCH=$(KARCH)
