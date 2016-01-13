@@ -1,16 +1,12 @@
 #!/bin/sh
 modules=" \
-	boot \
-	configfile \
-	crypto \
-	gettext \
 	iso9660 \
 	memdisk \
+	normal \
 	part_gpt \
 	part_msdos \
 	search \
-	tar \
-	terminal"
+	tar"
 
 pkgsrc="$1"; shift
 source="$1"; shift
@@ -45,6 +41,7 @@ cp "$pkgsrc/grub-standalone.cfg" boot/grub/grub.cfg
 cp "$source"/*.lst boot/grub/x86_64-efi
 
 cp "$source/moddep.lst" "$source/kernel.img" x86_64-efi
+
 : > $modlist
 for m in $modules; do
     add_module $m

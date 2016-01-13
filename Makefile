@@ -845,7 +845,7 @@ boot.iso: boot.iso.d/linux boot.iso.d/rootfs
 boot.hybrid.iso: boot.iso
 	$(Q)echo Generating $@...
 	$(Q)cp $< $@.tmp
-	$(Q)isohybrid $@.tmp
+	$(Q)isohybrid --partok $@.tmp
 	$(Q)mv $@.tmp $@
 	$(Q)echo Generating $@... done
 	$(Q)du --apparent-size -h $@
@@ -863,7 +863,7 @@ boot.efi.iso: boot.iso.d/linux boot.iso.d/rootfs grub-efi/staging
 boot.efi.hybrid.iso: boot.efi.iso
 	$(Q)echo Generating $@...
 	$(Q)cp $< $@.tmp
-	$(Q)isohybrid --uefi $@.tmp
+	$(Q)isohybrid --partok --uefi $@.tmp
 	$(Q)mv $@.tmp $@
 	$(Q)echo Generating $@... done
 	$(Q)du --apparent-size -h $@
