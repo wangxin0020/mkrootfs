@@ -3,12 +3,12 @@ title-text: "Boot options"
 desktop-color: "black"
 desktop-image: "/isolinux/splash.png"
 message-color: "black"
-message-bg-color: "black"
+message-bg-color: "white"
 terminal-box: "menu_bkg_*.png"
 
 + boot_menu {
-  left = 10%
-  width = 80%
+  left = 13%
+  width = 74%
   top = 40%
   height = 20%
   item_color = #336799
