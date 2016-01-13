@@ -36,6 +36,10 @@ defconfig-$(MKR_LINUX_BOARD_DEFCONFIG) = \
 			$(O)/include/config/board/name.h \
 			$(O)/include/config/linux/board/config.h \
 			$(O)/include/config/linux/board/defconfig.h)
+	$(Q)if test -e ../.linux_config; then \
+		echo '***' Warning: re-using .linux_config, if you want to restore the default; \
+		echo configuration, run \"make linux/mkr-config\"; \
+	fi
 	$(Q)rm -Rf * $(filter-out .config .mkr.srcdir .mkr.log .mkr.filelist .mkr.dirlist,$(wildcard .[a-z]* ..[a-z]*)) && : > $@
 
 ready-$(call not,$(MKR_XENO_KERNEL)) := .mkr.cleaned
