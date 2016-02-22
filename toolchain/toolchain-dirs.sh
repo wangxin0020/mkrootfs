@@ -47,7 +47,7 @@ else
     done | sort -u`
     BINDIRS=`for d in $LIBDIRS; do \
 	for subd in bin ../bin sbin ../sbin ../debug-root/usr/bin; do \
-	    if [ -e "$d/$subd" ]; then \
+	    if [ -d "$d/$subd" ]; then \
 		cd "$d/$subd" && pwd; \
 	    fi \
 	done \
