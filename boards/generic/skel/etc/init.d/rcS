@@ -3,7 +3,7 @@
 secure_network="@MKR_SECURE_NETWORK@"
 
 mount /proc
-dev=`sed 's/^.*console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
+dev=`sed 's/^.* console=\([^, ]*\).*$/\1/;t;s/.*/tty1/' /proc/cmdline`
 
 # Make dev a tmpfs directory
 if ! grep -q devtmpfs /proc/mounts; then
