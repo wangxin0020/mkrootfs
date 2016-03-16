@@ -1,8 +1,8 @@
 #
 # Automatically generated make config: don't edit
-# Mon Feb  8 22:54:45 2016
+# Fri Jan 22 15:55:50 2016
 #
-MKR_BOARD_NAME=atom
+MKR_BOARD_NAME=rescue
 
 #
 # Toolchain and flags selection
@@ -39,30 +39,31 @@ MKR_LIBDL=y
 MKR_LIBM=y
 MKR_LIBPTHREAD=y
 MKR_LIBRESOLV=y
-# MKR_LIBSTDCPP is not set
-# MKR_LIBUTIL is not set
+MKR_LIBSTDCPP=y
+MKR_LIBUTIL=y
 
 #
 # Output
 #
 # MKR_OUT_TAR is not set
-MKR_OUT_NFS=y
-MKR_OUT_RSYNCD_PORT=31000
+# MKR_OUT_NFS is not set
 MKR_OUT_INITRAMFS=y
 # MKR_OUT_INITRAMFS_GZ is not set
 MKR_OUT_INITRAMFS_XZ=y
 # MKR_OUT_INITRAMFS_UBOOT is not set
-MKR_OUT_TFTP=y
-MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/atom
-MKR_OUT_TFTP_BASENAME=gilles-2.x
+# MKR_OUT_TFTP is not set
 # MKR_SKIP_ROOTFS is not set
-MKR_SKIP_ROOTFS_MODULES_STRIP=y
-# MKR_OUT_ISO_BOOT is not set
+# MKR_SKIP_ROOTFS_MODULES_STRIP is not set
+MKR_OUT_ISO_BOOT=y
+MKR_OUT_ISO_BOOT_DIR=/usr/share/syslinux
+MKR_OUT_ISO_HYBRID=y
+MKR_GRUB_EFI=y
+MKR_GRUB_EFI_DIR=/usr/lib64/grub/x86_64-efi
 
 #
 # Base
 #
-MKR_SRC_BASEDIR=$(HOME)/files/xenomai:/usr/src
+MKR_SRC_BASEDIR=$(HOME)/src:/usr/src:$(HOME)/files/xenomai
 
 #
 # Base skeleton
@@ -71,19 +72,24 @@ MKR_BASE=y
 MKR_BASE_SRC_GENERIC=y
 # MKR_BASE_SRC_BOARD is not set
 MKR_BASE_SRCDIR=$(srctree)/boards/generic
-# MKR_KEYBOARD_MAPS is not set
-# MKR_SECURE_NETWORK is not set
-MKR_SWAP=y
-MKR_SWAP_DEV=sda1
-MKR_BASE_SHELL=/bin/ash
+MKR_KEYBOARD_MAPS=y
+# MKR_KEYBOARD_ONE_MAP is not set
+MKR_KEYBOARD_ALL_MAPS=y
+MKR_KEYBOARD_CHOOSER=y
+MKR_SECURE_NETWORK=y
+# MKR_BASE_SSH_DROPBEAR is not set
+MKR_BASE_SSH_OPENSSH=y
+# MKR_SWAP is not set
+MKR_SWAP_DEV=null
+MKR_BASE_SHELL=/bin/bash
 
 #
 # BusyBox
 #
 MKR_BUSYBOX=y
 MKR_BUSYBOX_SRCDIR=busybox-*
-MKR_BUSYBOX_BOARD_DEFCONFIG=y
-# MKR_BUSYBOX_BOARD_CONFIG is not set
+# MKR_BUSYBOX_BOARD_DEFCONFIG is not set
+MKR_BUSYBOX_BOARD_CONFIG=y
 
 #
 # Dropbear
@@ -95,7 +101,7 @@ MKR_BUSYBOX_BOARD_DEFCONFIG=y
 #
 MKR_LINUX=y
 MKR_KCC=$(CC)
-MKR_LINUX_SRCDIR=ipipe
+MKR_LINUX_SRCDIR=linux-mainline
 MKR_LINUX_BOARD_CONFIG=y
 # MKR_LINUX_BOARD_DEFCONFIG is not set
 MKR_LINUX_TARGETS=bzImage
@@ -109,7 +115,9 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # Linux firmware
 #
-# MKR_LINUX_FW is not set
+MKR_LINUX_FW=y
+MKR_LINUX_FW_REPO=git://git.click-hack.org/kernel.org/linux-firmware.git
+# MKR_LINUX_FW_UPDATE is not set
 
 #
 # LTP (old versions)
@@ -124,66 +132,22 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # OpenSSH
 #
-# MKR_OPENSSH is not set
+MKR_OPENSSH=y
+MKR_OPENSSH_SRCDIR=openssh-*
 
 #
 # RTnet
 #
-# MKR_RTNET is not set
 
 #
 # Real-time tests & benches
 #
-MKR_TESTS=y
-MKR_TESTS_SRCDIR=$(srctree)/tests
-MKR_TESTS_XENO=y
-MKR_XENO_TEST_FRONTEND=y
+# MKR_TESTS is not set
 
 #
 # Xenomai
 #
-MKR_XENO=y
-MKR_XENO_SRCDIR=xenomai-2.6
-MKR_XENO_MAINT=y
-MKR_XENO_SMP=y
-MKR_XENO_KERNEL=y
-MKR_XENO_CLASSIC=y
-# MKR_XENO_FORGE is not set
-MKR_XENO_DEBUG=y
-
-#
-# Components selection
-#
-MKR_XENO_USERSPACE=y
-# MKR_XENO_A4L is not set
-MKR_XENO_NATIVE=y
-MKR_XENO_POSIX=y
-# MKR_XENO_PSOS is not set
-# MKR_XENO_RTCAN is not set
-MKR_XENO_RTDM=y
-# MKR_XENO_UITRON is not set
-# MKR_XENO_VRTX is not set
-# MKR_XENO_VXWORKS is not set
-MKR_XENO_TESTSUITE=y
-# MKR_XENO_TESTSUITE_UNFREQUENT is not set
-
-#
-# Advanced configuration options
-#
-# MKR_XENO_SEP_TESTDIR is not set
-MKR_XENO_X86_VSYSCALL=y
-MKR_XENO_X86_TSC=y
-# MKR_XENO_THREAD is not set
-# MKR_XENO_DLOPEN is not set
-
-#
-# Automatic mlockall
-#
-# MKR_XENO_POSIX_MLOCKALL is not set
-# MKR_XENO_PSOS_MLOCKALL is not set
-# MKR_XENO_UITRON_MLOCKALL is not set
-MKR_XENO_ATOMIC_BUILTINS=y
-# MKR_XENO_ATOMIC_ADHOC is not set
+# MKR_XENO is not set
 
 #
 # Other
@@ -192,12 +156,15 @@ MKR_XENO_ATOMIC_BUILTINS=y
 #
 # alsa-utils
 #
-# MKR_ALSA_UTILS is not set
+MKR_ALSA_UTILS=y
+MKR_ALSA_UTILS_SRCDIR=alsa-utils-*
+MKR_ALSA_UTILS_ALSAMIXER=y
 
 #
 # Bash
 #
-# MKR_BASH is not set
+MKR_BASH=y
+MKR_BASH_SRCDIR=bash-*
 
 #
 # Cryptsetup
@@ -209,7 +176,8 @@ MKR_CRYPTSETUP_LIBUUID=y
 #
 # Debootstrap
 #
-# MKR_DEBOOTSTRAP is not set
+MKR_DEBOOTSTRAP=y
+MKR_DEBOOTSTRAP_SRCDIR=debootstrap-*
 
 #
 # Device Mapper
@@ -222,7 +190,6 @@ MKR_DEVICE_MAPPER_SRCDIR=LVM*
 #
 MKR_DIALOG=y
 MKR_DIALOG_SRCDIR=dialog-*
-# MKR_DIALOG_WIDEC is not set
 
 #
 # Dosfstools
@@ -236,7 +203,7 @@ MKR_DOSFSTOOLS_SRCDIR=dosfstools-*
 MKR_E2FSPROGS=y
 MKR_E2FSPROGS_SRCDIR=e2fsprogs-*
 MKR_E2FSPROGS_LIBUUID=y
-# MKR_E2FSPROGS_LIBBLKID is not set
+MKR_E2FSPROGS_LIBBLKID=y
 
 #
 # File
@@ -253,7 +220,8 @@ MKR_FILE_ZLIB=y
 #
 # Iperf
 #
-# MKR_IPERF is not set
+MKR_IPERF=y
+MKR_IPERF_SRCDIR=iperf-*
 
 #
 # Kexec-tools
@@ -268,32 +236,41 @@ MKR_FILE_ZLIB=y
 #
 # Mdadm
 #
-# MKR_MDADM is not set
+MKR_MDADM=y
+MKR_MDADM_SRCDIR=mdadm-*
 
 #
 # msr-tools
 #
-# MKR_MSR_TOOLS is not set
+MKR_MSR_TOOLS=y
+MKR_MSR_TOOLS_SRCDIR=msr-tools-*
 
 #
 # Ntfs-3g
 #
-# MKR_NTFS is not set
+MKR_NTFS=y
+# MKR_NTFS32 is not set
+MKR_NTFS_SRCDIR=ntfs-3g_*
+MKR_NTFS_LIBUUID=y
 
 #
 # Parted
 #
-# MKR_PARTED is not set
+MKR_PARTED=y
+MKR_PARTED_SRCDIR=parted-*
+MKR_PARTED_LIBBLKID=y
 
 #
 # pciutils
 #
-# MKR_PCIUTILS is not set
+MKR_PCIUTILS=y
+MKR_PCIUTILS_SRCDIR=pciutils-*
 
 #
 # Rpcbind
 #
-# MKR_RPCBIND is not set
+MKR_RPCBIND=y
+MKR_RPCBIND_SRCDIR=rpcbind-*
 
 #
 # Strace
@@ -310,7 +287,8 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 #
 # Usbutils
 #
-# MKR_USBUTILS is not set
+MKR_USBUTILS=y
+MKR_USBUTILS_SRCDIR=usbutils-*
 
 #
 # Valgrind
@@ -320,12 +298,17 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 #
 # wireless-tools
 #
-# MKR_WIRELESS_TOOLS is not set
+MKR_WIRELESS_TOOLS=y
+MKR_WIRELESS_TOOLS_SRCDIR=wireless_tools.*
 
 #
 # wpa_supplicant
 #
-# MKR_WPA_SUPPLICANT is not set
+MKR_WPA_SUPPLICANT=y
+MKR_WPA_SUPPLICANT_SRCDIR=wpa_supplicant-*
+# MKR_WPA_SUPPLICANT_TLS_INTERNAL is not set
+MKR_WPA_SUPPLICANT_TLS_LIBRESSL=y
+MKR_WPA_SUPPLICANT_CONFIG_TLS=openssl
 
 #
 # Libraries
@@ -334,12 +317,15 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 #
 # alsa-lib
 #
-# MKR_ALSA_LIB is not set
+MKR_ALSA_LIB=y
+MKR_ALSA_LIB_SRCDIR=alsa-lib-*
 
 #
 # fuse
 #
-# MKR_FUSE is not set
+MKR_FUSE=y
+# MKR_FUSE32 is not set
+MKR_FUSE_SRCDIR=fuse-*
 
 #
 # libpcap
@@ -350,12 +336,15 @@ MKR_LIBPCAP_SRCDIR=libpcap-*
 #
 # libressl
 #
-# MKR_LIBRESSL is not set
+MKR_LIBRESSL=y
+MKR_LIBRESSL_SRCDIR=libressl-*
+MKR_LIBRESSL_OPENSSL=y
 
 #
 # libtirpc
 #
-# MKR_LIBTIRPC is not set
+MKR_LIBTIRPC=y
+MKR_LIBTIRPC_SRCDIR=libtirpc-*
 
 #
 # libtomcrypt
@@ -370,15 +359,15 @@ MKR_LIBPCAP_SRCDIR=libpcap-*
 #
 # libusb
 #
-# MKR_LIBUSB is not set
+MKR_LIBUSB=y
+MKR_LIBUSB_SRCDIR=libusb-*
 
 #
 # ncurses
 #
 MKR_NCURSES=y
 MKR_NCURSES_SRCDIR=ncurses-*
-# MKR_NCURSES_WIDEC is not set
-# MKR_NCURSES_FULL_TERMINFO is not set
+MKR_NCURSES_FULL_TERMINFO=y
 
 #
 # popt
@@ -389,7 +378,8 @@ MKR_POPT_SRCDIR=popt-*
 #
 # readline
 #
-# MKR_READLINE is not set
+MKR_READLINE=y
+MKR_READLINE_SRCDIR=readline-*
 
 #
 # util-linux
@@ -397,13 +387,15 @@ MKR_POPT_SRCDIR=popt-*
 MKR_UTIL_LINUX=y
 MKR_UTIL_LINUX_SRCDIR=util-linux-*
 MKR_UTIL_LINUX_LIBUUID=y
-# MKR_UTIL_LINUX_LIBBLKID is not set
+MKR_UTIL_LINUX_LIBBLKID=y
 # MKR_UTIL_LINUX_CRAMFS is not set
 
 #
 # xz
 #
-# MKR_XZ is not set
+MKR_XZ=y
+MKR_XZ_SRCDIR=xz-*
+MKR_XZ_XZ=y
 
 #
 # zlib-ng

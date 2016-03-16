@@ -1,7 +1,8 @@
 #
 # Automatically generated make config: don't edit
-# Tue Jan  5 09:29:00 2016
+# Thu Jan  7 12:04:47 2016
 #
+MKR_BOARD_NAME=livecd
 
 #
 # Toolchain and flags selection
@@ -68,8 +69,9 @@ MKR_SRC_BASEDIR=$(HOME)/src:/usr/src:$(HOME)/files/xenomai
 # Base skeleton
 #
 MKR_BASE=y
+MKR_BASE_SRC_GENERIC=y
+# MKR_BASE_SRC_BOARD is not set
 MKR_BASE_SRCDIR=$(srctree)/boards/generic
-MKR_BOARD=generic
 MKR_KEYBOARD_MAPS=y
 # MKR_KEYBOARD_ONE_MAP is not set
 MKR_KEYBOARD_ALL_MAPS=y
@@ -86,6 +88,7 @@ MKR_BASE_SHELL=/bin/bash
 #
 MKR_BUSYBOX=y
 MKR_BUSYBOX_SRCDIR=busybox-*
+# MKR_BUSYBOX_BOARD_DEFCONFIG is not set
 MKR_BUSYBOX_BOARD_CONFIG=y
 
 #
@@ -99,7 +102,8 @@ MKR_BUSYBOX_BOARD_CONFIG=y
 MKR_LINUX=y
 MKR_KCC=$(CC)
 MKR_LINUX_SRCDIR=ipipe
-MKR_LINUX_CONFIG=livecd/config-$(KERNELVERSION)
+MKR_LINUX_BOARD_CONFIG=y
+# MKR_LINUX_BOARD_DEFCONFIG is not set
 MKR_LINUX_TARGETS=bzImage
 MKR_LINUX_IMAGE=arch/x86/boot/bzImage
 MKR_LINUX_NO_DT=y

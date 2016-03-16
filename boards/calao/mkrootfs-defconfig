@@ -1,14 +1,14 @@
 #
 # Automatically generated make config: don't edit
-# Mon Feb  8 22:54:45 2016
+# Tue Jan 12 07:02:34 2016
 #
-MKR_BOARD_NAME=atom
+MKR_BOARD_NAME=calao
 
 #
 # Toolchain and flags selection
 #
 MKR_TOOLCHAIN=y
-# MKR_ARCH_ARM is not set
+MKR_ARCH_ARM=y
 # MKR_ARCH_ARM64 is not set
 # MKR_ARCH_BFIN is not set
 # MKR_ARCH_NIOS2 is not set
@@ -16,21 +16,29 @@ MKR_TOOLCHAIN=y
 # MKR_ARCH_PPC64 is not set
 # MKR_ARCH_I386 is not set
 # MKR_ARCH_X86_32 is not set
-MKR_ARCH_X86_64=y
+# MKR_ARCH_X86_64 is not set
 # MKR_ARCH_SH4 is not set
-MKR_ARCH=x86_64
-MKR_KARCH=x86
-MKR_ARCH32=i686
-MKR_HAVE_TOOLCHAIN32=y
+MKR_ARCH=arm
+MKR_KARCH=arm
+# MKR_HAVE_TOOLCHAIN32 is not set
 MKR_CONFIGURE_HOST=$(ARCH)-linux
-MKR_CC=gcc
-MKR_CXX=g++
+MKR_CC=arm-none-linux-gnueabi-gcc
+MKR_CXX=arm-none-linux-gnueabi-g++
+MKR_ARCH_FLAGS=-march=armv5te -msoft-float
+MKR_ARM_ARCH=5
+MKR_ARM_FLOAT_SOFT=y
+# MKR_ARM_FLOAT_VFP2 is not set
+# MKR_ARM_FLOAT_VFP3 is not set
+# MKR_ARM_FLOAT_VFP3_D16 is not set
+# MKR_ARM_FLOAT_NEON is not set
+# MKR_ARM_FLOAT_VFP4 is not set
+# MKR_ARM_FLOAT_VFP4_D16 is not set
+# MKR_ARM_FLOAT_VFP is not set
 MKR_CFLAGS=$(ARCH_FLAGS) -g -O2
-MKR_CXXFLAGS=$(ARCH_FLAGS) -g -O2
+MKR_CXXFLAGS=$(ARCH_FLAGS) -g -Os
 MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2
 MKR_SYSROOT_AUTO=y
 # MKR_SYSROOT_MANUAL is not set
-# MKR_TOOLCHAIN32 is not set
 
 #
 # Toolchain libraries selection
@@ -48,21 +56,16 @@ MKR_LIBRESOLV=y
 # MKR_OUT_TAR is not set
 MKR_OUT_NFS=y
 MKR_OUT_RSYNCD_PORT=31000
-MKR_OUT_INITRAMFS=y
-# MKR_OUT_INITRAMFS_GZ is not set
-MKR_OUT_INITRAMFS_XZ=y
-# MKR_OUT_INITRAMFS_UBOOT is not set
+# MKR_OUT_INITRAMFS is not set
 MKR_OUT_TFTP=y
-MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/atom
-MKR_OUT_TFTP_BASENAME=gilles-2.x
-# MKR_SKIP_ROOTFS is not set
-MKR_SKIP_ROOTFS_MODULES_STRIP=y
-# MKR_OUT_ISO_BOOT is not set
+MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/calao
+MKR_OUT_TFTP_BASENAME=gilles-vanilla
+MKR_SKIP_ROOTFS=y
 
 #
 # Base
 #
-MKR_SRC_BASEDIR=$(HOME)/files/xenomai:/usr/src
+MKR_SRC_BASEDIR=$(HOME)/files/work/ixblue:$(HOME)/files/xenomai:/usr/src
 
 #
 # Base skeleton
@@ -73,8 +76,8 @@ MKR_BASE_SRC_GENERIC=y
 MKR_BASE_SRCDIR=$(srctree)/boards/generic
 # MKR_KEYBOARD_MAPS is not set
 # MKR_SECURE_NETWORK is not set
-MKR_SWAP=y
-MKR_SWAP_DEV=sda1
+# MKR_SWAP is not set
+MKR_SWAP_DEV=null
 MKR_BASE_SHELL=/bin/ash
 
 #
@@ -95,14 +98,16 @@ MKR_BUSYBOX_BOARD_DEFCONFIG=y
 #
 MKR_LINUX=y
 MKR_KCC=$(CC)
-MKR_LINUX_SRCDIR=ipipe
+MKR_LINUX_SRCDIR=linux-mainline
 MKR_LINUX_BOARD_CONFIG=y
 # MKR_LINUX_BOARD_DEFCONFIG is not set
-MKR_LINUX_TARGETS=bzImage
-MKR_LINUX_IMAGE=arch/x86/boot/bzImage
-MKR_LINUX_NO_DT=y
-# MKR_LINUX_DT_MERGED is not set
+MKR_LINUX_TARGETS=uImage
+MKR_LINUX_IMAGE=arch/arm/boot/uImage
+MKR_LINUX_LOADADDR=0x20008000
+# MKR_LINUX_NO_DT is not set
+MKR_LINUX_DT_MERGED=y
 # MKR_LINUX_DT is not set
+MKR_LINUX_DT_NAME=usb_a9263.dtb
 MKR_LINUX_EXTRA_FILES=
 MKR_LINUX_EXTRA_INSTALL=
 
@@ -129,61 +134,17 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # RTnet
 #
-# MKR_RTNET is not set
 
 #
 # Real-time tests & benches
 #
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
-MKR_TESTS_XENO=y
-MKR_XENO_TEST_FRONTEND=y
 
 #
 # Xenomai
 #
-MKR_XENO=y
-MKR_XENO_SRCDIR=xenomai-2.6
-MKR_XENO_MAINT=y
-MKR_XENO_SMP=y
-MKR_XENO_KERNEL=y
-MKR_XENO_CLASSIC=y
-# MKR_XENO_FORGE is not set
-MKR_XENO_DEBUG=y
-
-#
-# Components selection
-#
-MKR_XENO_USERSPACE=y
-# MKR_XENO_A4L is not set
-MKR_XENO_NATIVE=y
-MKR_XENO_POSIX=y
-# MKR_XENO_PSOS is not set
-# MKR_XENO_RTCAN is not set
-MKR_XENO_RTDM=y
-# MKR_XENO_UITRON is not set
-# MKR_XENO_VRTX is not set
-# MKR_XENO_VXWORKS is not set
-MKR_XENO_TESTSUITE=y
-# MKR_XENO_TESTSUITE_UNFREQUENT is not set
-
-#
-# Advanced configuration options
-#
-# MKR_XENO_SEP_TESTDIR is not set
-MKR_XENO_X86_VSYSCALL=y
-MKR_XENO_X86_TSC=y
-# MKR_XENO_THREAD is not set
-# MKR_XENO_DLOPEN is not set
-
-#
-# Automatic mlockall
-#
-# MKR_XENO_POSIX_MLOCKALL is not set
-# MKR_XENO_PSOS_MLOCKALL is not set
-# MKR_XENO_UITRON_MLOCKALL is not set
-MKR_XENO_ATOMIC_BUILTINS=y
-# MKR_XENO_ATOMIC_ADHOC is not set
+# MKR_XENO is not set
 
 #
 # Other
@@ -202,9 +163,7 @@ MKR_XENO_ATOMIC_BUILTINS=y
 #
 # Cryptsetup
 #
-MKR_CRYPTSETUP=y
-MKR_CRYPTSETUP_SRCDIR=cryptsetup-*
-MKR_CRYPTSETUP_LIBUUID=y
+# MKR_CRYPTSETUP is not set
 
 #
 # Debootstrap
@@ -214,36 +173,27 @@ MKR_CRYPTSETUP_LIBUUID=y
 #
 # Device Mapper
 #
-MKR_DEVICE_MAPPER=y
-MKR_DEVICE_MAPPER_SRCDIR=LVM*
+# MKR_DEVICE_MAPPER is not set
 
 #
 # Dialog
 #
-MKR_DIALOG=y
-MKR_DIALOG_SRCDIR=dialog-*
-# MKR_DIALOG_WIDEC is not set
+# MKR_DIALOG is not set
 
 #
 # Dosfstools
 #
-MKR_DOSFSTOOLS=y
-MKR_DOSFSTOOLS_SRCDIR=dosfstools-*
+# MKR_DOSFSTOOLS is not set
 
 #
 # E2fsprogs
 #
-MKR_E2FSPROGS=y
-MKR_E2FSPROGS_SRCDIR=e2fsprogs-*
-MKR_E2FSPROGS_LIBUUID=y
-# MKR_E2FSPROGS_LIBBLKID is not set
+# MKR_E2FSPROGS is not set
 
 #
 # File
 #
-MKR_FILE=y
-MKR_FILE_SRCDIR=file-*
-MKR_FILE_ZLIB=y
+# MKR_FILE is not set
 
 #
 # GDB
@@ -273,7 +223,6 @@ MKR_FILE_ZLIB=y
 #
 # msr-tools
 #
-# MKR_MSR_TOOLS is not set
 
 #
 # Ntfs-3g
@@ -304,8 +253,7 @@ MKR_STRACE_SRCDIR=strace-*
 #
 # Tcpdump
 #
-MKR_TCPDUMP=y
-MKR_TCPDUMP_SRCDIR=tcpdump-*
+# MKR_TCPDUMP is not set
 
 #
 # Usbutils
@@ -315,7 +263,6 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 #
 # Valgrind
 #
-# MKR_VALGRIND is not set
 
 #
 # wireless-tools
@@ -344,8 +291,7 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 #
 # libpcap
 #
-MKR_LIBPCAP=y
-MKR_LIBPCAP_SRCDIR=libpcap-*
+# MKR_LIBPCAP is not set
 
 #
 # libressl
@@ -375,16 +321,12 @@ MKR_LIBPCAP_SRCDIR=libpcap-*
 #
 # ncurses
 #
-MKR_NCURSES=y
-MKR_NCURSES_SRCDIR=ncurses-*
-# MKR_NCURSES_WIDEC is not set
-# MKR_NCURSES_FULL_TERMINFO is not set
+# MKR_NCURSES is not set
 
 #
 # popt
 #
-MKR_POPT=y
-MKR_POPT_SRCDIR=popt-*
+# MKR_POPT is not set
 
 #
 # readline
@@ -394,11 +336,7 @@ MKR_POPT_SRCDIR=popt-*
 #
 # util-linux
 #
-MKR_UTIL_LINUX=y
-MKR_UTIL_LINUX_SRCDIR=util-linux-*
-MKR_UTIL_LINUX_LIBUUID=y
-# MKR_UTIL_LINUX_LIBBLKID is not set
-# MKR_UTIL_LINUX_CRAMFS is not set
+# MKR_UTIL_LINUX is not set
 
 #
 # xz
@@ -408,5 +346,4 @@ MKR_UTIL_LINUX_LIBUUID=y
 #
 # zlib-ng
 #
-MKR_ZLIB=y
-MKR_ZLIB_NG_SRCDIR=zlib-ng*
+# MKR_ZLIB is not set
