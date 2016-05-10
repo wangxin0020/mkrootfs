@@ -1,0 +1,15 @@
+menu "iptables"
+
+config IPTABLES
+	build_depends on LIBNFTNL
+	package "Iptables"
+
+if IPTABLES
+
+config IPTABLES_SRCDIR
+       srcdir "Source directory"
+       default "iptables-*"
+
+endif
+
+endmenu

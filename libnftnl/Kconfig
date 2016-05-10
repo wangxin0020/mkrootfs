@@ -1,0 +1,15 @@
+menu "libnftnl"
+
+config LIBNFTNL
+	build_depends on LIBMNL
+	package "Libnftnl"
+
+if LIBNFTNL
+
+config LIBNFTNL_SRCDIR
+       srcdir "Source directory"
+       default "libnftnl-*"
+
+endif
+
+endmenu

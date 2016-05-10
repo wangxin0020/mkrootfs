@@ -1,0 +1,14 @@
+menu "libmnl"
+
+config LIBMNL
+	package "Libmnl"
+
+if LIBMNL
+
+config LIBMNL_SRCDIR
+       srcdir "Source directory"
+       default "libmnl-*"
+
+endif
+
+endmenu
