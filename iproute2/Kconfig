@@ -1,0 +1,15 @@
+menu "iproute2"
+
+config IPROUTE2
+	build_depends on IPTABLES
+	package "Iproute2"
+
+if IPROUTE2
+
+config IPROUTE2_SRCDIR
+       srcdir "Source directory"
+       default "iproute2-*"
+
+endif
+
+endmenu
