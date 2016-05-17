@@ -821,7 +821,7 @@ else
 endif
 endif
 
-linux/$(MKR_LINUX_IMAGE): $(if $(wildcard boot.iso.d/linux),$(if $(wildcard linux/$(MKR_LINUX_IMAGE)),,linux/staging),linux/staging)
+linux/$(MKR_LINUX_IMAGE): linux/staging
 
 boot.iso.d/linux: linux/$(MKR_LINUX_IMAGE) iso-boot/staging
 	$(Q)install -m 0644 -D $< $@
