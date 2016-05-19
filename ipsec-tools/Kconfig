@@ -1,0 +1,17 @@
+menu "ipsec-tools"
+
+config IPSEC_TOOLS
+	select LIBUTIL
+	build_select READLINE
+	build_select LIBRESSL
+	package "Ipsec-Tools"
+
+if IPSEC_TOOLS
+
+config IPSEC_TOOLS_SRCDIR
+	srcdir "Source directory"
+	default "ipsec-tools-*"
+
+endif
+
+endmenu
