@@ -3,7 +3,7 @@ rootfs-y += \
 	/usr/sbin/lspci \
 	/usr/sbin/setpci \
 	/usr/sbin/update-pciids \
-	/usr/share/pci.ids.gz \
+	/usr/share/pci.ids* \
 
 cflags-y += -Wall -W -Wno-parentheses -Wstrict-prototypes -Wmissing-prototypes \
 	-I$(PWD)/pciutils/lib -DWITH_GZFILEOP -fPIC
@@ -15,11 +15,17 @@ compile-make-args-y := \
 	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" CXXFLAGS="$(cxxflags-y)" \
 	LDFLAGS="$(ldflags-y)"
 
+compile-make-args-$(MKR_PCIUTILS_ZLIB) += ZLIB=yes
+compile-make-args-$(call not,$(MKR_PCIUTILS_ZLIB)) += ZLIB=no
+
 staging-make-args-y += SHARED=yes PREFIX=/usr install-lib
+
+staging-make-args-$(MKR_PCIUTILS_ZLIB) += ZLIB=yes
+staging-make-args-$(call not,$(MKR_PCIUTILS_ZLIB)) += ZLIB=no
 
 Makefile: $(srcdir)/Makefile $(deps)
 	echo "VPATH=$(srcdir)" > $@
-	sed "s#\./configure#$(srcdir)/lib/configure#;s#-m 644 \$$(PCIINC_INS)#-m644 \$$(filter %.h,\$$^)#" $< >> $@
+	sed "s#\./configure#$(srcdir)/lib/configure#;s#-m 644 \$$(PCIINC_INS)#-m 644 \$$(filter %.h,\$$^)#;s#install: all#install: \$$(PCI_IDS) all#;s#-m 644 \$$(PCI_IDS)#$$<#" $< >> $@
 
 lib/Makefile: $(srcdir)/lib/Makefile Makefile
 	mkdir -p lib
