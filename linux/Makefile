@@ -157,7 +157,7 @@ confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_CC)
 confcheck-y += $(call confcheck-tool,$(MKR_KCC),MKR_KCC)
 confcheck-$(MKR_XENO_MAINT) += $(call confcheck-tool,lndir,MKR_XENO)
 ifeq ($(MKR_XENO_KERNEL),y)
-ipipe := $(wildcard $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/ipipe.h)
+ipipe := $(wildcard $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/ipipe.h $(call mksrcdir,$(MKR_LINUX_SRCDIR))/arch/$(KARCH)/include/asm/irq_pipeline.h)
 confcheck-$(MKR_XENO_MAINT) += $(if $(ipipe),,echo Maintainer mode only works with I-pipe patched kernel sources; success=false;)
 endif
 confcheck-$(MKR_LINUX_DT_MERGED) += \
