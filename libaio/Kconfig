@@ -1,0 +1,14 @@
+menu "libaio"
+
+config LIBAIO
+       package "libaio library"
+
+if LIBAIO
+
+config LIBAIO_SRCDIR
+       srcdir "Source directory"
+       default "libaio-*"
+
+endif
+
+endmenu

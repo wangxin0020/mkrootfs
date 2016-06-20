@@ -216,6 +216,7 @@ menu "Libraries"
 
 source "alsa-lib/Kconfig"
 source "fuse/Kconfig"
+source "libaio/Kconfig"
 source "libmnl/Kconfig"
 source "libnftnl/Kconfig"
 source "libpcap/Kconfig"
