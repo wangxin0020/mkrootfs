@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Tue Jan 12 07:02:34 2016
+# Sun Jun 19 08:55:50 2016
 #
 MKR_BOARD_NAME=calao
 
@@ -59,13 +59,13 @@ MKR_OUT_RSYNCD_PORT=31000
 # MKR_OUT_INITRAMFS is not set
 MKR_OUT_TFTP=y
 MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/calao
-MKR_OUT_TFTP_BASENAME=gilles-vanilla
+MKR_OUT_TFTP_BASENAME=gilles-2.x
 MKR_SKIP_ROOTFS=y
 
 #
 # Base
 #
-MKR_SRC_BASEDIR=$(HOME)/files/work/ixblue:$(HOME)/files/xenomai:/usr/src
+MKR_SRC_BASEDIR=$(HOME)/files/xenomai:/usr/src
 
 #
 # Base skeleton
@@ -76,8 +76,8 @@ MKR_BASE_SRC_GENERIC=y
 MKR_BASE_SRCDIR=$(srctree)/boards/generic
 # MKR_KEYBOARD_MAPS is not set
 # MKR_SECURE_NETWORK is not set
-# MKR_SWAP is not set
-MKR_SWAP_DEV=null
+MKR_SWAP=y
+MKR_SWAP_DEV=sda1
 MKR_BASE_SHELL=/bin/ash
 
 #
@@ -98,7 +98,7 @@ MKR_BUSYBOX_BOARD_DEFCONFIG=y
 #
 MKR_LINUX=y
 MKR_KCC=$(CC)
-MKR_LINUX_SRCDIR=linux-mainline
+MKR_LINUX_SRCDIR=ipipe
 MKR_LINUX_BOARD_CONFIG=y
 # MKR_LINUX_BOARD_DEFCONFIG is not set
 MKR_LINUX_TARGETS=uImage
@@ -134,17 +134,60 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # RTnet
 #
+# MKR_RTNET is not set
 
 #
 # Real-time tests & benches
 #
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
+MKR_TESTS_XENO=y
+# MKR_XENO_TEST_FRONTEND is not set
 
 #
 # Xenomai
 #
-# MKR_XENO is not set
+MKR_XENO=y
+MKR_XENO_SRCDIR=xenomai-2.6
+MKR_XENO_MAINT=y
+MKR_XENO_SMP=y
+MKR_XENO_KERNEL=y
+MKR_XENO_CLASSIC=y
+# MKR_XENO_FORGE is not set
+MKR_XENO_DEBUG=y
+
+#
+# Components selection
+#
+MKR_XENO_USERSPACE=y
+# MKR_XENO_A4L is not set
+MKR_XENO_NATIVE=y
+MKR_XENO_POSIX=y
+# MKR_XENO_PSOS is not set
+# MKR_XENO_RTCAN is not set
+MKR_XENO_RTDM=y
+# MKR_XENO_UITRON is not set
+# MKR_XENO_VRTX is not set
+# MKR_XENO_VXWORKS is not set
+MKR_XENO_TESTSUITE=y
+# MKR_XENO_TESTSUITE_UNFREQUENT is not set
+
+#
+# Advanced configuration options
+#
+# MKR_XENO_SEP_TESTDIR is not set
+# MKR_XENO_THREAD is not set
+# MKR_XENO_DLOPEN is not set
+
+#
+# Automatic mlockall
+#
+# MKR_XENO_POSIX_MLOCKALL is not set
+# MKR_XENO_PSOS_MLOCKALL is not set
+# MKR_XENO_UITRON_MLOCKALL is not set
+MKR_XENO_ATOMIC_BUILTINS=y
+# MKR_XENO_ATOMIC_ADHOC is not set
+MKR_XENO_ARM_MACH=generic
 
 #
 # Other
@@ -204,6 +247,19 @@ MKR_TESTS_SRCDIR=$(srctree)/tests
 # Iperf
 #
 # MKR_IPERF is not set
+
+#
+# iptables
+#
+
+#
+# iproute2
+#
+
+#
+# ipsec-tools
+#
+# MKR_IPSEC_TOOLS is not set
 
 #
 # Kexec-tools
@@ -287,6 +343,15 @@ MKR_STRACE_SRCDIR=strace-*
 # fuse
 #
 # MKR_FUSE is not set
+
+#
+# libmnl
+#
+# MKR_LIBMNL is not set
+
+#
+# libnftnl
+#
 
 #
 # libpcap

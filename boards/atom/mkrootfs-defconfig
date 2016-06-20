@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Mon Feb  8 22:54:45 2016
+# Sat Jun 18 23:41:10 2016
 #
 MKR_BOARD_NAME=atom
 
@@ -25,9 +25,9 @@ MKR_HAVE_TOOLCHAIN32=y
 MKR_CONFIGURE_HOST=$(ARCH)-linux
 MKR_CC=gcc
 MKR_CXX=g++
-MKR_CFLAGS=$(ARCH_FLAGS) -g -O2
-MKR_CXXFLAGS=$(ARCH_FLAGS) -g -O2
-MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2
+MKR_CFLAGS=$(ARCH_FLAGS) -g -O2 -march=atom
+MKR_CXXFLAGS=$(ARCH_FLAGS) -g -O2 -march=atom
+MKR_LDFLAGS=$(ARCH_FLAGS) -g -O2 -march=atom
 MKR_SYSROOT_AUTO=y
 # MKR_SYSROOT_MANUAL is not set
 # MKR_TOOLCHAIN32 is not set
@@ -48,15 +48,11 @@ MKR_LIBRESOLV=y
 # MKR_OUT_TAR is not set
 MKR_OUT_NFS=y
 MKR_OUT_RSYNCD_PORT=31000
-MKR_OUT_INITRAMFS=y
-# MKR_OUT_INITRAMFS_GZ is not set
-MKR_OUT_INITRAMFS_XZ=y
-# MKR_OUT_INITRAMFS_UBOOT is not set
+# MKR_OUT_INITRAMFS is not set
 MKR_OUT_TFTP=y
 MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/atom
 MKR_OUT_TFTP_BASENAME=gilles-2.x
-# MKR_SKIP_ROOTFS is not set
-MKR_SKIP_ROOTFS_MODULES_STRIP=y
+MKR_SKIP_ROOTFS=y
 # MKR_OUT_ISO_BOOT is not set
 
 #
@@ -119,7 +115,8 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # LTP (newer versions)
 #
-# MKR_LTP_NEW is not set
+MKR_LTP_NEW=y
+MKR_LTP_NEW_SRCDIR=ltp-full-*
 
 #
 # OpenSSH
@@ -134,10 +131,7 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # Real-time tests & benches
 #
-MKR_TESTS=y
-MKR_TESTS_SRCDIR=$(srctree)/tests
-MKR_TESTS_XENO=y
-MKR_XENO_TEST_FRONTEND=y
+# MKR_TESTS is not set
 
 #
 # Xenomai
@@ -202,9 +196,7 @@ MKR_XENO_ATOMIC_BUILTINS=y
 #
 # Cryptsetup
 #
-MKR_CRYPTSETUP=y
-MKR_CRYPTSETUP_SRCDIR=cryptsetup-*
-MKR_CRYPTSETUP_LIBUUID=y
+# MKR_CRYPTSETUP is not set
 
 #
 # Debootstrap
@@ -214,15 +206,12 @@ MKR_CRYPTSETUP_LIBUUID=y
 #
 # Device Mapper
 #
-MKR_DEVICE_MAPPER=y
-MKR_DEVICE_MAPPER_SRCDIR=LVM*
+# MKR_DEVICE_MAPPER is not set
 
 #
 # Dialog
 #
-MKR_DIALOG=y
-MKR_DIALOG_SRCDIR=dialog-*
-# MKR_DIALOG_WIDEC is not set
+# MKR_DIALOG is not set
 
 #
 # Dosfstools
@@ -235,8 +224,6 @@ MKR_DOSFSTOOLS_SRCDIR=dosfstools-*
 #
 MKR_E2FSPROGS=y
 MKR_E2FSPROGS_SRCDIR=e2fsprogs-*
-MKR_E2FSPROGS_LIBUUID=y
-# MKR_E2FSPROGS_LIBBLKID is not set
 
 #
 # File
@@ -254,6 +241,19 @@ MKR_FILE_ZLIB=y
 # Iperf
 #
 # MKR_IPERF is not set
+
+#
+# iptables
+#
+
+#
+# iproute2
+#
+
+#
+# ipsec-tools
+#
+# MKR_IPSEC_TOOLS is not set
 
 #
 # Kexec-tools
@@ -342,6 +342,15 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 # MKR_FUSE is not set
 
 #
+# libmnl
+#
+# MKR_LIBMNL is not set
+
+#
+# libnftnl
+#
+
+#
 # libpcap
 #
 MKR_LIBPCAP=y
@@ -375,16 +384,12 @@ MKR_LIBPCAP_SRCDIR=libpcap-*
 #
 # ncurses
 #
-MKR_NCURSES=y
-MKR_NCURSES_SRCDIR=ncurses-*
-# MKR_NCURSES_WIDEC is not set
-# MKR_NCURSES_FULL_TERMINFO is not set
+# MKR_NCURSES is not set
 
 #
 # popt
 #
-MKR_POPT=y
-MKR_POPT_SRCDIR=popt-*
+# MKR_POPT is not set
 
 #
 # readline
@@ -394,11 +399,7 @@ MKR_POPT_SRCDIR=popt-*
 #
 # util-linux
 #
-MKR_UTIL_LINUX=y
-MKR_UTIL_LINUX_SRCDIR=util-linux-*
-MKR_UTIL_LINUX_LIBUUID=y
-# MKR_UTIL_LINUX_LIBBLKID is not set
-# MKR_UTIL_LINUX_CRAMFS is not set
+# MKR_UTIL_LINUX is not set
 
 #
 # xz

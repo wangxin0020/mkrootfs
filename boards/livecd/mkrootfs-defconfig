@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Thu Jan  7 12:04:47 2016
+# Sun Jun 12 12:38:30 2016
 #
 MKR_BOARD_NAME=livecd
 
@@ -279,6 +279,19 @@ MKR_IPERF=y
 MKR_IPERF_SRCDIR=iperf-*
 
 #
+# iptables
+#
+
+#
+# iproute2
+#
+
+#
+# ipsec-tools
+#
+# MKR_IPSEC_TOOLS is not set
+
+#
 # Kexec-tools
 #
 # MKR_KEXEC_TOOLS is not set
@@ -378,6 +391,15 @@ MKR_WPA_SUPPLICANT_CONFIG_TLS=openssl
 MKR_FUSE=y
 # MKR_FUSE32 is not set
 MKR_FUSE_SRCDIR=fuse-*
+
+#
+# libmnl
+#
+# MKR_LIBMNL is not set
+
+#
+# libnftnl
+#
 
 #
 # libpcap
