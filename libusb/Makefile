@@ -4,6 +4,8 @@ configure-args-y += \
 rootfs-y += \
 	/usr/lib/libusb-1.0.so.*
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

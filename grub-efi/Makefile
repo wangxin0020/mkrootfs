@@ -4,7 +4,9 @@ isobootdir := $(staging)/../boot.iso.d
 
 rootfs-y :=
 
-bootx64.efi: $(pkgdir)/Makefile $(deps) $(pkgdir)/mkefi.sh $(pkgdir)/grub-standalone.cfg
+$(mkr-configured): $(deps)
+
+bootx64.efi: $(mkr-configured) $(pkgdir)/mkefi.sh $(pkgdir)/grub-standalone.cfg
 	$(pkgdir)/mkefi.sh $(pkgdir) $(srcdir) `pwd`
 
 efiboot.img: bootx64.efi

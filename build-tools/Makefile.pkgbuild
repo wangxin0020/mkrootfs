@@ -53,6 +53,8 @@ staging := $(O)/staging
 rootfs := $(O)/rootfs
 mksrcdir=$(shell $(srctree)/build-tools/mksrcdir.sh \
 		"$(srctree)" "$(MKR_SRC_BASEDIR)" "$(1)")
+mkr-configured = .mkr.configured
+mkr-configured32 = .mkr.configured32
 
 MAKE_UNI := $(MAKE) -j 1
 
@@ -64,7 +66,9 @@ $(error No Makefile or Kbuild for package $(obj))
 endif
 
 .mkr.makefile.deps: $(mkr-pkgmk) $(deps)
-	$(Q)$(AWK) -f $(srctree)/build-tools/makefile-deps.awk $< > $@ || rm -f $@
+	$(Q)echo deps = $(pkgdir)/Kconfig $(patsubst %,../%/$(mkr-configured),$(build-deps)) > $@
+	$(Q)echo deps32 = $(pkgdir)/Kconfig $(patsubst %,../%/$(mkr-configured32),$(build-deps)) >> $@
+	$(Q)$(AWK) -f $(srctree)/build-tools/makefile-deps.awk $< >> $@ || rm -f $@
 
 -include .mkr.makefile.deps
 
@@ -137,6 +141,10 @@ configure32-env-y = \
 	PKG_CONFIG_ALLOW_SYSTEM_LIBS=y \
 	PKG_CONFIG_ALLOW_SYSTEM_CFLAGS=y
 
+default-autotools-configured = .mkr.autotools.default.configured
+
+default-autotools-configured32 = .mkr.autotools.default.configured32
+
 include $(mkr-pkgmk)
 
 ifneq ($(mkr-build-src),)
@@ -181,20 +189,46 @@ $(srcdir)/configure:
 # Use an improbable stamp name in order to avoid conflicts with
 # packages with custom rules.
 .mkr.autotools.default.configured: $(deps) $(srcdir)/configure
+	$(Q)echo $@ remade because of $?
 	rm -Rf * || :
 	$(configure-env-y) $(srcdir)/configure $(configure-args-y) && : > $@
 
-.mkr.autotools.default.configured32: $(deps32)
+.mkr.autotools.default.configured32: $(deps32) $(srcdir)/configure
+	$(Q)echo $@ remade because of $?
 	rm -Rf * || :
 	$(configure32-env-y) $(srcdir)/configure $(configure32-args-y) && : > $@
 
+$(mkr-configured): $(pkgdir)/Makefile
+	$(Q)if test -z "$(filter-out $(pkgdir)/Makefile,$^)"; then \
+		echo '***' Error: Dependencies missing for '$$(mkr-configured)';\
+		echo '***' Error: add them to $(pkgdir)Makefile; \
+		false; \
+	fi
+	$(Q)echo $@ remade because of $?
+	$(Q): > $@
+
+$(mkr-configured32): $(pkgdir)/Makefile
+	$(Q)if test -z "$(filter-out $(pkgdir)/Makefile,$^)"; then \
+		echo '***' Error: Dependencies missing for '$$(mkr-configured32)';\
+		echo '***' Error: add them to $(pkgdir)Makefile; \
+		false; \
+	fi
+	$(Q)echo $@ remade because of $?
+	$(Q): > $@
+
 .PHONY: default-autotools-compile
-default-autotools-compile: .mkr.autotools.default.configured
+default-autotools-compile: $(mkr-configured)
 	$(configure-env-y) $(MAKE) $(compile-make-args-y)
 
+.PHONY: compile
+compile: $(mkr-configured)
+
 .PHONY: default-autotools-compile32
-default-autotools-compile32: .mkr.autotools.default.configured32
+default-autotools-compile32: $(mkr-configured32)
 	$(configure32-env-y) $(MAKE) $(compile-make-args-y)
+
+.PHONY: compile32
+compile32: $(mkr-configured32)
 
 .PHONY: default-autotools-staging
 default-autotools-staging:
@@ -253,7 +287,7 @@ strip:
 	$(Q)cat $(CURDIR)/.mkr.filelist | while read f; do \
 		g="$(rootfs)/$$f"; \
 		case "$$f" in \
-		dev/*|*.o|*.a)continue;; \
+		dev/*|*.o|*.a|*.gz|*.bz2|*.xz)continue;; \
 		*)if [ ! -f $$g ]; then \
 			continue; \
 		  fi; \
@@ -274,11 +308,13 @@ strip:
 .PHONY: default-clean
 default-clean:
 	$(Q)if test -e Makefile; then \
-		$(MAKE) clean; \
+		$(MAKE) $(compile-make-args-y) clean; \
 	fi
 
 default-autotools-clean:
 	$(Q)if test -e .mkr.autotools.default.configured; then \
-		$(MAKE) clean; \
-		rm .mkr.autotools.default.configured; \
+		$(configure-env-y) $(MAKE) $(compile-make-args-y) clean; \
+		$(Q)rm .mkr.autotools.default.configured; \
 	fi
+
+clean: $(mkr-configured)

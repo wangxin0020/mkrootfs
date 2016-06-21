@@ -53,6 +53,8 @@ configure-args-$(call not, $(MKR_UTIL_LINUX_LIBUUID)) += --disable-libuuid
 configure-args-$(call not, $(MKR_UTIL_LINUX_LIBBLKID)) += --disable-libblkid
 configure-args-$(call not, $(MKR_UTIL_LINUX_CRAMFS)) += --disable-cramfs
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

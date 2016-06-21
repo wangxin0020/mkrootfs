@@ -7,11 +7,13 @@ force-$(MKR_LINUX_FW_UPDATE) = FORCE
 $(fwdir):
 	git clone $(MKR_LINUX_FW_REPO) $@
 
-refresh: $(fwdir) $(force-y)
+refresh: $(fwdir) $(force-y) $(deps)
 	cd $< && git pull
 	: > $@
 
-compile: refresh
+$(mkr-configured): refresh
+
+compile: ;
 
 staging:
 	cd $(fwdir) && find . -name .git -prune -o -type f -print | while read f; do \

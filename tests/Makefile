@@ -42,6 +42,8 @@ sdinfo: sdinfo.o
 # unexported in Makefile.pkgbuild
 vpath % $(srcdir)
 
+$(mkr-configured): $(deps)
+
 compile: $(all)
 
 staging-all: $(all)
@@ -130,7 +132,7 @@ DEPENDENCIES := \
 ifneq ($(filter compile, $(MAKECMDGOALS)),)
 ifneq ($(strip $(DEPENDENCIES)),)
 mkdeps_cmd= -M $(CPPFLAGS) $< 2> /dev/null | \
-	sed 's,\($*\)\.o[ :]*,\1.o $@: $$(deps) ,g' > $@; \
+	sed 's,\($*\)\.o[ :]*,\1.o $@: $$(mkr-configured) ,g' > $@; \
 	test -s $@ || rm -f $@
 
 %.d: %.c

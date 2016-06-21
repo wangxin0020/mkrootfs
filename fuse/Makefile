@@ -1,13 +1,11 @@
+configured-$(call not, $(MKR_NTFS32)) := $(default-autotools-configured)
 compile-$(call not, $(MKR_FUSE32)) := default-autotools-compile
 config-$(call not, $(MKR_FUSE32)) := configure
 lib-$(call not, $(MKR_FUSE32)) := lib
+configured-$(MKR_NTFS32) = $(default-autotools-configured32)
 compile-$(MKR_FUSE32) := default-autotools-compile32
 config-$(MKR_FUSE32) := configure32
 lib-$(MKR_FUSE32) := lib32
-
-compile: $(compile-y)
-
-staging: default-autotools-staging
 
 rootfs-y := \
 	/dev/fuse \
@@ -18,6 +16,12 @@ rootfs-y := \
 	/usr/$(lib-y)/libulockmgr.so.*
 
 $(config-y)-args-y += --with-shared --disable-example
+
+$(mkr-configured): $(configured-y)
+
+compile: $(compile-y)
+
+staging: default-autotools-staging
 
 rootfs: default-rootfs
 

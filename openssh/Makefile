@@ -43,6 +43,8 @@ rootfs-y += \
 	/usr/libexec/ssh-pkcs11-helper \
 	/usr/sbin/sshd
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

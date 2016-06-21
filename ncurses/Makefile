@@ -30,6 +30,8 @@ rootfs-$(MKR_FULL_TERMINFO) += \
 rootfs-$(MKR_NCURSES_WIDEC) += \
 	/lib/libncursesw.so.*
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

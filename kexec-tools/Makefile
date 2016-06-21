@@ -10,6 +10,8 @@ configure-args-$(call not, $(MKR_KEXEC_LZMA)) += --without-lzma
 rootfs-y := /usr/sbin/kexec
 rootfs-$(MKR_KEXEC_TOOLS_KDUMP) += /usr/sbin/kdump
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

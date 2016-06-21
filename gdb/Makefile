@@ -11,6 +11,8 @@ configure-args-y += \
 configure-args-$(MKR_GDB_ZLIB) += --with-zlib
 configure-args-$(call not, $(MKR_GDB_ZLIB)) += --without-zlib
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

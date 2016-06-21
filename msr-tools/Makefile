@@ -14,7 +14,9 @@ Makefile: $(srcdir)/Makefile $(deps)
 	cat $< >> $@
 	$(MAKE) clean
 
-compile: Makefile
+$(mkr-configured): Makefile
+
+compile:
 	$(MAKE) $(compile-make-args-y)
 
 staging: 

@@ -12,19 +12,21 @@ staging-make-args-y += \
 
 rootfs-y := /usr/lib/$(LIBNAME)
 
-$(CURDIR)/.mkr.makefile.ready: $(srcdir)/makefile $(deps) $(pkgdir)/Makefile
+$(CURDIR)/Makefile: $(srcdir)/makefile $(deps)
 	rm -f $@
 	{ \
 		echo srcdir = $(srcdir); \
 		echo VPATH = $$\(srcdir\); \
 		sed 's#$$(HEADERS)#$$\(patsubst %,$$\(srcdir\)/%,$$\(HEADERS\)\)#g;/ranlib/d' $<; \
-	} > $(CURDIR)/Makefile
+	} > $@
 	mkdir -p $(CURDIR)/etc $(CURDIR)/pics
 	echo clean: > $(CURDIR)/etc/Makefile
 	echo clean: > $(CURDIR)/pics/Makefile
-	: > $@
+	$(MAKE) clean
 
-compile: $(CURDIR)/.mkr.makefile.ready $(deps)
+$(mkr-configured): $(CURDIR)/Makefile
+
+compile:
 	$(MAKE) $(compile-make-args-y)
 
 staging:

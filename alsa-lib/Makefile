@@ -6,6 +6,8 @@ rootfs-y := \
 	/usr/lib/libasound.so.* \
 	/usr/share/alsa/alsa.conf.d/README
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

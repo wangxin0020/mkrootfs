@@ -8,6 +8,8 @@ configure-args-y += \
 	--without-readline \
 	LIBS="-lblkid -luuid -ldevmapper"
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

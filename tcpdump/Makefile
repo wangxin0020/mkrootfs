@@ -6,6 +6,8 @@ configure-args-y += \
 
 rootfs-y += /usr/sbin/tcpdump
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

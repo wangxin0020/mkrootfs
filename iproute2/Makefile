@@ -40,9 +40,11 @@ $(IPROUTE2_MAKEFILES): %Makefile: $(srcdir)/%Makefile $(deps)
 
 Config: $(IPROUTE2_MAKEFILES) $(srcdir)/configure
 	$(configure-env-y) $(srcdir)/configure $(configure-args-y)
+	$(configure-env-y) $(MAKE) clean
 
-compile: Config
-	$(configure-env-y) $(MAKE) $(compile-make-args-y)
+$(mkr-configured): Config
+
+compile: default-autotools-compile
 
 staging: default-autotools-staging
 

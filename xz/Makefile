@@ -33,6 +33,8 @@ rootfs-$(MKR_XZ_XZ) += \
 	/usr/bin/xzless \
 	/usr/bin/xzmore
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

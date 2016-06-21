@@ -1,6 +1,8 @@
+configured-$(call not, $(MKR_NTFS32)) := $(default-autotools-configured)
 compile-$(call not, $(MKR_XENO32)) := default-autotools-compile
 config-$(call not, $(MKR_XENO32)) := configure
 lib-$(call not, $(MKR_XENO32)) := lib
+configured-$(MKR_NTFS32) = $(default-autotools-configured32)
 compile-$(MKR_XENO32) := default-autotools-compile32
 config-$(MKR_XENO32) := configure32
 lib-$(MKR_XENO32) := lib32
@@ -85,6 +87,8 @@ $(config-y)-args-$(MKR_XENO_FORGE_LORES_CLOCK) += --enable-lores-clock
 $(config-y)-args-$(MKR_XENO_FORGE_ASSERT) += --enable-assert
 $(config-y)-args-$(MKR_XENO_FORGE_ASYNC_CANCEL) += --enable-async-cancel
 $(config-y)-args-$(MKR_XENO_FORGE_PSHARED) += --enable-pshared
+
+$(mkr-configured): $(configured-y)
 
 # Compilation
 compile: $(compile-y)

@@ -54,6 +54,8 @@ xeno-srcdir=$(call mksrcdir,$(MKR_XENO_SRCDIR))
 .mkr.cleaned: $(wildcard $(O)/include/config/linux/srcdir.h \
 			$(O)/include/config/xeno/srcdir.h) ../.mkr.kvers
 
+$(mkr-configured): .mkr.cleaned
+
 # In maintainer mode, trigger prepare-kernel for every compilation
 force-prepare-$(MKR_XENO_MAINT) := FORCE
 

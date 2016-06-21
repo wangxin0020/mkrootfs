@@ -24,6 +24,8 @@ ldflags-y += -lreadline -lncurses
 
 cppflags-y += -D_GNU_SOURCE
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

@@ -7,6 +7,8 @@ rootfs-y += \
 	/usr/sbin/cryptsetup \
 	/usr/sbin/veritysetup
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

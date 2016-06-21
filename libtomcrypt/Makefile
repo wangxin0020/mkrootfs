@@ -14,19 +14,21 @@ staging-make-args-y += \
 
 rootfs-y := /usr/lib/$(LIBNAME)
 
-$(CURDIR)/.mkr.makefile.ready: $(srcdir)/makefile $(deps)
+$(CURDIR)/Makefile: $(srcdir)/makefile $(deps)
 	rm -f $@
 	{ \
 		echo srcdir = $(srcdir); \
 		echo VPATH = $$\(srcdir\); \
 		sed 's#$$(HEADERS)#$$\(patsubst %,$$\(srcdir\)/%,$$\(HEADERS\)\)#g;s#-I\.#-I$(srcdir)#g' $<; \
-	} > $(CURDIR)/Makefile
+	} > $@
 	{  \
 		cd $(srcdir); find src -type d; \
 	} | while read d; do mkdir -p $(CURDIR)/$$d; done
-	: > $@
+	$(MAKE) clean
 
-compile: $(CURDIR)/.mkr.makefile.ready $(deps)
+$(mkr-configured): $(CURDIR)/Makefile
+
+compile:
 	$(MAKE) $(compile-make-args-y)
 
 staging:

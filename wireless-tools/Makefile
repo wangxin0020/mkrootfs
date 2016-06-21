@@ -17,10 +17,13 @@ rootfs-y := \
 	/usr/sbin/iwpriv \
 	/usr/sbin/iwspy
 
-$(CURDIR)/Makefile: $(srcdir)/Makefile
+$(CURDIR)/Makefile: $(srcdir)/Makefile $(deps)
 	sed 's,srcdir = .,srcdir = $(srcdir),' $< > $@
+	$(MAKE) clean
 
-compile: $(CURDIR)/Makefile $(deps)
+$(mkr-configured): $(CURDIR)/Makefile
+
+compile:
 	$(MAKE) $(compile-make-args-y)
 
 staging:

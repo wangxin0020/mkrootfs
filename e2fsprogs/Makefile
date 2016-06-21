@@ -42,6 +42,8 @@ rootfs-y += \
 	/usr/sbin/tune2fs \
 	/usr/sbin/uuidd
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

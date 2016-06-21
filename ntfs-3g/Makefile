@@ -1,6 +1,8 @@
+configured-$(call not, $(MKR_NTFS32)) := $(default-autotools-configured)
 compile-$(call not, $(MKR_NTFS32)) := default-autotools-compile
 config-$(call not, $(MKR_NTFS32)) := configure
 lib-$(call not, $(MKR_NTFS32)) := lib
+configured-$(MKR_NTFS32) = $(default-autotools-configured32)
 compile-$(MKR_NTFS32) := default-autotools-compile32
 config-$(MKR_NTFS32) := configure32
 lib-$(MKR_NTFS32) := lib32
@@ -42,6 +44,8 @@ rootfs-y := \
 	/usr/sbin/ntfslabel \
 	/usr/sbin/ntfsresize \
 	/usr/sbin/ntfsundelete
+
+$(mkr-configured): $(configured-y)
 
 compile: $(compile-y)
 

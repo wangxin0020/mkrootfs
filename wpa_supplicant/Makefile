@@ -11,7 +11,7 @@ rootfs-y := \
 	/usr/sbin/wpa_passphrase \
 	/usr/sbin/wpa_supplicant
 
-$(CURDIR)/.mkr.makefile.ready: $(srcdir)/wpa_supplicant/Makefile $(pkgdir)/Makefile $(deps)
+$(CURDIR)/.mkr.makefiles.ready: $(srcdir)/wpa_supplicant/Makefile $(deps)
 	rm -f $@
 	mkdir -p src
 	{ cd $(srcdir); find src wpa_supplicant -name Makefile; } | \
@@ -27,7 +27,7 @@ $(CURDIR)/.mkr.makefile.ready: $(srcdir)/wpa_supplicant/Makefile $(pkgdir)/Makef
 	mkdir -p wpa_supplicant/systemd
 	: > $@
 
-$(CURDIR)/wpa_supplicant/.config: $(CURDIR)/.mkr.makefile.ready
+$(CURDIR)/wpa_supplicant/.config: $(CURDIR)/.mkr.makefiles.ready
 	rm -f $@
 	echo CONFIG_DRIVER_HOSTAP=y > $@.tmp
 	echo CONFIG_DRIVER_WEXT=y >> $@.tmp
@@ -37,8 +37,11 @@ $(CURDIR)/wpa_supplicant/.config: $(CURDIR)/.mkr.makefile.ready
 	echo CONFIG_EAP_FAST=y >> $@.tmp
 	echo CONFIG_WPS=yes >> $@.tmp
 	mv $@.tmp $@
+	$(MAKE) -C $(CURDIR)/wpa_supplicant $(compile-make-args-y) clean
 
-compile: $(CURDIR)/wpa_supplicant/.config
+$(mkr-configured): $(CURDIR)/wpa_supplicant/.config
+
+compile:
 	$(MAKE) -C $(CURDIR)/wpa_supplicant $(compile-make-args-y)
 
 staging:

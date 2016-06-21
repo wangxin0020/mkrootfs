@@ -7,6 +7,8 @@ rootfs-y := \
 	/etc/netconfig \
 	/usr/lib/libtirpc.so.*
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

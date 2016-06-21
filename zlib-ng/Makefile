@@ -14,6 +14,8 @@ configure-env-y := \
 rootfs-y := \
 	/usr/lib/libz.so.*
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

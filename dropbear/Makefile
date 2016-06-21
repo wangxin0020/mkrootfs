@@ -16,6 +16,8 @@ rootfs-y += \
 	/usr/bin/scp \
 	/usr/sbin/dropbear
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

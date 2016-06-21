@@ -58,7 +58,7 @@ struct cross_dir_data {
 	int printed;
 };
 
-static void print_build_dir(void *cookie, struct symbol *sym, const char *name)
+static void print_dir_dep(void *cookie, struct symbol *sym, const char *name)
 {
 	struct cross_dir_data *d = cookie;
 
@@ -73,6 +73,21 @@ static void print_build_dir(void *cookie, struct symbol *sym, const char *name)
 	++d->printed;
 }
 
+static void print_pkg_dep(void *cookie, struct symbol *sym, const char *name)
+{
+	struct cross_dir_data *d = cookie;
+
+	if (!sym || !sym->file || !sym->file->dir->name[0]
+	    || !sym->file->dir->enabled || d->sym->file->dir == sym->file->dir)
+		return;
+
+	if (!d->printed)
+		fprintf(d->out, "%s/build-deps += ", d->sym->file->dir->name);
+
+	fprintf(d->out, "%s ", sym->file->dir->name);
+	++d->printed;
+}
+
 static void print_build_deps(FILE *out, struct symbol *sym)
 {
 	struct cross_dir_data d;
@@ -84,9 +99,8 @@ static void print_build_deps(FILE *out, struct symbol *sym)
 
 	d.out = out;
 	d.sym = sym;
-	d.printed = 1;
-
 	d.printed = 0;
+
 	for (prop = sym->prop; prop; prop = prop->next) {
 		switch (prop->type) {
 		case P_BUILD_SELECT:
@@ -94,7 +108,7 @@ static void print_build_deps(FILE *out, struct symbol *sym)
 				break;
 			/* Fallback wanted */
 		case P_BUILD_DEPENDS:
-			expr_print(prop->expr, print_build_dir, &d, E_NONE);
+			expr_print(prop->expr, print_dir_dep, &d, E_NONE);
 			break;
 			/* Avoid gcc warning */
 		default:
@@ -102,8 +116,29 @@ static void print_build_deps(FILE *out, struct symbol *sym)
 		}
 	}
 
-	if (d.printed)
-		putc('\n', out);
+	if (!d.printed)
+		return;
+
+	putc('\n', out);
+
+	d.printed = 0;
+
+	for (prop = sym->prop; prop; prop = prop->next) {
+		switch (prop->type) {
+		case P_BUILD_SELECT:
+			if (!expr_calc_value(prop->visible.expr))
+				break;
+			/* Fallback wanted */
+		case P_BUILD_DEPENDS:
+			expr_print(prop->expr, print_pkg_dep, &d, E_NONE);
+			break;
+			/* Avoid gcc warning */
+		default:
+			break;
+		}
+	}
+
+	putc('\n', out);
 }
 
 /* write a dependency file as used by kbuild to track dependencies */

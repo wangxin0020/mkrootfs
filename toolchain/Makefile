@@ -57,6 +57,8 @@ bins-y := \
 	ldconfig.real \
 	ldd
 
+$(mkr-configured): $(deps)
+
 # Compiling: nothing to do
 compile: ;
 

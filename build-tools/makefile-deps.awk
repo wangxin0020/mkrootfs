@@ -15,7 +15,7 @@ END {
 	printf("mkr-optdeps :=");
 	for (s in list)
 		printf(" \\\n    $(wildcard $(O)/include/config/"s".h)");
-	printf("\n\n$(mkr-optdeps): ;\n\ndeps :=");
+	printf("\n\n$(mkr-optdeps): ;\n\ndeps +=");
 	printf(" \\\n    $(mkr-optdeps)")
 	printf(" \\\n    .mkr.makefile.deps");
 	printf(" \\\n    .mkr.srcdir");
@@ -23,7 +23,7 @@ END {
 	printf(" \\\n    "FILENAME);
 	printf(" \\\n    $(srctree)/build-tools/Makefile.pkgbuild")
 	printf(" \\\n    $(srctree)/build-tools/makefile-deps.awk\n")
-	printf("\ndeps32 :=");
+	printf("\ndeps32 +=");
 	printf(" \\\n    $(mkr-optdeps)")
 	printf(" \\\n    .mkr.makefile.deps");
 	printf(" \\\n    .mkr.srcdir");

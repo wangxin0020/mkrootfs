@@ -24,6 +24,8 @@ rootfs-y := \
 	/usr/sbin/alsaconf \
 	/usr/sbin/alsactl
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

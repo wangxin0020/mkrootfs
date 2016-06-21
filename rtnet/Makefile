@@ -61,6 +61,8 @@ rootfs-y := \
 	/usr/examples/xenomai/posix/* \
 	/etc/default/rtnet.example
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

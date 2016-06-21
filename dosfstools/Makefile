@@ -3,10 +3,13 @@ compile-make-args-y += \
 
 staging-make-args-y += PREFIX=/usr
 
-$(CURDIR)/Makefile: $(srcdir)/Makefile
+$(CURDIR)/Makefile: $(srcdir)/Makefile $(deps)
 	sed 's,VPATH = src,VPATH = $(srcdir)/src,' $< > $@
+	$(MAKE) clean
 
-compile: $(CURDIR)/Makefile $(deps)
+$(mkr-configured): $(CURDIR)/Makefile
+
+compile:
 	$(MAKE) $(compile-make-args-y)
 
 staging:

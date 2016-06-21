@@ -15,8 +15,11 @@ staging-make-args-y +=							       \
 Makefile: $(srcdir)/Makefile $(deps)
 	rm -Rf * || :
 	{ echo VPATH=$(srcdir); cat $<; } > $@
+	$(MAKE) $(compile-make-args-y) clean
 
-compile: Makefile
+$(mkr-configured): Makefile
+
+compile: ;
 
 staging: default-autotools-staging
 

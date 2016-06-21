@@ -9,6 +9,8 @@ configure-args-y +=				\
 
 compile-make-args-y := device-mapper
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging:

@@ -6,6 +6,8 @@ rootfs-y += \
 	/usr/lib/libmagic.so.* \
 	/usr/bin/file
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

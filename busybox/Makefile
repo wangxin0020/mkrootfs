@@ -28,13 +28,19 @@ args := V=$(KBUILD_VERBOSE) SKIP_STRIP=y -C $(srcdir) O=$(CURDIR) \
 .config: ../.busybox_config
 	$(Q)cmp -s $< $@ || cp $< $@
 
+.mkr.config: .config
+	$(Q)tail -n +6 $< > .tmp.$@
+	$(Q)if cmp -s .tmp.$@ $@; then rm .tmp.$@; else mv .tmp.$@ $@; fi
+
 mkr-config:
 	@echo Resetting busybox configuration to $(board-config); \
 	$(Q)$(defconfig-y)
 	$(Q)sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 	$(Q)cp .config ../.busybox_config
 
-include/autoconf.h: .config ../.mkr.builddir .mkr.srcdir
+$(mkr-configured): .mkr.config ../.mkr.builddir .mkr.srcdir $(deps)
+
+include/autoconf.h: $(mkr-configured)
 	test -f Makefile && $(MAKE) $(args) distclean || :
 	cp ../.busybox_config .config
 	yes "" | $(MAKE) $(args) oldconfig
@@ -57,12 +63,13 @@ confcheck-$(call not,$(defconfig)) += \
 
 confcheck: default-confcheck
 
-# Catch-all target, allow to run all the targets (including the
-# *config ones and clean)
+clean: .config
+	$(MAKE) $(args) $@
+
+# Catch-all target, allow to run all the *config targets
 %config: .config
 	$(MAKE) $(args) $@
 	sed -i 's,^CONFIG_PREFIX=.*$$,CONFIG_PREFIX="$(pkginst)",' .config
 	$(Q)cp .config ../.busybox_config
 
-clean: .config
-	$(MAKE) $(args) $@
+$(pkgdir)/Kconfig: ;

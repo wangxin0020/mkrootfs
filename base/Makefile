@@ -15,6 +15,7 @@ vars-subst := \
 	  -e 's,@MKR_SECURE_NETWORK@,$(if $(MKR_SECURE_NETWORK),true,false),g' \
 	  -e 's,@MKR_BASE_SHELL@,$(MKR_BASE_SHELL),g'
 
+$(mkr-configured): $(deps)
 
 # Compiling: nothing to do
 compile: ;

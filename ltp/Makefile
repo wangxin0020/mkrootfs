@@ -40,6 +40,8 @@ rootfs-y := \
 	/ltp/ver_linux \
 	/ltp/Version
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

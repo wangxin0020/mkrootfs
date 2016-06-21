@@ -27,11 +27,16 @@ Makefile: $(srcdir)/Makefile $(deps)
 	echo "VPATH=$(srcdir)" > $@
 	sed "s#\./configure#$(srcdir)/lib/configure#;s#-m 644 \$$(PCIINC_INS)#-m 644 \$$(filter %.h,\$$^)#;s#install: all#install: \$$(PCI_IDS) all#;s#-m 644 \$$(PCI_IDS)#$$<#" $< >> $@
 
-lib/Makefile: $(srcdir)/lib/Makefile Makefile
+lib/Makefile: $(srcdir)/lib/Makefile
 	mkdir -p lib
 	echo "VPATH=$(srcdir)/lib" > $@
 	sed "s#=libpci\.ver#=$(srcdir)/lib/libpci.ver#" $< >> $@
+
+.makefiles.ready: Makefile lib/Makefile
 	$(MAKE) clean
+	: > $@
+
+$(mkr-configured): .makefiles.ready
 
 compile: lib/Makefile
 	$(configure-env-y) $(MAKE) $(compile-make-args-y)

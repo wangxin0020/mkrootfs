@@ -9,6 +9,8 @@ rootfs-$(MKR_LIBRESSL_OPENSSL) += \
 	/etc/ssl/openssl.cnf \
 	/usr/bin/openssl
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

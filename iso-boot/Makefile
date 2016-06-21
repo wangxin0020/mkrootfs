@@ -5,6 +5,8 @@ isobootdir := $(staging)/../boot.iso.d
 
 rootfs-y :=
 
+$(mkr-configured): $(deps)
+
 compile:
 
 staging:

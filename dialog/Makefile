@@ -9,6 +9,8 @@ configure-args-$(MKR_DIALOG_WIDEC) += \
 
 rootfs-y := /usr/bin/dialog
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

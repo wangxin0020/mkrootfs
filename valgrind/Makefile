@@ -6,6 +6,8 @@ configure-args-$(MKR_ARCH_ARM) := \
 	STRIP="$(cross)strip" NM="$(cross)nm" RANLIB="$(cross)ranlib" \
 	CPPFLAGS="$(cppflags-y)" CFLAGS="$(cflags-y)" LDFLAGS="$(ldflags-y)"
 
+$(mkr-configured): $(default-autotools-configured)
+
 compile: default-autotools-compile
 
 staging: default-autotools-staging

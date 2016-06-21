@@ -14,22 +14,31 @@ compile-make-args-y := \
 
 staging-make-args-y += prefix='$$(DESTDIR)/usr'
 
-Makefile: $(srcdir)/Makefile $(deps)
+$(CURDIR)/Makefile: $(srcdir)/Makefile $(deps)
+	$(Q)echo $@ remade because of $?
 	echo "VPATH=$(srcdir)" > $@
 	cat $< >> $@
 
-src/Makefile: $(srcdir)/src/Makefile Makefile
+$(CURDIR)/src/Makefile: $(srcdir)/src/Makefile $(deps)
+	$(Q)echo $@ remade because of $?
 	mkdir -p src
 	echo "VPATH=$(srcdir)/src" > $@
 	sed 's#libaio\.map#$(srcdir)/src/libaio.map#;s#-m 644 libaio\.h#-m 644 $(srcdir)/src/libaio.h#' $< >> $@
 
-harness/Makefile: $(srcdir)/harness/Makefile src/Makefile
+$(CURDIR)/harness/Makefile: $(srcdir)/harness/Makefile $(deps)
+	$(Q)echo $@ remade because of $?
 	mkdir -p harness
 	echo "VPATH=$(srcdir)/src" > $@
 	cat $< >> $@
-	$(MAKE) clean
 
-compile: harness/Makefile
+.makefiles.ready: $(CURDIR)/Makefile $(CURDIR)/src/Makefile $(CURDIR)/harness/Makefile
+	$(Q)echo $@ remade because of $?
+	$(MAKE) clean
+	: > $@
+
+$(mkr-configured): .makefiles.ready
+
+compile:
 	$(configure-env-y) $(MAKE) $(compile-make-args-y)
 
 staging: default-autotools-staging

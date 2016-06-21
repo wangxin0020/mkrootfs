@@ -7,6 +7,9 @@ staging-make-args-y +=							       \
 Makefile: $(srcdir)/Makefile $(deps)
 	rm -Rf * || :
 	sed 's,srcdir=\.,srcdir=$(srcdir),g' $< > $@
+	$(MAKE) clean
+
+$(mkr-configured): Makefile
 
 compile: Makefile
 

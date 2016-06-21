@@ -22,15 +22,19 @@ configure: do-sync ;
 # Configure (maintainer mode)
 config.status: configure
 	./configure $(configure-args-y) --enable-maintainer-mode
+	$(MAKE) clean
 else
 # Configure
 config.status: $(create-stamp)
 	$(sync-y) $(srcdir)/* .
 	./configure $(configure-args-y)
+	$(MAKE) clean
 endif
 
+$(mkr-configured): config.status
+
 # Build
-compile: config.status
+compile:
 	PATH=$(LTP_PATH) $(MAKE) CROSS_COMPILE="$(cross)" \
 	CC="$(CC) $(ARCH_FLAGS)" CXX="$(CXX) $(ARCH_FLAGS)" \
 		AR="$(cross)ar" RANLIB="$(cross)ranlib"
