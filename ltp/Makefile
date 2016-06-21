@@ -2,10 +2,16 @@ configure-args-y += --prefix=/ltp \
 	ac_cv_header_openssl_sha_h=no \
 	ac_cv_header_sys_acl_h=no
 
+configure-args-$(call not,$(MKR_LTP_NEW_AIO)) += \
+	ac_cv_header_libaio_h=no
+
 compile-make-args-y += \
 	-f $(srcdir)/Makefile \
 	top_srcdir="$(srcdir)" \
 	top_builddir=`pwd`
+
+compile-make-args-$(MKR_LTP_NEW_AIO) += \
+	AIO_LIBS="-laio"
 
 staging-make-args-y += \
 	-f $(srcdir)/Makefile \

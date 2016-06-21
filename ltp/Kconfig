@@ -17,6 +17,10 @@ config LTP_NEW_SRCDIR
        srcdir "Source directory"
        default "ltp-full-*"
 
+config LTP_NEW_AIO
+       bool "Enable aio test cases"
+       build_select LIBAIO
+
 endif
 
 endmenu
