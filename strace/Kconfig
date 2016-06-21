@@ -11,6 +11,10 @@ config STRACE_SRCDIR
        srcdir "Source directory"
        default "strace-*"
 
+config STRACE_AIO
+       bool "Enable aio decoding"
+       build_select LIBAIO
+
 endif
 
 endmenu
