@@ -1,7 +1,7 @@
 menu "iproute2"
 
 config IPROUTE2
-	build_depends on IPTABLES
+	build_select IPTABLES
 	package "Iproute2"
 
 if IPROUTE2
