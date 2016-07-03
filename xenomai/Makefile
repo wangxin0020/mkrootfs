@@ -174,6 +174,7 @@ rootfs-$(MKR_XENO_TESTSUITE) += \
 	/usr/bin/xeno-load \
 	/usr/bin/dohell \
 	/usr/bin/smokey \
+	/usr/bin/smokey_net_server \
 	/usr/$(lib-y)/libtrank.so.* \
 	/usr/$(lib-y)/libsmokey.so.*
 
