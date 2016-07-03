@@ -424,9 +424,9 @@ output-confcheck-$(MKR_OUT_NFS) += \
 output-confcheck-$(MKR_OUT_TGZ) += \
 	$(call confcheck-tool-var,tar,OUT_TGZ)
 output-confcheck-$(MKR_OUT_INITRAMFS_GZ) += \
-	$(call confcheck-tool-var,gzip,OUT_INITRAMFS_GZ)
+	$(call confcheck-tool-var,pigz,OUT_INITRAMFS_GZ)
 output-confcheck-$(MKR_OUT_INITRAMFS_XZ) += \
-	$(call confcheck-tool-var,xz,OUT_INITRAMFS_XZ)
+	$(call confcheck-tool-var,pixz,OUT_INITRAMFS_XZ)
 
 $(foreach t,VERSION PATCHLEVEL SUBLEVEL, \
 	$(eval $(shell grep '^$(t) =' $(call mksrcdir,$(MKR_LINUX_SRCDIR))/Makefile)))
@@ -794,13 +794,13 @@ initramfs.cpio: $(rootfs-y) .mkr.fakeroot
 
 initramfs.cpio.gz: initramfs.cpio
 	$(Q)echo Generating $@...
-	$(Q)gzip -c $<  > $@
+	$(Q)pigz -c $<  > $@
 	$(Q)echo Generating $@... done
 	$(Q)du --apparent-size -h $@
 
 initramfs.cpio.xz: initramfs.cpio
 	$(Q)echo Generating $@...
-	$(Q)xz --check=crc32 --lzma2 -kf3 $<
+	$(Q)pixz $< $@
 	$(Q)echo Generating $@... done
 	$(Q)du --apparent-size -h $@
 
