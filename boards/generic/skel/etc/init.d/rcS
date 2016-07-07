@@ -29,6 +29,8 @@ if test ! -e /etc/ld.so.cache; then
 fi
 
 echo /sbin/mkrootfs_hotplug > /proc/sys/kernel/hotplug
+mknod /dev/null c 1 3
+mknod /dev/zero c 1 5
 mdev -s
 exec < /dev/$dev > /dev/$dev 2> /dev/$dev
 
