@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Wed Jun  8 15:21:16 2016
+# Tue Jun 21 20:48:33 2016
 #
 MKR_BOARD_NAME=sabre
 
@@ -57,7 +57,9 @@ MKR_LIBUTIL=y
 MKR_OUT_NFS=y
 MKR_OUT_RSYNCD_PORT=31000
 # MKR_OUT_INITRAMFS is not set
-# MKR_OUT_TFTP is not set
+MKR_OUT_TFTP=y
+MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/$(MKR_BOARD_NAME)
+MKR_OUT_TFTP_BASENAME=gilles-2.x
 MKR_SKIP_ROOTFS=y
 
 #
@@ -75,7 +77,7 @@ MKR_BASE_SRCDIR=$(srctree)/boards/generic
 # MKR_KEYBOARD_MAPS is not set
 # MKR_SECURE_NETWORK is not set
 MKR_SWAP=y
-MKR_SWAP_DEV=sda1
+MKR_SWAP_DEV=mmcblk0p4
 MKR_BASE_SHELL=/bin/ash
 
 #
@@ -98,7 +100,7 @@ MKR_DROPBEAR_ZLIB=y
 #
 MKR_LINUX=y
 MKR_KCC=$(CC)
-MKR_LINUX_SRCDIR=linux-mainline
+MKR_LINUX_SRCDIR=ipipe
 MKR_LINUX_BOARD_CONFIG=y
 # MKR_LINUX_BOARD_DEFCONFIG is not set
 MKR_LINUX_TARGETS=uImage
@@ -124,7 +126,9 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # LTP (newer versions)
 #
-# MKR_LTP_NEW is not set
+MKR_LTP_NEW=y
+MKR_LTP_NEW_SRCDIR=ltp-full-*
+# MKR_LTP_NEW_AIO is not set
 
 #
 # OpenSSH
@@ -134,17 +138,60 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 # RTnet
 #
+# MKR_RTNET is not set
 
 #
 # Real-time tests & benches
 #
 MKR_TESTS=y
 MKR_TESTS_SRCDIR=$(srctree)/tests
+MKR_TESTS_XENO=y
+# MKR_XENO_TEST_FRONTEND is not set
 
 #
 # Xenomai
 #
-# MKR_XENO is not set
+MKR_XENO=y
+MKR_XENO_SRCDIR=xenomai-2.6
+MKR_XENO_MAINT=y
+MKR_XENO_SMP=y
+MKR_XENO_KERNEL=y
+MKR_XENO_CLASSIC=y
+# MKR_XENO_FORGE is not set
+MKR_XENO_DEBUG=y
+
+#
+# Components selection
+#
+MKR_XENO_USERSPACE=y
+# MKR_XENO_A4L is not set
+MKR_XENO_NATIVE=y
+MKR_XENO_POSIX=y
+# MKR_XENO_PSOS is not set
+# MKR_XENO_RTCAN is not set
+MKR_XENO_RTDM=y
+# MKR_XENO_UITRON is not set
+# MKR_XENO_VRTX is not set
+# MKR_XENO_VXWORKS is not set
+MKR_XENO_TESTSUITE=y
+# MKR_XENO_TESTSUITE_UNFREQUENT is not set
+
+#
+# Advanced configuration options
+#
+# MKR_XENO_SEP_TESTDIR is not set
+# MKR_XENO_THREAD is not set
+# MKR_XENO_DLOPEN is not set
+
+#
+# Automatic mlockall
+#
+# MKR_XENO_POSIX_MLOCKALL is not set
+# MKR_XENO_PSOS_MLOCKALL is not set
+# MKR_XENO_UITRON_MLOCKALL is not set
+MKR_XENO_ATOMIC_BUILTINS=y
+# MKR_XENO_ATOMIC_ADHOC is not set
+MKR_XENO_ARM_MACH=generic
 
 #
 # Other
@@ -212,10 +259,12 @@ MKR_FILE_ZLIB=y
 #
 # iptables
 #
+# MKR_IPTABLES is not set
 
 #
 # iproute2
 #
+# MKR_IPROUTE2 is not set
 
 #
 # ipsec-tools
@@ -266,6 +315,7 @@ MKR_FILE_ZLIB=y
 #
 MKR_STRACE=y
 MKR_STRACE_SRCDIR=strace-*
+# MKR_STRACE_AIO is not set
 
 #
 # Tcpdump
@@ -307,6 +357,12 @@ MKR_STRACE_SRCDIR=strace-*
 # MKR_FUSE is not set
 
 #
+# libaio
+#
+MKR_LIBAIO=y
+MKR_LIBAIO_SRCDIR=libaio-*
+
+#
 # libmnl
 #
 # MKR_LIBMNL is not set
@@ -314,6 +370,7 @@ MKR_STRACE_SRCDIR=strace-*
 #
 # libnftnl
 #
+# MKR_LIBNFTNL is not set
 
 #
 # libpcap

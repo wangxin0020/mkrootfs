@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Sat Jan  9 01:28:50 2016
+# Thu Jul  7 17:17:25 2016
 #
 MKR_BOARD_NAME=xplained
 
@@ -34,8 +34,8 @@ MKR_ARM_ARCH=7
 # MKR_ARM_FLOAT_VFP4 is not set
 MKR_ARM_FLOAT_VFP4_D16=y
 MKR_ARM_FLOAT_VFP=y
-MKR_CFLAGS=$(ARCH_FLAGS) -g -Os
-MKR_CXXFLAGS=$(ARCH_FLAGS) -g -Os
+MKR_CFLAGS=$(ARCH_FLAGS) -g -Os -mcpu=cortex-a5
+MKR_CXXFLAGS=$(ARCH_FLAGS) -g -Os -mcpu=cortex-a5
 MKR_LDFLAGS=$(ARCH_FLAGS) -g -Os
 MKR_SYSROOT_AUTO=y
 # MKR_SYSROOT_MANUAL is not set
@@ -59,7 +59,7 @@ MKR_OUT_RSYNCD_PORT=31000
 # MKR_OUT_INITRAMFS is not set
 MKR_OUT_TFTP=y
 MKR_OUT_TFTP_DIRNAME=/var/lib/tftpboot/xplained
-MKR_OUT_TFTP_BASENAME=gilles-cobalt
+MKR_OUT_TFTP_BASENAME=gilles-2.x
 MKR_SKIP_ROOTFS=y
 
 #
@@ -126,6 +126,7 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 MKR_LTP_NEW=y
 MKR_LTP_NEW_SRCDIR=ltp-full-*
+# MKR_LTP_NEW_AIO is not set
 
 #
 # OpenSSH
@@ -135,6 +136,7 @@ MKR_LTP_NEW_SRCDIR=ltp-full-*
 #
 # RTnet
 #
+# MKR_RTNET is not set
 
 #
 # Real-time tests & benches
@@ -148,19 +150,13 @@ MKR_TESTS_XENO=y
 # Xenomai
 #
 MKR_XENO=y
-MKR_XENO_SRCDIR=xenomai-gch
+MKR_XENO_SRCDIR=xenomai-2.6
 MKR_XENO_MAINT=y
 # MKR_XENO_SMP is not set
 MKR_XENO_KERNEL=y
-# MKR_XENO_CLASSIC is not set
-MKR_XENO_FORGE=y
-MKR_XENO_COBALT=y
-# MKR_XENO_MERCURY is not set
-# MKR_XENO_VALGRIND is not set
-# MKR_XENO_DEBUG_NONE is not set
-MKR_XENO_DEBUG_SYMBOLS=y
-# MKR_XENO_DEBUG_PARTIAL is not set
-# MKR_XENO_DEBUG_FULL is not set
+MKR_XENO_CLASSIC=y
+# MKR_XENO_FORGE is not set
+MKR_XENO_DEBUG=y
 
 #
 # Components selection
@@ -177,8 +173,6 @@ MKR_XENO_RTDM=y
 # MKR_XENO_VXWORKS is not set
 MKR_XENO_TESTSUITE=y
 # MKR_XENO_TESTSUITE_UNFREQUENT is not set
-MKR_XENO_RTNET_TOOLS=y
-MKR_XENO_DEMOS=y
 
 #
 # Advanced configuration options
@@ -195,12 +189,6 @@ MKR_XENO_DEMOS=y
 # MKR_XENO_UITRON_MLOCKALL is not set
 MKR_XENO_ATOMIC_BUILTINS=y
 # MKR_XENO_ATOMIC_ADHOC is not set
-# MKR_XENO_FORGE_MONOTONIC_RAW is not set
-# MKR_XENO_FORGE_REGISTRY is not set
-# MKR_XENO_FORGE_LORES_CLOCK is not set
-# MKR_XENO_FORGE_ASSERT is not set
-# MKR_XENO_FORGE_ASYNC_CANCEL is not set
-# MKR_XENO_FORGE_PSHARED is not set
 MKR_XENO_ARM_MACH=generic
 
 #
@@ -267,6 +255,21 @@ MKR_FILE_ZLIB=y
 # MKR_IPERF is not set
 
 #
+# iptables
+#
+# MKR_IPTABLES is not set
+
+#
+# iproute2
+#
+# MKR_IPROUTE2 is not set
+
+#
+# ipsec-tools
+#
+# MKR_IPSEC_TOOLS is not set
+
+#
 # Kexec-tools
 #
 # MKR_KEXEC_TOOLS is not set
@@ -310,6 +313,7 @@ MKR_FILE_ZLIB=y
 #
 MKR_STRACE=y
 MKR_STRACE_SRCDIR=strace-*
+# MKR_STRACE_AIO is not set
 
 #
 # Tcpdump
@@ -350,6 +354,22 @@ MKR_TCPDUMP_SRCDIR=tcpdump-*
 # fuse
 #
 # MKR_FUSE is not set
+
+#
+# libaio
+#
+MKR_LIBAIO=y
+MKR_LIBAIO_SRCDIR=libaio-*
+
+#
+# libmnl
+#
+# MKR_LIBMNL is not set
+
+#
+# libnftnl
+#
+# MKR_LIBNFTNL is not set
 
 #
 # libpcap

@@ -1,6 +1,6 @@
 #
 # Automatically generated make config: don't edit
-# Sat Jun 18 23:21:35 2016
+# Thu Jul  7 18:58:49 2016
 #
 MKR_BOARD_NAME=nestor
 
@@ -68,8 +68,8 @@ MKR_BASE_SRC_GENERIC=y
 MKR_BASE_SRCDIR=$(srctree)/boards/generic
 # MKR_KEYBOARD_MAPS is not set
 # MKR_SECURE_NETWORK is not set
-MKR_SWAP=y
-MKR_SWAP_DEV=sda1
+# MKR_SWAP is not set
+MKR_SWAP_DEV=null
 MKR_BASE_SHELL=/bin/ash
 
 #
@@ -77,8 +77,8 @@ MKR_BASE_SHELL=/bin/ash
 #
 MKR_BUSYBOX=y
 MKR_BUSYBOX_SRCDIR=busybox-*
-MKR_BUSYBOX_BOARD_DEFCONFIG=y
-# MKR_BUSYBOX_BOARD_CONFIG is not set
+# MKR_BUSYBOX_BOARD_DEFCONFIG is not set
+MKR_BUSYBOX_BOARD_CONFIG=y
 
 #
 # Dropbear
@@ -116,6 +116,7 @@ MKR_LINUX_EXTRA_INSTALL=
 #
 MKR_LTP_NEW=y
 MKR_LTP_NEW_SRCDIR=ltp-full-*
+# MKR_LTP_NEW_AIO is not set
 
 #
 # OpenSSH
@@ -245,10 +246,12 @@ MKR_E2FSPROGS_SRCDIR=e2fsprogs-*
 #
 # iptables
 #
+# MKR_IPTABLES is not set
 
 #
 # iproute2
 #
+# MKR_IPROUTE2 is not set
 
 #
 # ipsec-tools
@@ -300,6 +303,7 @@ MKR_E2FSPROGS_SRCDIR=e2fsprogs-*
 #
 MKR_STRACE=y
 MKR_STRACE_SRCDIR=strace-*
+# MKR_STRACE_AIO is not set
 
 #
 # Tcpdump
@@ -341,6 +345,12 @@ MKR_STRACE_SRCDIR=strace-*
 # MKR_FUSE is not set
 
 #
+# libaio
+#
+MKR_LIBAIO=y
+MKR_LIBAIO_SRCDIR=libaio-*
+
+#
 # libmnl
 #
 # MKR_LIBMNL is not set
@@ -348,6 +358,7 @@ MKR_STRACE_SRCDIR=strace-*
 #
 # libnftnl
 #
+# MKR_LIBNFTNL is not set
 
 #
 # libpcap
