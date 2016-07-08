@@ -1,4 +1,3 @@
-dev_txt := $(srcdir)/dev.txt
 skeldir := $(srcdir)/skel
 
 DIRS= \
@@ -21,9 +20,6 @@ $(mkr-configured): $(deps)
 compile: ;
 
 # Installing stuff
-devices:
-	$(pkgdir)/mkdevices.sh "$(pkginst)" < $(dev_txt)
-
 dirs:
 	for d in $(DIRS); do mkdir -p "$(pkginst)/$$d"; done
 	chmod a+rwx+t "$(pkginst)/tmp" "$(pkginst)/root"
@@ -52,7 +48,7 @@ chooser:
 	mkdir -p $(pkginst)/usr/bin
 	cp -d --preserve=mode,timestamps $(pkgdir)/keymap-chooser.sh $(pkginst)/usr/bin/keymap-chooser.sh
 
-staging-y := devices dirs skel
+staging-y := dirs skel
 staging-$(MKR_KEYBOARD_ONE_MAP) += one-map
 staging-$(MKR_KEYBOARD_ALL_MAPS) += all-maps
 staging-$(MKR_KEYBOARD_CHOOSER) += chooser
