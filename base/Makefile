@@ -1,6 +1,7 @@
 skeldir := $(srcdir)/skel
 
 DIRS= \
+	/dev \
 	/proc \
 	/sys \
 	/tmp \
