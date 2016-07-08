@@ -872,7 +872,7 @@ print-kernel-destination: $(outputs-y) $(outputs-y-y) $(outputs-y-y-y)
 	$(Q)$(mkr-locked-echo) '***********************************************'
 	$(Q)$(mkr-locked-echo) Copy to $(MKR_OUT_TFTP_DIRNAME)
 	$(Q)$(mkr-locked-echo) kernel copied to kernel-$(MKR_OUT_TFTP_BASENAME)
-	$(Q)[ -e linux/.mkr.cksum ] && $(mkr-locked-echo) CRC: `cat linux/.mkr.cksum`
+	$(Q)[ -e linux/.mkr.cksum ] && $(mkr-locked-echo) CRC: `cat linux/.mkr.cksum` || :
 
 print-dtb-destination: print-kernel-destination
 	$(Q)$(mkr-locked-echo) dtb copied to dtb-$(MKR_OUT_TFTP_BASENAME)
