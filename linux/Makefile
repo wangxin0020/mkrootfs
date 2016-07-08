@@ -117,10 +117,15 @@ ifeq ($(MKR_LINUX_DT_MERGED),y)
 	mkimage -A $(KARCH) -O linux -T kernel -C none \
 		-a $(MKR_LINUX_LOADADDR) \
 		-e $(MKR_LINUX_LOADADDR) -n Linux -d zImage-dt uImage
+	od -A n -j 24 -N 4 -t xC uImage > .mkr.cksum
 	chmod a+r uImage
 	$(cp-y) uImage $(MKR_OUT_TFTP_DIRNAME)/kernel-$(MKR_OUT_TFTP_BASENAME)
 else
 	chmod a+r $(MKR_LINUX_IMAGE)
+	case "$(MKR_LINUX_IMAGE)" in \
+	*uImage) od -A n -j 24 -N 4 -t xC $(MKR_LINUX_IMAGE) > .mkr.cksum;; \
+	*) $(RM) .mkr.cksum;; \
+	esac
 	$(cp-y) $(MKR_LINUX_IMAGE) $(MKR_OUT_TFTP_DIRNAME)/kernel-$(MKR_OUT_TFTP_BASENAME)
 endif
 
